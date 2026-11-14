@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import XRayCore
 
 /// CI/debug aid. With `XRAY_SNAPSHOT_DIR` set, the app opens every screen (and every
 /// live-trace tab) in light and dark appearance, saves a PNG of the main window for

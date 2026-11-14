@@ -1,0 +1,112 @@
+import AppKit
+import SwiftUI
+
+/// CI/debug aid. With `XRAY_SNAPSHOT_DIR` set, the app opens every screen (and every
+/// live-trace tab) in light and dark appearance, saves a PNG of the main window for
+/// each into that folder, writes `snapshots.log` and quits.
+@MainActor
+enum SnapshotRunner {
+    static var directory: URL? {
+        ProcessInfo.processInfo.environment["XRAY_SNAPSHOT_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) }
+    }
+
+    static func runIfRequested(model: AppModel) {
+        guard let directory else { return }
+        Task { @MainActor in
+            await run(model: model, directory: directory)
+            NSApp.terminate(nil)
+        }
+    }
+
+    private static func run(model: AppModel, directory: URL) async {
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        var log: [String] = []
+
+        // Wait for the first scan and for the main window.
+        for _ in 0..<120 {
+            if model.lastScan != nil && !model.isScanning && mainWindow() != nil { break }
+            try? await Task.sleep(nanoseconds: 250_000_000)
+        }
+        log.append("events: \(model.priced.count), activity items: \(model.activity.count), trace sessions: \(model.traceSessions.count)")
+        if let status = model.liveStatus {
+            log.append("live state: \(status.state.title) — \(status.state.detail ?? "")")
+        }
+        guard let window = mainWindow() else {
+            log.append("no main window; windows: \(NSApp.windows.map { "\($0.title) \($0.frame)" })")
+            write(log, to: directory)
+            return
+        }
+        window.setContentSize(NSSize(width: 1440, height: 940))
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate()
+        log.append("window \(window.windowNumber) \(window.frame)")
+
+        let appearances: [(String, NSAppearance.Name)] = [("light", .aqua), ("dark", .darkAqua)]
+        for (appearanceName, appearance) in appearances {
+            NSApp.appearance = NSAppearance(named: appearance)
+            for item in SidebarItem.allCases {
+                model.selection = item
+                if item == .trace {
+                    for tab in TraceTab.allCases {
+                        model.traceTab = tab
+                        log.append(await capture(window, name: "\(appearanceName)-\(item.rawValue)-\(tab.rawValue)", directory: directory))
+                    }
+                } else {
+                    log.append(await capture(window, name: "\(appearanceName)-\(item.rawValue)", directory: directory))
+                }
+            }
+        }
+        model.selection = .live
+        write(log, to: directory)
+    }
+
+    private static func mainWindow() -> NSWindow? {
+        NSApp.windows.first { $0.isVisible && $0.canBecomeMain && $0.frame.width > 400 }
+    }
+
+    private static func capture(_ window: NSWindow, name: String, directory: URL) async -> String {
+        try? await Task.sleep(nanoseconds: 1_600_000_000)
+        let url = directory.appendingPathComponent(name + ".png")
+        if let image = windowServerImage(of: window), let data = png(image) {
+            do {
+                try data.write(to: url)
+                return "\(name): window server, \(data.count) bytes"
+            } catch {
+                return "\(name): \(error)"
+            }
+        }
+        guard let view = window.contentView,
+              let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return "\(name): no bitmap" }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        guard let data = rep.representation(using: .png, properties: [:]) else { return "\(name): no png" }
+        do {
+            try data.write(to: url)
+            return "\(name): cacheDisplay, \(data.count) bytes"
+        } catch {
+            return "\(name): \(error)"
+        }
+    }
+
+    /// Image of our own window from the window server. Looked up at run time because the
+    /// API is deprecated; an app may capture its own windows without screen-recording access.
+    private static func windowServerImage(of window: NSWindow) -> CGImage? {
+        typealias CreateImage = @convention(c) (CGRect, UInt32, UInt32, UInt32) -> Unmanaged<CGImage>?
+        guard let handle = dlopen("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics", RTLD_NOW),
+              let symbol = dlsym(handle, "CGWindowListCreateImage") else { return nil }
+        let create = unsafeBitCast(symbol, to: CreateImage.self)
+        let includingWindow: UInt32 = 1 << 3
+        let boundsIgnoreFraming: UInt32 = 1 << 0
+        let bestResolution: UInt32 = 1 << 3
+        return create(.null, includingWindow, UInt32(window.windowNumber), boundsIgnoreFraming | bestResolution)?.takeRetainedValue()
+    }
+
+    private static func png(_ image: CGImage) -> Data? {
+        guard image.width > 1, image.height > 1 else { return nil }
+        return NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
+    }
+
+    private static func write(_ log: [String], to directory: URL) {
+        try? (log.joined(separator: "\n") + "\n").write(to: directory.appendingPathComponent("snapshots.log"), atomically: true, encoding: .utf8)
+    }
+}

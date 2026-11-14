@@ -1,0 +1,59 @@
+name: Snapshots
+
+# Builds the app, generates demo transcripts, captures every screen in light and dark
+# appearance and publishes the PNGs to the `snapshots` branch. Run it manually.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshots:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build --product S2AClaudeXRay
+
+      - name: Demo data
+        run: python3 scripts/demo-data.py "$RUNNER_TEMP/xray-demo"
+
+      - name: Capture screens
+        run: |
+          set +e
+          OUT="$RUNNER_TEMP/snapshots"
+          mkdir -p "$OUT/screen"
+          BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
+          CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" "$BIN" > "$OUT/app-output.txt" 2>&1 &
+          APP=$!
+          for i in 1 2 3 4 5 6; do
+            sleep 8
+            screencapture -x -t jpg "$OUT/screen/screen-$i.jpg" 2>> "$OUT/screen/errors.txt"
+            kill -0 $APP 2>/dev/null || break
+          done
+          for i in $(seq 1 90); do
+            kill -0 $APP 2>/dev/null || break
+            sleep 2
+          done
+          kill $APP 2>/dev/null
+          wait $APP
+          echo "exit code: $?" >> "$OUT/app-output.txt"
+          cp ~/Library/Logs/DiagnosticReports/S2AClaudeXRay* "$OUT/" 2>/dev/null
+          ls -la "$OUT" "$OUT/screen"
+          cat "$OUT/snapshots.log" "$OUT/app-output.txt" 2>/dev/null
+          exit 0
+
+      - name: Publish to the snapshots branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd "$RUNNER_TEMP/snapshots"
+          git init -q -b snapshots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Snapshots of ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" snapshots

@@ -99,6 +99,7 @@ final class AppModel {
     var period: Period = .month
     /// Session shown in the live trace; `nil` follows the most recently active one.
     var pinnedTraceSession: String?
+    var traceTab: TraceTab = .feed
 
     @ObservationIgnored private var store = UsageStore()
     private let ingestor = TranscriptIngestor()
@@ -132,6 +133,7 @@ final class AppModel {
             Task { @MainActor in self?.tick() }
         }
         Task { await rescan() }
+        SnapshotRunner.runIfRequested(model: self)
     }
 
     private func tick() {

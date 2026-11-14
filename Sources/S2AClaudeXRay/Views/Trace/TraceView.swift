@@ -20,10 +20,10 @@ enum TraceTab: String, CaseIterable, Identifiable {
 /// Live trace: what Claude Code is doing right now and every step it took, in full detail.
 struct TraceView: View {
     @Environment(AppModel.self) private var model
-    @State private var tab: TraceTab = .feed
     @AppStorage("trace.hideContent") private var hideContent = false
 
     var body: some View {
+        @Bindable var model = model
         let sessions = model.traceSessions
 
         VStack(alignment: .leading, spacing: 0) {
@@ -39,7 +39,7 @@ struct TraceView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
 
-                Picker("Раздел", selection: $tab) {
+                Picker("Раздел", selection: $model.traceTab) {
                     ForEach(TraceTab.allCases) { tab in
                         Text(tab.title).tag(tab)
                     }
@@ -52,7 +52,7 @@ struct TraceView: View {
                 Divider()
 
                 Group {
-                    switch tab {
+                    switch model.traceTab {
                     case .feed: TraceFeedView(trace: trace, usage: usage, hideContent: hideContent)
                     case .flow: TraceFlowView(trace: trace, usage: usage, hideContent: hideContent)
                     case .timeline: TraceTimelineView(trace: trace, usage: usage)

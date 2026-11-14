@@ -40,6 +40,17 @@ public enum ModelCatalog {
         return .other
     }
 
+    /// Context window in tokens. Current models have 1M; Haiku 4.5 and older models 200K.
+    public static func contextWindow(for model: String) -> Int {
+        if model.lowercased().contains("[1m]") { return 1_000_000 }
+        let id = PricingTable.normalize(model)
+        let oneMillion = [
+            "claude-fable-5", "claude-mythos-5", "claude-opus-5", "claude-opus-4-8", "claude-opus-4-7",
+            "claude-opus-4-6", "claude-sonnet-5", "claude-sonnet-4-6", "claude-haiku-5-5",
+        ]
+        return oneMillion.contains { id.hasPrefix($0) } ? 1_000_000 : 200_000
+    }
+
     /// Human-readable name: `claude-opus-5-5` -> `Opus 5.5`, `claude-sonnet-4-5-20250929` -> `Sonnet 4.5`.
     public static func displayName(for model: String) -> String {
         let id = PricingTable.normalize(model)

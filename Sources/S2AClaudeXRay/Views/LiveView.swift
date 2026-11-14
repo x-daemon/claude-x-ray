@@ -14,6 +14,8 @@ struct LiveView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                LiveActivityCard()
+
                 Card(title: "Окно лимита (5 часов)", subtitle: model.plan.isSubscription ? "подписка \(model.plan.title)" : nil) {
                     WindowSummaryView()
                 }
@@ -222,6 +224,50 @@ struct CurrentSessionCard: View {
                     }
                     .font(.caption)
                     .monospacedDigit()
+                }
+            }
+        }
+    }
+}
+
+/// "What is Claude doing right now": live state plus the latest steps, linking to the full trace.
+struct LiveActivityCard: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        if let sessionID = model.traceSessions.first?.id {
+            let trace = model.trace(for: sessionID)
+            let usage = model.usageByMessage(sessionID: sessionID)
+            VStack(alignment: .leading, spacing: 10) {
+                TraceStatusBanner(trace: trace, usage: usage)
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(Array(trace.items.filter { $0.kind != .context && $0.kind != .toolResult }.suffix(6).reversed())) { item in
+                        HStack(spacing: 8) {
+                            Text(item.timestamp.formatted(date: .omitted, time: .standard))
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                                .frame(width: 66, alignment: .leading)
+                            Image(systemName: TraceStyle.icon(for: item.kind))
+                                .foregroundStyle(item.isError ? Palette.critical : TraceStyle.color(for: item.kind))
+                                .frame(width: 16)
+                            Text(item.title).lineLimit(1)
+                            if let tool = trace.tools.first(where: { $0.call.id == item.id }) {
+                                ToolStatusChip(tool: tool)
+                            }
+                            Spacer()
+                        }
+                        .font(.callout)
+                    }
+                }
+                HStack {
+                    Button {
+                        model.selection = .trace
+                    } label: {
+                        Label("Открыть Live-трассу", systemImage: "point.3.connected.trianglepath.dotted")
+                    }
+                    Text("промпты, размышления, инструменты, MCP, скиллы, контекст и поток — подробно и в реальном времени")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
         }

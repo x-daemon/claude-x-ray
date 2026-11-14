@@ -103,5 +103,11 @@ final class FmtTests: XCTestCase {
         XCTAssertEqual(Fmt.duration(14 * 60), "14 мин")
         XCTAssertEqual(Fmt.dateTime(Fixture.date(2026, 11, 14, 7, 3), calendar: Fixture.utc), "14.11 07:03")
         XCTAssertEqual(Fmt.isoDay(Fixture.date(2026, 1, 2, 3), calendar: Fixture.utc), "2026-01-02")
+        XCTAssertEqual(Fmt.shortDuration(0.85), "850 мс")
+        XCTAssertEqual(Fmt.shortDuration(4.24), "4.2 с")
+        XCTAssertEqual(Fmt.shortDuration(185), "3 мин 05 с")
+        XCTAssertEqual(Fmt.ms(2128), "2.1 с")
+        XCTAssertEqual(Fmt.bytes(820), "820 Б")
+        XCTAssertEqual(Fmt.bytes(12_600), "12.3 КБ")
     }
 }

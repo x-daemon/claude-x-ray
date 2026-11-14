@@ -27,7 +27,7 @@ struct RootView: View {
             .navigationTitle(model.selection?.title ?? "S2A Claude X-Ray")
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if model.selection != .live {
+                    if model.selection != .live && model.selection != .trace {
                         Picker("Период", selection: $model.period) {
                             ForEach(Period.allCases) { period in
                                 Text(period.title).tag(period)
@@ -54,6 +54,7 @@ struct RootView: View {
     private func detail(for item: SidebarItem) -> some View {
         switch item {
         case .live: LiveView()
+        case .trace: TraceView()
         case .overview: OverviewView()
         case .sessions: SessionsView()
         case .projects: BreakdownView(dimension: .project)

@@ -85,5 +85,9 @@ final class PricingTests: XCTestCase {
         XCTAssertEqual(ModelCatalog.displayName(for: "claude-haiku-5-5"), "Haiku 5.5")
         XCTAssertEqual(ModelCatalog.family(of: "claude-mythos-5-2"), .mythos)
         XCTAssertEqual(ModelCatalog.family(of: "whatever"), .other)
+        XCTAssertEqual(ModelCatalog.contextWindow(for: "claude-opus-5-5"), 1_000_000)
+        XCTAssertEqual(ModelCatalog.contextWindow(for: "claude-sonnet-5-5"), 1_000_000)
+        XCTAssertEqual(ModelCatalog.contextWindow(for: "claude-haiku-4-5"), 200_000)
+        XCTAssertEqual(ModelCatalog.contextWindow(for: "claude-sonnet-4-5-20250929[1m]"), 1_000_000)
     }
 }

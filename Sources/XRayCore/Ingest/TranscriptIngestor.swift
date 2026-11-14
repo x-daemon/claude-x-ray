@@ -4,6 +4,8 @@ import Foundation
 public struct ScanResult: Sendable {
     /// Events parsed from the bytes appended since the previous scan (not yet de-duplicated).
     public var events: [UsageEvent] = []
+    /// Activity trace items from recently modified transcripts.
+    public var activities: [ActivityItem] = []
     public var filesSeen = 0
     public var filesRead = 0
     public var linesRead = 0
@@ -25,7 +27,9 @@ public actor TranscriptIngestor {
         readers.removeAll()
     }
 
-    public func scan(directories: [URL]) -> ScanResult {
+    /// - Parameter activitySince: transcripts modified after this date are also parsed
+    ///   into activity items for the live trace; `nil` skips activity parsing.
+    public func scan(directories: [URL], activitySince: Date? = nil) -> ScanResult {
         let started = Date()
         var result = ScanResult()
         let fileManager = FileManager.default
@@ -34,7 +38,7 @@ public actor TranscriptIngestor {
             guard ClaudeDataLocator.isDirectory(directory) else { continue }
             guard let enumerator = fileManager.enumerator(
                 at: directory,
-                includingPropertiesForKeys: [.isRegularFileKey],
+                includingPropertiesForKeys: [.isRegularFileKey, .contentModificationDateKey],
                 options: [.skipsHiddenFiles]
             ) else {
                 result.errors.append("Нет доступа к \(directory.path)")
@@ -60,6 +64,11 @@ public actor TranscriptIngestor {
                 result.linesRead += lines.count
                 let sessionID = url.deletingPathExtension().lastPathComponent
                 let project = url.deletingLastPathComponent().lastPathComponent
+                var wantsActivity = false
+                if let activitySince {
+                    let modified = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+                    wantsActivity = (modified ?? .distantFuture) >= activitySince
+                }
                 for line in lines {
                     if let event = TranscriptParser.parse(
                         line: line,
@@ -67,6 +76,13 @@ public actor TranscriptIngestor {
                         fallbackProject: project
                     ) {
                         result.events.append(event)
+                    }
+                    if wantsActivity {
+                        result.activities += ActivityParser.parse(
+                            line: line,
+                            fallbackSessionID: sessionID,
+                            fallbackProject: project
+                        )
                     }
                 }
             }

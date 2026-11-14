@@ -46,6 +46,29 @@ public enum Fmt {
         return "\(seconds) с"
     }
 
+    /// Short durations for steps and tools: `850 мс`, `4.2 с`, `3 мин 05 с`, `1 ч 02 мин`.
+    public static func shortDuration(_ interval: TimeInterval) -> String {
+        let value = max(0, interval)
+        if value < 1 { return "\(Int((value * 1000).rounded())) мс" }
+        if value < 60 { return trimmed(value, digits: 1) + " с" }
+        let seconds = Int(value.rounded())
+        if seconds < 3600 { return String(format: "%ld мин %02ld с", seconds / 60, seconds % 60) }
+        return duration(value)
+    }
+
+    /// Milliseconds from transcripts: `2128` -> `2.1 с`.
+    public static func ms(_ milliseconds: Int) -> String {
+        shortDuration(Double(milliseconds) / 1000)
+    }
+
+    /// `820 Б`, `12.3 КБ`, `4.5 МБ`.
+    public static func bytes(_ count: Int) -> String {
+        let value = Double(count)
+        if value < 1024 { return "\(count) Б" }
+        if value < 1024 * 1024 { return trimmed(value / 1024, digits: 1) + " КБ" }
+        return trimmed(value / 1024 / 1024, digits: 1) + " МБ"
+    }
+
     /// `14.11 17:23`
     public static func dateTime(_ date: Date, calendar: Calendar = .current) -> String {
         let c = calendar.dateComponents([.day, .month, .hour, .minute], from: date)

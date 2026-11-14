@@ -61,8 +61,9 @@ struct MenuBarLabel: View {
     let model: AppModel
 
     var body: some View {
+        let state = model.liveStatus?.state
         HStack(spacing: 4) {
-            Image(systemName: "waveform.path.ecg")
+            Image(systemName: state.map { $0.isActive ? TraceStyle.icon(for: $0) : "waveform.path.ecg" } ?? "waveform.path.ecg")
             Text(model.menuBarTitle).monospacedDigit()
         }
     }

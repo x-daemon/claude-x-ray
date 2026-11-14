@@ -5,13 +5,14 @@ import SwiftUI
 import XRayCore
 
 enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
-    case live, overview, sessions, projects, models, insights, reports
+    case live, trace, overview, sessions, projects, models, insights, reports
 
     var id: Self { self }
 
     var title: String {
         switch self {
         case .live: return "Сейчас"
+        case .trace: return "Live-трасса"
         case .overview: return "Обзор"
         case .sessions: return "Сессии"
         case .projects: return "Проекты"
@@ -24,6 +25,7 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     var systemImage: String {
         switch self {
         case .live: return "waveform.path.ecg"
+        case .trace: return "point.3.connected.trianglepath.dotted"
         case .overview: return "chart.bar.xaxis"
         case .sessions: return "list.bullet.rectangle"
         case .projects: return "folder"
@@ -82,6 +84,8 @@ final class AppModel {
     private(set) var now = Date()
     /// Model display names ordered by all-time cost; fixes each model's chart color.
     private(set) var modelOrder: [String] = []
+    /// Recent activity (prompts, tool calls, results, context updates) for the live trace.
+    private(set) var activity = ActivityStore()
 
     // MARK: Settings
 
@@ -93,6 +97,8 @@ final class AppModel {
 
     var selection: SidebarItem? = .live
     var period: Period = .month
+    /// Session shown in the live trace; `nil` follows the most recently active one.
+    var pinnedTraceSession: String?
 
     @ObservationIgnored private var store = UsageStore()
     private let ingestor = TranscriptIngestor()
@@ -105,6 +111,8 @@ final class AppModel {
 
     static let otherSeries = "Другие"
     static let maxColoredModels = 7
+    /// How far back the live trace reads transcripts.
+    static let activityRetention: TimeInterval = 3 * 86_400
 
     init() {
         let settings = SettingsStore()
@@ -133,6 +141,9 @@ final class AppModel {
         if tickCount % 4 == 0 {
             Task { await rescan() }
         }
+        if tickCount % 40 == 0 {
+            activity.prune(now: now)
+        }
     }
 
     private func restartWatching() {
@@ -158,10 +169,16 @@ final class AppModel {
             return
         }
         isScanning = true
-        let result = await ingestor.scan(directories: directories)
+        let result = await ingestor.scan(
+            directories: directories,
+            activitySince: Date().addingTimeInterval(-Self.activityRetention)
+        )
         let changed = store.merge(result.events)
         if changed > 0 || lastScan == nil {
             recompute()
+        }
+        if !result.activities.isEmpty {
+            activity.merge(result.activities, now: Date())
         }
         lastScanResult = result
         lastScan = Date()
@@ -178,6 +195,7 @@ final class AppModel {
     func fullRescan() async {
         await ingestor.reset()
         store.removeAll()
+        activity.removeAll()
         priced = []
         windows = []
         lastScan = nil
@@ -297,6 +315,38 @@ final class AppModel {
         guard let last = priced.last else { return nil }
         let id = last.event.sessionID
         return SessionAnalytics.sessions(events(since: now.addingTimeInterval(-7 * 86_400)).filter { $0.event.sessionID == id }).first
+    }
+
+    // MARK: Live trace
+
+    /// Sessions with recent activity, most recently active first.
+    var traceSessions: [SessionActivity] { activity.sessions() }
+
+    /// The session the live trace shows: the pinned one, or the most recently active.
+    var traceSessionID: String? {
+        if let pinnedTraceSession, activity.items.contains(where: { $0.sessionID == pinnedTraceSession }) {
+            return pinnedTraceSession
+        }
+        return traceSessions.first?.id
+    }
+
+    func trace(for sessionID: String) -> SessionTrace {
+        TraceBuilder.build(sessionID: sessionID, items: activity.items(forSession: sessionID), now: now)
+    }
+
+    /// What Claude is doing right now in the most recently active session.
+    var liveStatus: LiveStatus? {
+        guard let id = traceSessions.first?.id else { return nil }
+        return trace(for: id).status
+    }
+
+    /// Priced usage of a session, keyed by API message id (joins trace steps with tokens and cost).
+    func usageByMessage(sessionID: String) -> [String: PricedEvent] {
+        var result: [String: PricedEvent] = [:]
+        for item in priced where item.event.sessionID == sessionID {
+            result[item.event.messageID] = item
+        }
+        return result
     }
 
     var menuBarTitle: String {

@@ -24,10 +24,10 @@ enum TraceStyle {
 
     static func color(for kind: ActivityKind) -> Color {
         switch kind {
-        case .prompt, .queued: return Palette.series[1]
-        case .thinking, .reply: return Palette.series[0]
-        case .toolCall, .toolResult: return Palette.series[2]
-        case .context, .compact: return Palette.series[6]
+        case .prompt, .queued: return Palette.user
+        case .thinking, .reply: return Palette.model
+        case .toolCall, .toolResult: return Palette.tool
+        case .context, .compact: return Palette.context
         case .hook, .note: return Palette.other
         case .interrupted: return Palette.warning
         case .apiError: return Palette.critical
@@ -66,8 +66,8 @@ enum TraceStyle {
 
     static func color(for state: LiveState) -> Color {
         switch state {
-        case .runningTool, .runningSubagent: return Palette.series[2]
-        case .thinking, .writing: return Palette.series[0]
+        case .runningTool, .runningSubagent: return Palette.tool
+        case .thinking, .writing: return Palette.model
         case .waitingForUser: return Palette.good
         case .interrupted: return Palette.warning
         case .error: return Palette.critical
@@ -121,7 +121,7 @@ enum TraceStyle {
 
     static func color(for outcome: TurnOutcome) -> Color {
         switch outcome {
-        case .inProgress: return Palette.series[0]
+        case .inProgress: return Palette.model
         case .completed: return Palette.good
         case .interrupted: return Palette.warning
         case .failed: return Palette.critical

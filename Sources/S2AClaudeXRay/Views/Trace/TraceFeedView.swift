@@ -236,7 +236,7 @@ struct UsageLine: View {
         parts.append(Fmt.usd(priced.cost.total))
 
         return HStack(spacing: 6) {
-            Image(systemName: "gauge.with.dots.needle.33percent").foregroundStyle(Palette.series[0])
+            Image(systemName: "gauge.with.dots.needle.33percent").foregroundStyle(Palette.model)
             Text(parts.joined(separator: " · "))
         }
         .font(.caption.monospacedDigit())
@@ -266,18 +266,18 @@ enum TraceText {
 
     static func chips(for item: ActivityItem, tool: ToolExecution?) -> [ChipSpec] {
         var chips: [ChipSpec] = [ChipSpec(text: TraceStyle.label(for: item.kind), icon: nil, tint: TraceStyle.color(for: item.kind))]
-        if item.isSidechain { chips.append(ChipSpec(text: "субагент", icon: "person.2", tint: Palette.series[4])) }
+        if item.isSidechain { chips.append(ChipSpec(text: "субагент", icon: "person.2", tint: Palette.subagent)) }
         if let model = item.model, item.kind == .thinking || item.kind == .reply || item.kind == .toolCall {
-            chips.append(ChipSpec(text: ModelCatalog.displayName(for: model), icon: "cpu", tint: Palette.series[0]))
+            chips.append(ChipSpec(text: ModelCatalog.displayName(for: model), icon: "cpu", tint: Palette.model))
         }
         if let requested = item.requestedModel, let model = item.model, PricingTable.normalize(requested) != PricingTable.normalize(model) {
             chips.append(ChipSpec(text: "запрошена \(ModelCatalog.displayName(for: requested))", icon: "arrow.triangle.swap", tint: Palette.warning))
         }
         if let effort = item.effort, item.kind == .thinking || item.kind == .reply { chips.append(ChipSpec(text: "effort \(effort)", icon: "dial.medium", tint: Palette.other)) }
-        if let ms = item.thinkingMs, ms > 0 { chips.append(ChipSpec(text: "думал \(Fmt.ms(ms))", icon: "brain", tint: Palette.series[0])) }
+        if let ms = item.thinkingMs, ms > 0 { chips.append(ChipSpec(text: "думал \(Fmt.ms(ms))", icon: "brain", tint: Palette.model)) }
         if let ms = item.inputStreamMs, ms > 0 { chips.append(ChipSpec(text: "ввод генерировался \(Fmt.ms(ms))", icon: "keyboard", tint: Palette.other)) }
-        if let server = item.mcpServer { chips.append(ChipSpec(text: "MCP \(server)", icon: "puzzlepiece.extension", tint: Palette.series[6])) }
-        if let skill = item.attributionSkill { chips.append(ChipSpec(text: "скилл \(skill)", icon: "sparkles", tint: Palette.series[3])) }
+        if let server = item.mcpServer { chips.append(ChipSpec(text: "MCP \(server)", icon: "puzzlepiece.extension", tint: Palette.mcp)) }
+        if let skill = item.attributionSkill { chips.append(ChipSpec(text: "скилл \(skill)", icon: "sparkles", tint: Palette.skill)) }
         if let action = item.fileAction, let path = item.target {
             let verb: String
             switch action {

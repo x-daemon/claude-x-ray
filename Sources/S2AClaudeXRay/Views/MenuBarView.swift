@@ -13,7 +13,7 @@ struct MenuBarView: View {
 
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "waveform.path.ecg").foregroundStyle(Palette.series[0])
+                BrandMark(size: 22)
                 Text("S2A Claude X-Ray").font(.headline)
                 Spacer()
                 if model.isScanning {

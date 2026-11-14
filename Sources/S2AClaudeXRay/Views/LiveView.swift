@@ -107,7 +107,7 @@ struct WindowSummaryView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    .tint(ratio >= 0.9 ? Palette.critical : ratio >= 0.7 ? Palette.warning : Palette.series[0])
+                    .tint(ratio >= 0.9 ? Palette.critical : ratio >= 0.7 ? Palette.warning : Palette.primary)
                 }
 
                 HStack(spacing: 16) {
@@ -150,7 +150,7 @@ struct LiveActivityChart: View {
                     xEnd: .value("Конец", bucket.end.addingTimeInterval(-20)),
                     y: .value("USD", bucket.summary.cost.total)
                 )
-                .foregroundStyle(Palette.series[0])
+                .foregroundStyle(Palette.primary)
                 .cornerRadius(3)
             }
             if let windowStart, windowStart > (buckets.first?.start ?? now) {
@@ -168,7 +168,7 @@ struct LiveActivityChart: View {
                         ChartTooltip(
                             title: "\(bucket.start.formatted(date: .omitted, time: .shortened)) – \(bucket.end.formatted(date: .omitted, time: .shortened))",
                             rows: [
-                                ("Стоимость", Fmt.usd(bucket.summary.cost.total), Palette.series[0]),
+                                ("Стоимость", Fmt.usd(bucket.summary.cost.total), Palette.primary),
                                 ("Токены", Fmt.tokens(bucket.summary.tokens.total), nil),
                                 ("Запросы", "\(bucket.summary.requests)", nil),
                             ]

@@ -44,24 +44,32 @@ enum SnapshotRunner {
         NSApp.activate()
         log.append("window \(window.windowNumber) \(window.frame)")
 
-        let appearances: [(String, NSAppearance.Name)] = [("light", .aqua), ("dark", .darkAqua)]
-        for (appearanceName, appearance) in appearances {
-            NSApp.appearance = NSAppearance(named: appearance)
-            for item in SidebarItem.allCases {
+        // S2A in light and dark on every screen; the neutral theme on a few screens for comparison.
+        let passes: [(theme: AppTheme, mode: String, appearance: NSAppearance.Name, items: [SidebarItem], tabs: [TraceTab])] = [
+            (.s2a, "light", .aqua, SidebarItem.allCases, TraceTab.allCases),
+            (.s2a, "dark", .darkAqua, SidebarItem.allCases, TraceTab.allCases),
+            (.system, "light", .aqua, [.live, .trace, .overview], [.feed]),
+        ]
+        for pass in passes {
+            UserDefaults.standard.set(pass.theme.rawValue, forKey: AppTheme.storageKey)
+            NSApp.appearance = NSAppearance(named: pass.appearance)
+            let prefix = "\(pass.theme.rawValue)-\(pass.mode)"
+            for item in pass.items {
                 model.selection = item
                 if item == .sessions {
                     model.selectedSessionID = SessionAnalytics.sessions(model.periodEvents).first?.id
                 }
                 if item == .trace {
-                    for tab in TraceTab.allCases {
+                    for tab in pass.tabs {
                         model.traceTab = tab
-                        log.append(await capture(window, name: "\(appearanceName)-\(item.rawValue)-\(tab.rawValue)", directory: directory))
+                        log.append(await capture(window, name: "\(prefix)-\(item.rawValue)-\(tab.rawValue)", directory: directory))
                     }
                 } else {
-                    log.append(await capture(window, name: "\(appearanceName)-\(item.rawValue)", directory: directory))
+                    log.append(await capture(window, name: "\(prefix)-\(item.rawValue)", directory: directory))
                 }
             }
         }
+        UserDefaults.standard.set(AppTheme.s2a.rawValue, forKey: AppTheme.storageKey)
         model.selection = .live
         write(log, to: directory)
     }

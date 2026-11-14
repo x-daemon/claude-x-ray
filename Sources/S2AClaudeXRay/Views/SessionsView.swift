@@ -98,7 +98,7 @@ struct SessionDetailView: View {
                         .foregroundStyle(by: .value("Тип", priced.event.isSidechain ? "Субагент" : "Основная сессия"))
                         .lineStyle(StrokeStyle(lineWidth: 2))
                     }
-                    .chartForegroundStyleScale(domain: ["Основная сессия", "Субагент"], range: [Palette.series[0], Palette.series[1]])
+                    .chartForegroundStyleScale(domain: ["Основная сессия", "Субагент"], range: [Palette.model, Palette.subagent])
                     .tokenYAxis()
                     .frame(height: 170)
                 }
@@ -118,7 +118,7 @@ struct SessionDetailView: View {
                         )
                         .foregroundStyle(by: .value("Статья", "Запись в кэш"))
                     }
-                    .chartForegroundStyleScale(domain: ["Остальное", "Запись в кэш"], range: [Palette.series[0], Palette.series[3]])
+                    .chartForegroundStyleScale(domain: ["Остальное", "Запись в кэш"], range: [Palette.primary, Palette.component("Запись в кэш")])
                     .usdYAxis()
                     .frame(height: 150)
                 }

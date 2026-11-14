@@ -11,7 +11,12 @@ struct RootView: View {
             List(SidebarItem.allCases, selection: $model.selection) { item in
                 Label(item.title, systemImage: item.systemImage)
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 210)
+            .navigationSplitViewColumnWidth(min: 200, ideal: 220)
+            .scrollContentBackground(Palette.sidebar == nil ? .automatic : .hidden)
+            .background(Palette.sidebar ?? Color.clear)
+            .safeAreaInset(edge: .top) {
+                BrandHeader()
+            }
             .safeAreaInset(edge: .bottom) {
                 ScanStatusView()
                     .padding(10)
@@ -22,6 +27,12 @@ struct RootView: View {
                     EmptyStateView()
                 } else {
                     detail(for: model.selection ?? .live)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background {
+                if let page = Palette.page {
+                    page.ignoresSafeArea()
                 }
             }
             .navigationTitle(model.selection?.title ?? "S2A Claude X-Ray")

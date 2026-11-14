@@ -120,7 +120,7 @@ struct TraceTimelineView: View {
             }
             ForEach(prompts) { prompt in
                 RuleMark(x: .value("Промпт", prompt.timestamp))
-                    .foregroundStyle(Palette.series[1])
+                    .foregroundStyle(Palette.user)
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
             }
             if let hovered {
@@ -131,7 +131,7 @@ struct TraceTimelineView: View {
                     }
             }
         }
-        .chartForegroundStyleScale(domain: Self.statusDomain, range: [Palette.series[0], Palette.series[2], Palette.critical, Palette.warning])
+        .chartForegroundStyleScale(domain: Self.statusDomain, range: [Palette.model, Palette.tool, Palette.critical, Palette.warning])
         .chartXScale(domain: start...end)
         .chartYScale(domain: lanes)
         .chartXSelection(value: $hovered)
@@ -147,8 +147,8 @@ struct TraceTimelineView: View {
 
     private func color(for status: String) -> Color? {
         switch status {
-        case "Модель": return Palette.series[0]
-        case "Успех": return Palette.series[2]
+        case "Модель": return Palette.model
+        case "Успех": return Palette.tool
         case "Ошибка": return Palette.critical
         case "Выполняется": return Palette.warning
         default: return nil
@@ -231,7 +231,7 @@ struct ContextLineChart: View {
                     .foregroundStyle(by: .value("Поток", point.series))
                     .symbolSize(18)
             }
-            .chartForegroundStyleScale(domain: ["Основная сессия", "Субагент"], range: [Palette.series[0], Palette.series[4]])
+            .chartForegroundStyleScale(domain: ["Основная сессия", "Субагент"], range: [Palette.model, Palette.subagent])
             .chartXScale(domain: start...end)
             .tokenYAxis()
             .frame(height: 170)

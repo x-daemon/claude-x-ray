@@ -60,7 +60,7 @@ struct ToolStatsChart: View {
                 RankedBarList(rows: stats.map { stat in
                     let ok = Double(stat.calls - stat.errors - stat.running)
                     let segments: [(value: Double, color: Color)] = [
-                        (value: ok, color: Palette.series[2]),
+                        (value: ok, color: Palette.tool),
                         (value: Double(stat.errors), color: Palette.critical),
                         (value: Double(stat.running), color: Palette.warning),
                     ].filter { $0.value > 0 }
@@ -75,7 +75,7 @@ struct ToolStatsChart: View {
                     )
                 })
                 HStack(spacing: 14) {
-                    Label("успех", systemImage: "square.fill").foregroundStyle(Palette.series[2])
+                    Label("успех", systemImage: "square.fill").foregroundStyle(Palette.tool)
                     Label("ошибка", systemImage: "square.fill").foregroundStyle(Palette.critical)
                     Label("выполняется", systemImage: "square.fill").foregroundStyle(Palette.warning)
                 }
@@ -126,7 +126,7 @@ struct MCPServersView: View {
                 ForEach(servers) { server in
                     VStack(alignment: .leading, spacing: 5) {
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Image(systemName: "puzzlepiece.extension").foregroundStyle(Palette.series[6])
+                            Image(systemName: "puzzlepiece.extension").foregroundStyle(Palette.mcp)
                             Text(server.name).font(.callout.weight(.semibold))
                             Chip(text: server.status.title, systemImage: TraceStyle.icon(for: server.status), tint: TraceStyle.color(for: server.status))
                             if server.hasInstructions {
@@ -140,7 +140,7 @@ struct MCPServersView: View {
                         if !server.tools.isEmpty {
                             FlowLayout(spacing: 5) {
                                 ForEach(server.tools.sorted { $0.value > $1.value }.map(\.key), id: \.self) { tool in
-                                    Chip(text: "\(tool) × \(server.tools[tool] ?? 0)", tint: Palette.series[6])
+                                    Chip(text: "\(tool) × \(server.tools[tool] ?? 0)", tint: Palette.mcp)
                                 }
                             }
                             .padding(.leading, 24)
@@ -165,7 +165,7 @@ struct SkillsView: View {
                     Chip(
                         text: skill.invocations > 0 ? "\(skill.name) × \(skill.invocations)" : skill.name,
                         systemImage: skill.invocations > 0 ? "sparkles" : nil,
-                        tint: skill.invocations > 0 ? Palette.series[3] : Palette.other
+                        tint: skill.invocations > 0 ? Palette.skill : Palette.other
                     )
                     .help(skill.lastUsed.map { "последний вызов \($0.formatted(date: .omitted, time: .standard))" } ?? (skill.available ? "доступен, не вызывался" : "вызван, но не в списке"))
                 }
@@ -184,7 +184,7 @@ struct SubagentsView: View {
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
                 ForEach(agents) { agent in
                     GridRow {
-                        Image(systemName: agent.calls > 0 ? "person.2.fill" : "person.2").foregroundStyle(agent.calls > 0 ? Palette.series[4] : Palette.other)
+                        Image(systemName: agent.calls > 0 ? "person.2.fill" : "person.2").foregroundStyle(agent.calls > 0 ? Palette.subagent : Palette.other)
                         Text(agent.type)
                         Text(agent.calls > 0 ? "\(agent.calls) запуск. · \(Fmt.shortDuration(agent.totalDuration))" : "доступен")
                             .foregroundStyle(.secondary)

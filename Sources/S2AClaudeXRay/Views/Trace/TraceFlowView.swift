@@ -168,14 +168,14 @@ struct FlowStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Image(systemName: "brain").foregroundStyle(Palette.series[0])
+                Image(systemName: "brain").foregroundStyle(Palette.model)
                 Text(step.model.map(ModelCatalog.displayName(for:)) ?? "Модель").font(.callout.weight(.semibold))
-                if step.isSidechain { Chip(text: "субагент", systemImage: "person.2", tint: Palette.series[4]) }
+                if step.isSidechain { Chip(text: "субагент", systemImage: "person.2", tint: Palette.subagent) }
                 if let effort = step.effort { Chip(text: "effort \(effort)", tint: Palette.other) }
                 Chip(text: "шаг \(Fmt.shortDuration(step.duration))", systemImage: "timer", tint: Palette.other)
-                if step.thinkingMs > 0 { Chip(text: "думал \(Fmt.ms(step.thinkingMs))", systemImage: "brain", tint: Palette.series[0]) }
+                if step.thinkingMs > 0 { Chip(text: "думал \(Fmt.ms(step.thinkingMs))", systemImage: "brain", tint: Palette.model) }
                 if step.inputStreamMs > 0 { Chip(text: "ввод \(Fmt.ms(step.inputStreamMs))", systemImage: "keyboard", tint: Palette.other) }
-                if let skill = step.attributionSkill { Chip(text: "скилл \(skill)", systemImage: "sparkles", tint: Palette.series[3]) }
+                if let skill = step.attributionSkill { Chip(text: "скилл \(skill)", systemImage: "sparkles", tint: Palette.skill) }
                 Spacer()
                 Text(step.start.formatted(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
             }
@@ -241,7 +241,7 @@ struct FlowItemRow: View {
                 .foregroundStyle(item.kind == .context || item.kind == .note ? Color.secondary : Color.primary)
                 .lineLimit(2)
             if let ms = item.thinkingMs, ms > 0 {
-                Chip(text: Fmt.ms(ms), systemImage: "brain", tint: Palette.series[0])
+                Chip(text: Fmt.ms(ms), systemImage: "brain", tint: Palette.model)
             }
             Spacer(minLength: 8)
             Text(item.timestamp.formatted(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)

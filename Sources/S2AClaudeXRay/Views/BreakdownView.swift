@@ -100,7 +100,7 @@ struct BreakdownView: View {
         } else {
             let scale = modelScale(for: top.map(\.name))
             RankedBarList(rows: top.map { row in
-                var color = Palette.series[0]
+                var color = Palette.primary
                 if dimension == .model {
                     let series = scale.domain.contains(row.name) ? row.name : AppModel.otherSeries
                     color = scale.domain.firstIndex(of: series).map { scale.range[$0] } ?? Palette.other

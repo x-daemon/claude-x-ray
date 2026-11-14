@@ -19,12 +19,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct S2AClaudeXRayApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var model = AppModel()
+    @AppStorage(AppTheme.storageKey) private var themeRaw = AppTheme.s2a.rawValue
+    @AppStorage(AppAppearance.storageKey) private var appearanceRaw = AppAppearance.auto.rawValue
+
+    private var appearance: AppAppearance { AppAppearance(rawValue: appearanceRaw) ?? .auto }
 
     var body: some Scene {
         Window("S2A Claude X-Ray", id: "main") {
             RootView()
                 .environment(model)
                 .frame(minWidth: 960, minHeight: 620)
+                .themedWindow(appearance: appearance)
+                .id(themeRaw)
         }
         .defaultSize(width: 1220, height: 800)
         .commands {
@@ -44,6 +50,8 @@ struct S2AClaudeXRayApp: App {
         MenuBarExtra {
             MenuBarView()
                 .environment(model)
+                .themedWindow(appearance: appearance)
+                .id(themeRaw)
         } label: {
             MenuBarLabel(model: model)
         }
@@ -52,6 +60,8 @@ struct S2AClaudeXRayApp: App {
         Settings {
             SettingsView()
                 .environment(model)
+                .themedWindow(appearance: appearance)
+                .id(themeRaw)
         }
     }
 }

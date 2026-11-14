@@ -13,7 +13,7 @@ struct StatTile: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 if let systemImage {
-                    Image(systemName: systemImage).foregroundStyle(.secondary)
+                    Image(systemName: systemImage).foregroundStyle(Palette.accent)
                 }
                 Text(title).font(.caption).foregroundStyle(.secondary)
             }
@@ -144,7 +144,7 @@ struct RankedBarRow: Identifiable {
     var detail: String? = nil
     let value: Double
     let valueText: String
-    var color: Color = Palette.series[0]
+    var color: Color = Palette.primary
     /// Stacked parts of the bar (e.g. success / error / running); `nil` draws one solid bar.
     var segments: [(value: Double, color: Color)]? = nil
     var help: String? = nil

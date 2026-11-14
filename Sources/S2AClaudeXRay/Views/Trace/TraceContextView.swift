@@ -38,7 +38,7 @@ struct TraceContextView: View {
 
                 Card(title: "Заполнение окна контекста", subtitle: "\(Fmt.tokens(contextNow)) из \(Fmt.tokens(window))") {
                     ProgressView(value: min(ratio, 1))
-                        .tint(ratio >= 0.8 ? Palette.critical : ratio >= 0.6 ? Palette.warning : Palette.series[0])
+                        .tint(ratio >= 0.8 ? Palette.critical : ratio >= 0.6 ? Palette.warning : Palette.primary)
                     Text(ratio >= 0.6
                          ? "Контекст заполнен больше чем на \(Fmt.percent(ratio)). Каждый следующий ход отправляет его целиком; подумайте о /compact или новой сессии."
                          : "Каждый ход заново отправляет весь контекст; чем он меньше, тем дешевле и быстрее ответы.")
@@ -172,7 +172,7 @@ struct ContextSplitChart: View {
                 BarMark(x: .value("Запрос", segment.index), y: .value("Токены", segment.tokens), width: .fixed(barWidth))
                     .foregroundStyle(by: .value("Часть", segment.kind))
             }
-            .chartForegroundStyleScale(domain: ["Чтение кэша", "Запись в кэш", "Свежий ввод"], range: [Palette.series[2], Palette.series[3], Palette.series[0]])
+            .chartForegroundStyleScale(domain: ["Чтение кэша", "Запись в кэш", "Свежий ввод"], range: [Palette.component("Чтение кэша"), Palette.component("Запись в кэш"), Palette.component("Ввод")])
             .tokenYAxis()
             .chartLegend(position: .bottom, alignment: .leading)
             .frame(height: 190)
@@ -261,7 +261,7 @@ struct PermissionsView: View {
                 Text("Как разрешались вызовы инструментов").font(.caption.weight(.medium)).foregroundStyle(.secondary)
                 ForEach(trace.permissions) { permission in
                     HStack {
-                        Image(systemName: permission.label.hasPrefix("accept") ? "checkmark.shield" : "hand.raised").foregroundStyle(Palette.series[0])
+                        Image(systemName: permission.label.hasPrefix("accept") ? "checkmark.shield" : "hand.raised").foregroundStyle(Palette.primary)
                         Text(permission.label)
                         Spacer()
                         Text("\(permission.count)").monospacedDigit()

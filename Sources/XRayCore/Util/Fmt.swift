@@ -69,6 +69,23 @@ public enum Fmt {
         return trimmed(value / 1024 / 1024, digits: 1) + " МБ"
     }
 
+    /// Russian plural: `plural(1, "раз", "раза", "раз")` -> `1 раз`, 2 -> `2 раза`, 5 -> `5 раз`.
+    public static func plural(_ count: Int, _ one: String, _ few: String, _ many: String) -> String {
+        let n = abs(count) % 100
+        let last = n % 10
+        let form: String
+        if n >= 11 && n <= 14 {
+            form = many
+        } else if last == 1 {
+            form = one
+        } else if last >= 2 && last <= 4 {
+            form = few
+        } else {
+            form = many
+        }
+        return "\(count) \(form)"
+    }
+
     /// `14.11 17:23`
     public static func dateTime(_ date: Date, calendar: Calendar = .current) -> String {
         let c = calendar.dateComponents([.day, .month, .hour, .minute], from: date)

@@ -45,7 +45,7 @@ struct TransitionsChart: View {
             Text("Переходов пока нет").foregroundStyle(.secondary)
         } else {
             RankedBarList(rows: transitions.map { transition in
-                RankedBarRow(id: transition.id, label: transition.id, value: Double(transition.count), valueText: "\(transition.count) раз")
+                RankedBarRow(id: transition.id, label: transition.id, value: Double(transition.count), valueText: Fmt.plural(transition.count, "раз", "раза", "раз"))
             })
         }
     }

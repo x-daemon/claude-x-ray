@@ -88,7 +88,7 @@ struct TraceHeader: View {
                 Text("Следовать за активной сессией").tag("")
                 Divider()
                 ForEach(sessions) { session in
-                    Text("\(session.projectName) · \(session.gitBranch ?? "—") · \(Fmt.dateTime(session.lastActivity)) · \(session.items) событий")
+                    Text("\(session.projectName) · \(session.gitBranch ?? "—") · \(Fmt.dateTime(session.lastActivity)) · \(Fmt.plural(session.items, "событие", "события", "событий"))")
                         .tag(session.id)
                 }
             }
@@ -103,7 +103,7 @@ struct TraceHeader: View {
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text(trace.projectPath ?? "—").font(.caption).textSelection(.enabled)
-                Text("сессия \(trace.sessionID.prefix(8)) · \(trace.items.count) событий · ошибок \(trace.errors)")
+                Text("сессия \(trace.sessionID.prefix(8)) · \(Fmt.plural(trace.items.count, "событие", "события", "событий")) · ошибок: \(trace.errors)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -164,8 +164,8 @@ struct TraceStatusBanner: View {
         if let start = status.turnStart {
             parts.append("ход идёт \(Fmt.shortDuration(now.timeIntervalSince(start)))")
         }
-        parts.append("\(status.stepsInTurn) ответов модели")
-        parts.append("\(status.toolsInTurn) вызовов инструментов")
+        parts.append("ответов модели: \(status.stepsInTurn)")
+        parts.append("вызовов инструментов: \(status.toolsInTurn)")
         if status.runningTools > 1 {
             parts.append("параллельно: \(status.runningTools)")
         }
@@ -192,7 +192,7 @@ struct SessionTotalsView: View {
             }
             GridRow {
                 Text("Токены").foregroundStyle(.secondary)
-                Text("\(Fmt.tokens(summary.tokens.total)) · \(summary.requests) запросов").monospacedDigit()
+                Text("\(Fmt.tokens(summary.tokens.total)) · \(Fmt.plural(summary.requests, "запрос", "запроса", "запросов"))").monospacedDigit()
             }
             GridRow {
                 Text("Контекст").foregroundStyle(.secondary)

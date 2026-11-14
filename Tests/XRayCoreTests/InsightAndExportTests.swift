@@ -109,5 +109,9 @@ final class FmtTests: XCTestCase {
         XCTAssertEqual(Fmt.ms(2128), "2.1 с")
         XCTAssertEqual(Fmt.bytes(820), "820 Б")
         XCTAssertEqual(Fmt.bytes(12_600), "12.3 КБ")
+        XCTAssertEqual(Fmt.plural(1, "раз", "раза", "раз"), "1 раз")
+        XCTAssertEqual(Fmt.plural(3, "раз", "раза", "раз"), "3 раза")
+        XCTAssertEqual(Fmt.plural(12, "раз", "раза", "раз"), "12 раз")
+        XCTAssertEqual(Fmt.plural(21, "событие", "события", "событий"), "21 событие")
     }
 }

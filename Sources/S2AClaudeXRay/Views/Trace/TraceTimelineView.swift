@@ -113,7 +113,7 @@ struct TraceTimelineView: View {
                     xStart: .value("Начало", bar.start),
                     xEnd: .value("Конец", bar.end),
                     y: .value("Дорожка", bar.lane),
-                    height: .ratio(0.62)
+                    height: .fixed(13)
                 )
                 .foregroundStyle(by: .value("Статус", bar.status))
                 .cornerRadius(3)

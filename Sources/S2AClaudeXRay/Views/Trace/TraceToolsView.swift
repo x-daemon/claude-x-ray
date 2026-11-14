@@ -52,33 +52,36 @@ struct TraceToolsView: View {
 struct ToolStatsChart: View {
     let stats: [ToolStat]
 
-    private struct Segment: Identifiable {
-        let tool: String
-        let kind: String
-        let count: Int
-        var id: String { tool + kind }
-    }
-
     var body: some View {
-        let segments = stats.flatMap { stat -> [Segment] in
-            [
-                Segment(tool: stat.name, kind: "Успех", count: stat.calls - stat.errors - stat.running),
-                Segment(tool: stat.name, kind: "Ошибка", count: stat.errors),
-                Segment(tool: stat.name, kind: "Выполняется", count: stat.running),
-            ].filter { $0.count > 0 }
-        }
-
-        if segments.isEmpty {
+        if stats.isEmpty {
             Text("Инструменты ещё не вызывались").foregroundStyle(.secondary)
         } else {
-            Chart(segments) { segment in
-                BarMark(x: .value("Вызовы", segment.count), y: .value("Инструмент", segment.tool))
-                    .foregroundStyle(by: .value("Статус", segment.kind))
+            VStack(alignment: .leading, spacing: 8) {
+                RankedBarList(rows: stats.map { stat in
+                    let ok = Double(stat.calls - stat.errors - stat.running)
+                    let segments: [(value: Double, color: Color)] = [
+                        (value: ok, color: Palette.series[2]),
+                        (value: Double(stat.errors), color: Palette.critical),
+                        (value: Double(stat.running), color: Palette.warning),
+                    ].filter { $0.value > 0 }
+                    return RankedBarRow(
+                        id: stat.name,
+                        label: ToolDescriber.displayName(for: stat.name),
+                        detail: stat.category.rawValue,
+                        value: Double(stat.calls),
+                        valueText: "\(stat.calls) · ср. \(Fmt.shortDuration(stat.averageDuration))",
+                        segments: segments,
+                        help: "успешно \(Int(ok)), ошибок \(stat.errors), выполняется \(stat.running)"
+                    )
+                })
+                HStack(spacing: 14) {
+                    Label("успех", systemImage: "square.fill").foregroundStyle(Palette.series[2])
+                    Label("ошибка", systemImage: "square.fill").foregroundStyle(Palette.critical)
+                    Label("выполняется", systemImage: "square.fill").foregroundStyle(Palette.warning)
+                }
+                .font(.caption)
+                .labelStyle(LegendLabelStyle())
             }
-            .chartForegroundStyleScale(domain: ["Успех", "Ошибка", "Выполняется"], range: [Palette.series[2], Palette.critical, Palette.warning])
-            .chartYScale(domain: stats.map(\.name))
-            .chartLegend(position: .bottom, alignment: .leading)
-            .frame(height: CGFloat(stats.count) * 24 + 50)
         }
     }
 }
@@ -96,7 +99,7 @@ struct ToolStatsGrid: View {
             .font(.caption.weight(.medium))
             ForEach(stats) { stat in
                 GridRow {
-                    Label(stat.name, systemImage: TraceStyle.icon(for: stat.category)).lineLimit(1)
+                    Label(ToolDescriber.displayName(for: stat.name), systemImage: TraceStyle.icon(for: stat.category)).lineLimit(1)
                     Text(stat.category.rawValue).foregroundStyle(.secondary)
                     Text("\(stat.calls)" + (stat.running > 0 ? " (\(stat.running) идёт)" : "")).monospacedDigit()
                     Text("\(stat.errors)").monospacedDigit().foregroundStyle(stat.errors > 0 ? Palette.critical : Color.primary)

@@ -36,8 +36,9 @@ enum SnapshotRunner {
             write(log, to: directory)
             return
         }
-        window.setContentSize(NSSize(width: 1440, height: 940))
-        window.center()
+        // Taller than most CI screens: frames set directly are not limited to the visible area.
+        let top = (window.screen ?? NSScreen.main)?.visibleFrame.maxY ?? 900
+        window.setFrame(NSRect(x: 0, y: top - 1300, width: 1440, height: 1300), display: true)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate()
         log.append("window \(window.windowNumber) \(window.frame)")
@@ -47,6 +48,9 @@ enum SnapshotRunner {
             NSApp.appearance = NSAppearance(named: appearance)
             for item in SidebarItem.allCases {
                 model.selection = item
+                if item == .sessions {
+                    model.selectedSessionID = SessionAnalytics.sessions(model.periodEvents).first?.id
+                }
                 if item == .trace {
                     for tab in TraceTab.allCases {
                         model.traceTab = tab

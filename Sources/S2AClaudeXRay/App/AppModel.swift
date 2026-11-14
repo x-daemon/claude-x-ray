@@ -100,6 +100,8 @@ final class AppModel {
     /// Session shown in the live trace; `nil` follows the most recently active one.
     var pinnedTraceSession: String?
     var traceTab: TraceTab = .feed
+    /// Selected row of the sessions table.
+    var selectedSessionID: String?
 
     @ObservationIgnored private var store = UsageStore()
     private let ingestor = TranscriptIngestor()

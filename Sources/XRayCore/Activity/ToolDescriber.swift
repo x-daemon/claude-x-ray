@@ -42,6 +42,12 @@ public enum ToolDescriber {
         return parts.count >= 3 ? parts[2...].joined(separator: "__") : nil
     }
 
+    /// Readable tool name: `mcp__Linear__list_issues` -> `MCP Linear · list_issues`.
+    public static func displayName(for toolName: String) -> String {
+        guard let server = mcpServer(of: toolName) else { return toolName }
+        return "MCP \(server) · \(mcpTool(of: toolName) ?? toolName)"
+    }
+
     public static func category(of toolName: String) -> Category {
         if toolName.hasPrefix("mcp__") { return .mcp }
         switch toolName {

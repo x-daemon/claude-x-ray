@@ -98,7 +98,9 @@ struct ContextCompositionView: View {
         let knownTotal = known.reduce(0) { $0 + $1.tokens }
         let parts = known + (total > knownTotal ? [Part(name: "Диалог, результаты инструментов, схемы", tokens: total - knownTotal)] : [])
         let domain = parts.map(\.name)
-        let range = Array(Palette.series.prefix(domain.count))
+        let range = parts.indices.map { index in
+            index < known.count ? Palette.series[index % Palette.series.count] : Palette.other
+        }
 
         VStack(alignment: .leading, spacing: 10) {
             if parts.isEmpty {
@@ -161,11 +163,13 @@ struct ContextSplitChart: View {
             ]
         }
 
+        let barWidth = CGFloat(max(2, min(14, 900 / max(events.count, 1) - 2)))
+
         if segments.isEmpty {
             Text("Нет запросов").foregroundStyle(.secondary)
         } else {
             Chart(segments) { segment in
-                BarMark(x: .value("Запрос", segment.index), y: .value("Токены", segment.tokens))
+                BarMark(x: .value("Запрос", segment.index), y: .value("Токены", segment.tokens), width: .fixed(barWidth))
                     .foregroundStyle(by: .value("Часть", segment.kind))
             }
             .chartForegroundStyleScale(domain: ["Чтение кэша", "Запись в кэш", "Свежий ввод"], range: [Palette.series[2], Palette.series[3], Palette.series[0]])

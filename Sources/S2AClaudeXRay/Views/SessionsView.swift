@@ -6,16 +6,16 @@ import XRayCore
 struct SessionsView: View {
     @Environment(AppModel.self) private var model
     @State private var sortOrder = [KeyPathComparator(\SessionSummary.cost, order: .reverse)]
-    @State private var selection: SessionSummary.ID?
     @State private var query = ""
 
     var body: some View {
+        @Bindable var model = model
         let events = model.periodEvents
         let sessions = SessionAnalytics.sessions(events)
         let rows = filter(sessions).sorted(using: sortOrder)
 
         VSplitView {
-            Table(rows, selection: $selection, sortOrder: $sortOrder) {
+            Table(rows, selection: $model.selectedSessionID, sortOrder: $sortOrder) {
                 TableColumn("Начало", value: \.start) { session in
                     Text(Fmt.dateTime(session.start)).monospacedDigit()
                 }
@@ -43,17 +43,18 @@ struct SessionsView: View {
                     Text(Fmt.usd(session.cost)).monospacedDigit()
                 }
             }
-            .frame(minHeight: 220)
+            .frame(maxWidth: .infinity, minHeight: 220, maxHeight: .infinity)
 
             Group {
-                if let id = selection, let session = sessions.first(where: { $0.id == id }) {
+                if let id = model.selectedSessionID, let session = sessions.first(where: { $0.id == id }) {
                     SessionDetailView(session: session, events: events.filter { $0.event.sessionID == id })
                 } else {
                     ContentUnavailableView("Выберите сессию", systemImage: "cursorarrow.click", description: Text("Детали, рост контекста и стоимость каждого запроса."))
                 }
             }
-            .frame(minHeight: 240)
+            .frame(maxWidth: .infinity, minHeight: 240, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .searchable(text: $query, prompt: "Проект, ветка или модель")
     }
 
@@ -106,12 +107,14 @@ struct SessionDetailView: View {
                     Chart(events) { priced in
                         BarMark(
                             x: .value("Время", priced.event.timestamp),
-                            y: .value("USD", priced.cost.total - priced.cost.cacheWrite)
+                            y: .value("USD", priced.cost.total - priced.cost.cacheWrite),
+                            width: .fixed(4)
                         )
                         .foregroundStyle(by: .value("Статья", "Остальное"))
                         BarMark(
                             x: .value("Время", priced.event.timestamp),
-                            y: .value("USD", priced.cost.cacheWrite)
+                            y: .value("USD", priced.cost.cacheWrite),
+                            width: .fixed(4)
                         )
                         .foregroundStyle(by: .value("Статья", "Запись в кэш"))
                     }

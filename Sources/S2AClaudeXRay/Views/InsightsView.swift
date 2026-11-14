@@ -9,14 +9,19 @@ struct InsightsView: View {
         let events = model.periodEvents
         let insights = InsightEngine(pricing: model.pricing).analyze(events)
         let summary = UsageSummary.of(events)
-        let savings = insights.compactMap(\.potentialSavings).reduce(0, +)
+        let freeSavings = insights.filter { $0.kind == .freeWin }.compactMap(\.potentialSavings).reduce(0, +)
+        let tradeoffSavings = insights.filter { $0.kind == .tradeoff }.compactMap(\.potentialSavings).reduce(0, +)
 
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 12) {
                     StatTile(title: model.plan.costLabel, value: Fmt.usd(summary.cost.total), caption: model.period.title)
                     StatTile(title: "Доля кэша", value: summary.requests > 0 ? Fmt.percent(summary.tokens.cacheHitRate) : "—", caption: "чем выше, тем дешевле каждый ход")
-                    StatTile(title: "Можно сэкономить", value: savings > 0 ? "до \(Fmt.usd(savings))" : "—", caption: "оценка по найденным пунктам")
+                    StatTile(
+                        title: "Без потери качества",
+                        value: freeSavings > 0 ? "до \(Fmt.usd(freeSavings))" : "—",
+                        caption: tradeoffSavings > 0 ? "ещё до \(Fmt.usd(tradeoffSavings)) через компромиссы; оценки пересекаются" : "кэш и гигиена контекста"
+                    )
                     StatTile(title: "Замечаний", value: "\(insights.filter { $0.severity >= .info }.count)", caption: "\(insights.filter { $0.severity >= .warning }.count) требуют внимания")
                 }
 

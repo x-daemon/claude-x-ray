@@ -44,17 +44,9 @@ struct TransitionsChart: View {
         if transitions.isEmpty {
             Text("Переходов пока нет").foregroundStyle(.secondary)
         } else {
-            Chart(transitions) { transition in
-                BarMark(x: .value("Раз", transition.count), y: .value("Переход", transition.id))
-                    .foregroundStyle(Palette.series[0])
-                    .cornerRadius(3)
-                    .annotation(position: .trailing) {
-                        Text("\(transition.count)").font(.caption).foregroundStyle(.secondary)
-                    }
-            }
-            .chartYScale(domain: transitions.map(\.id))
-            .chartXAxis(.hidden)
-            .frame(height: CGFloat(transitions.count) * 24 + 12)
+            RankedBarList(rows: transitions.map { transition in
+                RankedBarRow(id: transition.id, label: transition.id, value: Double(transition.count), valueText: "\(transition.count) раз")
+            })
         }
     }
 }

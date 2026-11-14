@@ -205,6 +205,8 @@ final class ActivityParserTests: XCTestCase {
         XCTAssertEqual(ToolDescriber.category(of: "Edit"), .write)
         XCTAssertEqual(ToolDescriber.mcpServer(of: "mcp__claude-code-remote__add_repo"), "claude-code-remote")
         XCTAssertEqual(ToolDescriber.mcpTool(of: "mcp__claude-code-remote__add_repo"), "add_repo")
+        XCTAssertEqual(ToolDescriber.displayName(for: "mcp__Linear__list_issues"), "MCP Linear · list_issues")
+        XCTAssertEqual(ToolDescriber.displayName(for: "Bash"), "Bash")
     }
 }
 

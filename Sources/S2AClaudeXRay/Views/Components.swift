@@ -136,3 +136,75 @@ extension View {
         }
     }
 }
+
+/// One row of a ranked horizontal bar list.
+struct RankedBarRow: Identifiable {
+    let id: String
+    let label: String
+    var detail: String? = nil
+    let value: Double
+    let valueText: String
+    var color: Color = Palette.series[0]
+    /// Stacked parts of the bar (e.g. success / error / running); `nil` draws one solid bar.
+    var segments: [(value: Double, color: Color)]? = nil
+    var help: String? = nil
+}
+
+/// Labelled horizontal bars: label column, proportional bar, value. Used instead of
+/// categorical bar charts so labels stay on the left and bars keep a readable thickness.
+struct RankedBarList: View {
+    let rows: [RankedBarRow]
+    var labelWidth: CGFloat = 230
+
+    var body: some View {
+        let maxValue = max(rows.map(\.value).max() ?? 0, .leastNonzeroMagnitude)
+        VStack(alignment: .leading, spacing: 7) {
+            ForEach(rows) { row in
+                HStack(spacing: 10) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(row.label).lineLimit(1).truncationMode(.middle)
+                        if let detail = row.detail {
+                            Text(detail).font(.caption2).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                        }
+                    }
+                    .frame(width: labelWidth, alignment: .leading)
+
+                    GeometryReader { geometry in
+                        let width = max(2, geometry.size.width * CGFloat(row.value / maxValue))
+                        HStack(spacing: 2) {
+                            if let segments = row.segments, row.value > 0 {
+                                ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(segment.color)
+                                        .frame(width: max(2, width * CGFloat(segment.value / row.value)))
+                                }
+                            } else {
+                                RoundedRectangle(cornerRadius: 3).fill(row.color).frame(width: width)
+                            }
+                        }
+                        .frame(height: 12)
+                        .frame(maxHeight: .infinity, alignment: .center)
+                    }
+                    .frame(height: 18)
+
+                    Text(row.valueText)
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .frame(minWidth: 90, alignment: .trailing)
+                }
+                .font(.callout)
+                .help(row.help ?? "\(row.label): \(row.valueText)")
+            }
+        }
+    }
+}
+
+/// Legend entry: colored swatch, text in the secondary text color.
+struct LegendLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 4) {
+            configuration.icon
+            configuration.title.foregroundStyle(.secondary)
+        }
+    }
+}

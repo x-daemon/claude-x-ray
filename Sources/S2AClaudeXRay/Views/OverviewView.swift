@@ -25,7 +25,8 @@ struct OverviewView: View {
                     Card(title: "Стоимость по времени", subtitle: "по моделям · \(unitTitle(unit))") {
                         CostTimelineChart(
                             buckets: Analytics.buckets(events, unit: unit, interval: interval) { model.seriesName(for: $0) },
-                            unit: unit
+                            unit: unit,
+                            interval: interval
                         )
                     }
                 }
@@ -62,6 +63,7 @@ struct CostTimelineChart: View {
     @Environment(AppModel.self) private var model
     let buckets: [TimeBucket]
     let unit: Calendar.Component
+    let interval: DateInterval
     @State private var selected: Date?
 
     private struct Point: Identifiable {
@@ -72,8 +74,12 @@ struct CostTimelineChart: View {
     }
 
     var body: some View {
+        // Same stacking order in every bucket: by the model's all-time rank.
+        let order = model.modelOrder + [AppModel.otherSeries]
         let points = buckets.flatMap { bucket in
-            bucket.bySeries.map { Point(date: bucket.start, series: $0.key, cost: $0.value.cost.total) }
+            bucket.bySeries
+                .map { Point(date: bucket.start, series: $0.key, cost: $0.value.cost.total) }
+                .sorted { (order.firstIndex(of: $0.series) ?? Int.max) < (order.firstIndex(of: $1.series) ?? Int.max) }
         }
         let scale = model.colorScale(for: points.map(\.series))
         let selectedBucket = selected.flatMap { date in buckets.first { $0.start <= date && date < $0.end } }
@@ -95,6 +101,7 @@ struct CostTimelineChart: View {
             }
         }
         .chartForegroundStyleScale(domain: scale.domain, range: scale.range)
+        .chartXScale(domain: interval.start...interval.end)
         .chartXSelection(value: $selected)
         .chartLegend(position: .bottom, alignment: .leading)
         .usdYAxis()

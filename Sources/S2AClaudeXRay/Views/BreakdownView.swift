@@ -97,33 +97,23 @@ struct BreakdownView: View {
     private func rankedChart(_ top: [BreakdownRow]) -> some View {
         if top.isEmpty {
             Text("Нет данных за период").foregroundStyle(.secondary).frame(height: 120)
-        } else if dimension == .model {
-            let scale = modelScale(for: top.map(\.name))
-            Chart(top) { row in
-                BarMark(x: .value("USD", row.cost), y: .value("Модель", row.name))
-                    .foregroundStyle(by: .value("Модель", scale.domain.contains(row.name) ? row.name : AppModel.otherSeries))
-                    .cornerRadius(4)
-                    .annotation(position: .trailing) {
-                        Text(Fmt.usd(row.cost)).font(.caption).foregroundStyle(.secondary)
-                    }
-            }
-            .chartForegroundStyleScale(domain: scale.domain, range: scale.range)
-            .chartLegend(.hidden)
-            .chartYScale(domain: top.map(\.name))
-            .usdXAxis()
-            .frame(height: CGFloat(max(top.count, 3)) * 30)
         } else {
-            Chart(top) { row in
-                BarMark(x: .value("USD", row.cost), y: .value("Проект", row.name))
-                    .foregroundStyle(Palette.series[0])
-                    .cornerRadius(4)
-                    .annotation(position: .trailing) {
-                        Text("\(Fmt.usd(row.cost)) · \(Fmt.percent(row.share))").font(.caption).foregroundStyle(.secondary)
-                    }
-            }
-            .chartYScale(domain: top.map(\.name))
-            .usdXAxis()
-            .frame(height: CGFloat(max(top.count, 3)) * 30)
+            let scale = modelScale(for: top.map(\.name))
+            RankedBarList(rows: top.map { row in
+                var color = Palette.series[0]
+                if dimension == .model {
+                    let series = scale.domain.contains(row.name) ? row.name : AppModel.otherSeries
+                    color = scale.domain.firstIndex(of: series).map { scale.range[$0] } ?? Palette.other
+                }
+                return RankedBarRow(
+                    id: row.id,
+                    label: row.name,
+                    detail: row.detail == row.name ? nil : row.detail,
+                    value: row.cost,
+                    valueText: "\(Fmt.usd(row.cost)) · \(Fmt.percent(row.share))",
+                    color: color
+                )
+            })
         }
     }
 

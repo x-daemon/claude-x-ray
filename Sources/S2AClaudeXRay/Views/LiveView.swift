@@ -143,8 +143,15 @@ struct LiveActivityChart: View {
     @State private var hovered: Date?
 
     var body: some View {
+        // Only buckets with requests get a bar: with nothing to draw, zero-height bars on a
+        // degenerate 0...0 axis rendered as a row of dashes across the middle of the chart.
+        let active = buckets.filter { $0.summary.requests > 0 }
+        let maxCost = active.map(\.summary.cost.total).max() ?? 0
+        let start = buckets.first?.start ?? now.addingTimeInterval(-3 * 3600)
+        let end = max(buckets.last?.end ?? now, start.addingTimeInterval(60))
+
         Chart {
-            ForEach(buckets) { bucket in
+            ForEach(active) { bucket in
                 BarMark(
                     xStart: .value("Начало", bucket.start),
                     xEnd: .value("Конец", bucket.end.addingTimeInterval(-20)),
@@ -177,6 +184,8 @@ struct LiveActivityChart: View {
             }
         }
         .chartXSelection(value: $hovered)
+        .chartXScale(domain: start...end)
+        .chartYScale(domain: 0...(maxCost > 0 ? maxCost * 1.1 : 1))
         .chartXAxis {
             AxisMarks(values: .stride(by: .minute, count: 30)) { _ in
                 AxisGridLine().foregroundStyle(Palette.hairline)
@@ -184,6 +193,16 @@ struct LiveActivityChart: View {
             }
         }
         .usdYAxis()
+        .overlay {
+            if active.isEmpty {
+                Text("За последние 3 часа запросов не было")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Palette.card))
+            }
+        }
         .frame(height: 200)
     }
 }

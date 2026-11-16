@@ -81,12 +81,31 @@ enum SnapshotRunner {
                     }
                 } else {
                     log.append(await capture(window, name: "\(prefix)-\(item.rawValue)", directory: directory))
+                    if item == .live {
+                        scrollToBottom(window)
+                        log.append(await capture(window, name: "\(prefix)-\(item.rawValue)-bottom", directory: directory))
+                    }
                 }
             }
         }
         UserDefaults.standard.set(AppTheme.s2a.rawValue, forKey: AppTheme.storageKey)
         model.selection = .live
         write(log, to: directory)
+    }
+
+    /// Scrolls the detail pane (the largest scroll view in the window) to its end.
+    private static func scrollToBottom(_ window: NSWindow) {
+        guard let content = window.contentView else { return }
+        let scrollViews = allSubviews(of: content).compactMap { $0 as? NSScrollView }
+        guard let scroll = scrollViews.max(by: { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }),
+              let document = scroll.documentView else { return }
+        let maxY = max(0, document.frame.height - scroll.contentView.bounds.height)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: document.isFlipped ? maxY : 0))
+        scroll.reflectScrolledClipView(scroll.contentView)
+    }
+
+    private static func allSubviews(of view: NSView) -> [NSView] {
+        view.subviews + view.subviews.flatMap { allSubviews(of: $0) }
     }
 
     private static func mainWindow() -> NSWindow? {

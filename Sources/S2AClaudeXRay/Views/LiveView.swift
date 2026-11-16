@@ -98,20 +98,25 @@ struct WindowSummaryView: View {
                     }
                 }
 
-                ProgressView(value: window.progress(at: now)) {
+                VStack(alignment: .leading, spacing: 5) {
                     Text("Время окна: \(window.start.formatted(date: .omitted, time: .shortened)) – \(window.end.formatted(date: .omitted, time: .shortened))")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    UsageBar(fraction: window.progress(at: now), color: Palette.primary, height: 6)
                 }
 
                 if let peak = model.peakWindow, peak.summary.cost.total > 0 {
                     let ratio = cost / peak.summary.cost.total
-                    ProgressView(value: min(ratio, 1)) {
+                    VStack(alignment: .leading, spacing: 5) {
                         Text("\(Fmt.percent(ratio)) от вашего самого загруженного окна (\(Fmt.usd(peak.summary.cost.total)), \(Fmt.dateTime(peak.start)))")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                        UsageBar(
+                            fraction: ratio,
+                            color: ratio >= 0.9 ? Palette.critical : ratio >= 0.7 ? Palette.warning : Palette.primary,
+                            height: 6
+                        )
                     }
-                    .tint(ratio >= 0.9 ? Palette.critical : ratio >= 0.7 ? Palette.warning : Palette.primary)
                 }
 
                 HStack(spacing: 16) {

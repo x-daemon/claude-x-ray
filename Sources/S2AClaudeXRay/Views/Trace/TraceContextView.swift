@@ -37,8 +37,7 @@ struct TraceContextView: View {
                 }
 
                 Card(title: "Заполнение окна контекста", subtitle: "\(Fmt.tokens(contextNow)) из \(Fmt.tokens(window))") {
-                    ProgressView(value: min(ratio, 1))
-                        .tint(ratio >= 0.8 ? Palette.critical : ratio >= 0.6 ? Palette.warning : Palette.primary)
+                    UsageBar(fraction: ratio, color: ratio >= 0.8 ? Palette.critical : ratio >= 0.6 ? Palette.warning : Palette.primary)
                     Text(ratio >= 0.6
                          ? "Контекст заполнен больше чем на \(Fmt.percent(ratio)). Каждый следующий ход отправляет его целиком; подумайте о /compact или новой сессии."
                          : "Каждый ход заново отправляет весь контекст; чем он меньше, тем дешевле и быстрее ответы.")

@@ -57,6 +57,29 @@ struct Card<Content: View>: View {
     }
 }
 
+/// Horizontal bar for a share of a limit. It draws its own colors: system progress bars turn
+/// gray whenever the window is not active, which hid the warning and critical colors.
+struct UsageBar: View {
+    let fraction: Double
+    var color: Color = Palette.accent
+    var height: CGFloat = 8
+
+    var body: some View {
+        let clamped = min(max(fraction, 0), 1)
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Palette.emptyCell)
+                Capsule()
+                    .fill(color)
+                    .frame(width: clamped > 0 ? max(height, proxy.size.width * clamped) : 0)
+            }
+        }
+        .frame(height: height)
+        .accessibilityElement()
+        .accessibilityValue(Fmt.percent(clamped))
+    }
+}
+
 /// Small floating box shown by chart hover layers.
 struct ChartTooltip: View {
     let title: String

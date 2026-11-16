@@ -62,8 +62,7 @@ struct LimitGauge: View {
                     .monospacedDigit()
                 Text("использовано").font(.caption).foregroundStyle(.secondary)
             }
-            ProgressView(value: fraction)
-                .tint(LimitGauge.color(for: fraction))
+            UsageBar(fraction: fraction, color: LimitGauge.color(for: fraction))
             Text(resetText)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -96,7 +95,7 @@ struct SpendGauge: View {
             Text(Fmt.percent(fraction))
                 .font(.system(size: 30, weight: .semibold, design: .rounded))
                 .monospacedDigit()
-            ProgressView(value: fraction).tint(LimitGauge.color(for: fraction))
+            UsageBar(fraction: fraction, color: LimitGauge.color(for: fraction))
             if let used = spend.usedUSD, let limit = spend.limitUSD {
                 Text("\(Fmt.usd(used)) из \(Fmt.usd(limit))").font(.caption).foregroundStyle(.secondary)
             }

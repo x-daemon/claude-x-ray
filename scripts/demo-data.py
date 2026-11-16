@@ -11,7 +11,7 @@ Usage:
 Writes <dir>/projects/<project>/<session>.jsonl shaped like real transcripts:
 one line per content block (with the usage repeated, as Claude Code does),
 tool results, attachments (tools, MCP servers, skills, subagents, system prompt),
-a week of history and a live session whose last tool call is still running.
+two weeks of history and a live session whose last tool call is still running.
 All content is made up.
 """
 import json
@@ -145,14 +145,14 @@ def text(value):
 
 
 def history(root):
-    """A week of finished sessions across three projects."""
+    """Two weeks of finished sessions across three projects (so reports can compare weeks)."""
     projects = [
         ("/Users/demo/code/shop-api", "main", "claude-opus-5-5"),
         ("/Users/demo/code/ios-app", "feature/onboarding", "claude-sonnet-5-5"),
         ("/Users/demo/code/data-pipeline", "main", "claude-opus-5-5"),
     ]
     files = ["Sources/App/Router.swift", "Sources/App/Orders.swift", "Tests/AppTests/OrdersTests.swift", "README.md", "Package.swift"]
-    for day in range(7, 0, -1):
+    for day in range(14, 0, -1):
         for _ in range(random.randint(2, 4)):
             path, branch, model = random.choice(projects)
             s = Session(root, path, branch)

@@ -221,6 +221,7 @@ struct ModelShareChart: View {
 /// Weekday x hour grid of API-equivalent spend, with a hover readout.
 struct ActivityHeatmap: View {
     let cells: [HeatCell]
+    var showsHint = true
     @State private var hovered: HeatCell?
 
     private static let days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
@@ -276,15 +277,17 @@ struct ActivityHeatmap: View {
             }
             .frame(height: 220)
 
-            Group {
-                if let hovered {
-                    Text("\(Self.days[hovered.weekday]), \(Self.hours[hovered.hour]):00 — \(Fmt.usd(hovered.cost)), запросов: \(hovered.requests)")
-                } else {
-                    Text("Наведите курсор на ячейку, чтобы увидеть значение.")
+            if showsHint {
+                Group {
+                    if let hovered {
+                        Text("\(Self.days[hovered.weekday]), \(Self.hours[hovered.hour]):00 — \(Fmt.usd(hovered.cost)), запросов: \(hovered.requests)")
+                    } else {
+                        Text("Наведите курсор на ячейку, чтобы увидеть значение.")
+                    }
                 }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
         }
     }
 

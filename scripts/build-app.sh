@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Builds "S2A Claude X-Ray.app" from the Swift package (release, ad-hoc signed).
 # Usage: ./scripts/build-app.sh                       -> build/S2A Claude X-Ray.app
-#        VERSION=0.4.0 UNIVERSAL=1 ./scripts/build-app.sh   (Apple Silicon + Intel)
+#        VERSION=0.5.0 UNIVERSAL=1 ./scripts/build-app.sh   (Apple Silicon + Intel)
 set -euo pipefail
 
 APP_NAME="S2A Claude X-Ray"
 EXECUTABLE="S2AClaudeXRay"
 BUNDLE_ID="${BUNDLE_ID:-com.s2a.claude-xray}"
-VERSION="${VERSION:-0.4.0}"
+VERSION="${VERSION:-0.5.0}"
 BUILD_NUMBER="${BUILD_NUMBER:-$(git rev-list --count HEAD 2>/dev/null || echo 1)}"
 
 cd "$(dirname "$0")/.."

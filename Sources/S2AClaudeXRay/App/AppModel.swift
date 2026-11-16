@@ -461,6 +461,19 @@ final class AppModel {
         Analytics.filter(priced, in: periodInterval)
     }
 
+    /// The same length of time right before the selected period; nil for "all time".
+    var previousPeriodInterval: DateInterval? {
+        guard period != .all, let interval = periodInterval else { return nil }
+        return DateInterval(start: interval.start.addingTimeInterval(-interval.duration), end: interval.start)
+    }
+
+    /// Events of the previous period, nil when there is nothing to compare with.
+    var previousPeriodEvents: [PricedEvent]? {
+        guard let interval = previousPeriodInterval,
+              let first = priced.first?.event.timestamp, first < interval.end else { return nil }
+        return Analytics.filter(priced, in: interval)
+    }
+
     /// Bucket size for timeline charts of the selected period.
     var periodChartUnit: Calendar.Component {
         guard let interval = periodInterval else { return .day }

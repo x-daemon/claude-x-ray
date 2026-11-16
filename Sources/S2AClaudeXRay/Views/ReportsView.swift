@@ -3,67 +3,90 @@ import SwiftUI
 import UniformTypeIdentifiers
 import XRayCore
 
-/// Report preview and export (Markdown, CSV).
+/// The visual report of the selected period, with PDF export and the data exports (Markdown, CSV).
 struct ReportsView: View {
     @Environment(AppModel.self) private var model
     @State private var status: String?
 
     var body: some View {
-        let events = model.periodEvents
-        let insights = InsightEngine(pricing: model.pricing).analyze(events)
-        let markdown = ReportExporter.markdown(
-            title: "S2A Claude X-Ray — отчёт об использовании Claude Code",
-            periodLabel: model.period.title,
-            events: events,
-            insights: insights
-        )
         let stamp = Fmt.isoDay(model.now)
 
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Button {
-                    save(markdown, name: "claude-xray-\(stamp).md", type: UTType(filenameExtension: "md") ?? .plainText)
+                    savePDF(name: "S2A Claude X-Ray — отчёт \(stamp).pdf")
                 } label: {
-                    Label("Markdown…", systemImage: "doc.richtext")
+                    Label("Сохранить PDF…", systemImage: "doc.richtext")
                 }
-                Button {
-                    save(ReportExporter.dailyCSV(events), name: "claude-xray-daily-\(stamp).csv", type: .commaSeparatedText)
+                .keyboardShortcut("s", modifiers: .command)
+
+                Menu {
+                    Button("Markdown…") {
+                        save(markdown(), name: "claude-xray-\(stamp).md", type: UTType(filenameExtension: "md") ?? .plainText)
+                    }
+                    Button("CSV по дням…") {
+                        save(ReportExporter.dailyCSV(model.periodEvents), name: "claude-xray-daily-\(stamp).csv", type: .commaSeparatedText)
+                    }
+                    Button("CSV по сессиям…") {
+                        save(ReportExporter.sessionsCSV(SessionAnalytics.sessions(model.periodEvents)), name: "claude-xray-sessions-\(stamp).csv", type: .commaSeparatedText)
+                    }
+                    Divider()
+                    Button("Копировать как Markdown") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(markdown(), forType: .string)
+                        status = "Отчёт скопирован в буфер обмена"
+                    }
                 } label: {
-                    Label("CSV по дням…", systemImage: "tablecells")
+                    Label("Данные", systemImage: "tablecells")
                 }
-                Button {
-                    save(ReportExporter.sessionsCSV(SessionAnalytics.sessions(events)), name: "claude-xray-sessions-\(stamp).csv", type: .commaSeparatedText)
-                } label: {
-                    Label("CSV по сессиям…", systemImage: "list.bullet.rectangle")
-                }
-                Button {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(markdown, forType: .string)
-                    status = "Отчёт скопирован в буфер обмена"
-                } label: {
-                    Label("Копировать", systemImage: "doc.on.doc")
-                }
+                .fixedSize()
+
                 Spacer()
                 if let status {
                     Text(status).font(.caption).foregroundStyle(.secondary)
                 }
             }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
 
-            Text("Период: \(model.period.title). Отчёт строится только из локальных логов, ничего не отправляется в сеть.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Divider()
 
             ScrollView {
-                Text(markdown)
-                    .font(.system(.callout, design: .monospaced))
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(14)
+                ReportDocument()
+                    .frame(maxWidth: 1180)
+                    .padding(20)
+                    .frame(maxWidth: .infinity)
             }
-            .background(RoundedRectangle(cornerRadius: 10).fill(Palette.card))
-            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Palette.hairline))
         }
-        .padding(20)
+    }
+
+    private func markdown() -> String {
+        let events = model.periodEvents
+        return ReportExporter.markdown(
+            title: "S2A Claude X-Ray — отчёт об использовании Claude Code",
+            periodLabel: model.period.title,
+            events: events,
+            insights: InsightEngine(pricing: model.pricing).analyze(events)
+        )
+    }
+
+    private func savePDF(name: String) {
+        guard let data = ReportPDF.data(for: model) else {
+            status = "Не удалось построить PDF"
+            return
+        }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = name
+        panel.allowedContentTypes = [.pdf]
+        panel.canCreateDirectories = true
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try data.write(to: url, options: .atomic)
+            status = "Сохранено: \(url.lastPathComponent)"
+            NSWorkspace.shared.activateFileViewerSelecting([url])
+        } catch {
+            status = "Не удалось сохранить: \(error.localizedDescription)"
+        }
     }
 
     private func save(_ text: String, name: String, type: UTType) {

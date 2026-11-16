@@ -75,6 +75,8 @@ enum SnapshotRunner {
             let prefix = "\(pass.theme.rawValue)-\(pass.mode)"
             for item in items {
                 model.selection = item
+                // The report compares with the previous period: a week has one in the demo data.
+                model.period = item == .reports ? .week : .month
                 if item == .sessions {
                     model.selectedSessionID = SessionAnalytics.sessions(model.periodEvents).first?.id
                 }
@@ -94,6 +96,17 @@ enum SnapshotRunner {
             }
         }
         UserDefaults.standard.set(AppTheme.s2a.rawValue, forKey: AppTheme.storageKey)
+        NSApp.appearance = NSAppearance(named: .aqua)
+        if model.hasData && (screens?.contains(SidebarItem.reports.rawValue) ?? true) {
+            model.period = .week
+            if let pdf = ReportPDF.data(for: model) {
+                try? pdf.write(to: directory.appendingPathComponent("report.pdf"))
+                log.append("report.pdf: \(pdf.count) bytes")
+            } else {
+                log.append("report.pdf: failed")
+            }
+        }
+        model.period = .month
         model.selection = .live
         write(log, to: directory)
     }

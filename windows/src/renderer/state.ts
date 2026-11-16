@@ -7,7 +7,7 @@ import { Fmt } from "../core/fmt";
 import { displayModelName, type UsageEvent } from "../core/model";
 import type { PlanUsage } from "../core/plan";
 import { priceEvents, type PricedEvent, type PricingTable } from "../core/pricing";
-import { ActivityStore, buildTrace, type LiveStatus, type SessionActivity, type SessionTrace } from "../core/trace";
+import { ActivityStore, buildTrace, stateIsActive, stateTitle, type LiveStatus, type SessionActivity, type SessionTrace } from "../core/trace";
 import { UsageStore } from "../core/transcript";
 import type { Delta, InitialState, ReceiverStatus, ScanInfo, Settings, StatusLineState, XRayBridge } from "../shared/api";
 import { applyPalette, palette, type Palette } from "./theme";
@@ -357,7 +357,21 @@ export class Store {
     });
   }
 
-  /** Text for the tray tooltip and the popup header: real 5-hour usage and the window's cost. */
+  /** Tray tooltip: the account's 5-hour usage and the current window's cost, labelled. */
+  get trayTooltip(): string {
+    const parts: string[] = [];
+    const window = this.planUsage?.fiveHour;
+    if (window && this.planUsage && this.now - this.planUsage.capturedAt < 3 * 3_600_000 && this.now < window.resetsAt) {
+      parts.push(`лимит 5 ч ${Fmt.percent(Math.min(Math.max(window.usedPercentage / 100, 0), 1))}`);
+    }
+    const active = this.activeWindow;
+    if (active) parts.push(`окно ${Fmt.usd(active.summary.totalCost)}`);
+    const live = this.liveStatus;
+    if (live && stateIsActive(live.state)) parts.push(stateTitle(live.state));
+    return ["S2A Claude X-Ray", ...parts].join(" · ");
+  }
+
+  /** Short title like the macOS menu bar: real 5-hour usage and the window's cost. */
   get trayTitle(): string {
     const parts: string[] = [];
     const window = this.planUsage?.fiveHour;

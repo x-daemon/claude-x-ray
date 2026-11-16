@@ -104,6 +104,8 @@ export interface XRayBridge {
   openPath(target: string): Promise<void>;
   openExternal(url: string): Promise<void>;
   openMain(screen?: string): Promise<void>;
+  /** Text of the tray icon tooltip (the menu bar title of the macOS app). */
+  setTrayTitle(text: string): void;
   quit(): Promise<void>;
 }
 
@@ -132,5 +134,6 @@ export const CHANNELS = {
   openPath: "xray:open-path",
   openExternal: "xray:open-external",
   openMain: "xray:open-main",
+  trayTitle: "xray:tray-title",
   quit: "xray:quit",
 } as const;

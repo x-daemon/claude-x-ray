@@ -32,6 +32,7 @@ const bridge: XRayBridge = {
   openPath: (target) => ipcRenderer.invoke(CHANNELS.openPath, target),
   openExternal: (url) => ipcRenderer.invoke(CHANNELS.openExternal, url),
   openMain: (screen) => ipcRenderer.invoke(CHANNELS.openMain, screen),
+  setTrayTitle: (text) => ipcRenderer.send(CHANNELS.trayTitle, text),
   quit: () => ipcRenderer.invoke(CHANNELS.quit),
 };
 

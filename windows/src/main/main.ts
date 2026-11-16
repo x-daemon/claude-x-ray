@@ -169,11 +169,15 @@ function togglePopup(): void {
 
 // MARK: Tray
 
+/** Set by the main window's renderer, which prices the usage; plan usage alone until then. */
+let rendererTrayTitle: string | undefined;
+
 function trayTitle(): string {
+  if (rendererTrayTitle) return rendererTrayTitle.slice(0, 127);
   const parts: string[] = [];
   const now = Date.now();
   if (planUsage?.fiveHour && now - planUsage.capturedAt < 3 * 3_600_000 && !windowHasReset(planUsage.fiveHour, now)) {
-    parts.push(`лимит 5 ч: ${Fmt.percent(windowFraction(planUsage.fiveHour, now))}`);
+    parts.push(`лимит 5 ч ${Fmt.percent(windowFraction(planUsage.fiveHour, now))}`);
   }
   return ["S2A Claude X-Ray", ...parts].join(" · ");
 }
@@ -310,6 +314,12 @@ function registerIPC(): void {
   ipcMain.handle(CHANNELS.openMain, (_e, screenName?: string) => {
     popup?.hide();
     showMain(screenName);
+  });
+  ipcMain.on(CHANNELS.trayTitle, (event, text: string) => {
+    if (mainWindow && event.sender === mainWindow.webContents && typeof text === "string") {
+      rendererTrayTitle = text;
+      updateTray();
+    }
   });
   ipcMain.handle(CHANNELS.quit, () => {
     quitting = true;

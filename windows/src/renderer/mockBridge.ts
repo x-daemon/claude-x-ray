@@ -85,6 +85,7 @@ export function mockBridge(): XRayBridge {
       window.open(url, "_blank");
     },
     async openMain() {},
+    setTrayTitle: noop,
     async quit() {},
   };
 }

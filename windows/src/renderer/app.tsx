@@ -53,9 +53,17 @@ function MainWindow() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey && e.key.toLowerCase() === "r") || e.key === "F5") {
+      // Same shortcuts as the macOS menu: refresh, rescan everything, import a session log.
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "r") {
+        e.preventDefault();
+        void s.bridge.fullRescan();
+      } else if ((e.ctrlKey && e.key.toLowerCase() === "r") || e.key === "F5") {
         e.preventDefault();
         void s.bridge.rescan();
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === "i") {
+        e.preventDefault();
+        void s.bridge.importDialog();
       }
       if (e.ctrlKey && e.key === ",") {
         e.preventDefault();
@@ -65,6 +73,10 @@ function MainWindow() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // The tray tooltip follows the same numbers as the macOS menu bar title.
+  const tooltip = s.trayTooltip;
+  useEffect(() => s.bridge.setTrayTitle(tooltip), [tooltip]);
 
   // Session logs dropped on the window, for example from a cloud session.
   const onDrop = (e: DragEvent) => {

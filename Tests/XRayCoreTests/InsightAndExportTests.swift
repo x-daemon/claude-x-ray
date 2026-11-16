@@ -120,5 +120,9 @@ final class FmtTests: XCTestCase {
         XCTAssertEqual(Fmt.ago(86_400 + 5), "1 день назад")
         XCTAssertEqual(Fmt.ago(4 * 86_400 + 3600), "4 дня назад")
         XCTAssertEqual(Fmt.ago(11 * 86_400), "11 дней назад")
+        XCTAssertEqual(Fmt.span(45 * 60), "45 мин")
+        XCTAssertEqual(Fmt.span(2 * 3600 + 10 * 60), "2 ч 10 мин")
+        XCTAssertEqual(Fmt.span(3 * 86_400 + 4 * 3600 + 59), "3 дня 4 ч")
+        XCTAssertEqual(Fmt.span(86_400 + 120), "1 день")
     }
 }

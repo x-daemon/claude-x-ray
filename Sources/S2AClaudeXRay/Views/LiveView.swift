@@ -16,7 +16,11 @@ struct LiveView: View {
             VStack(alignment: .leading, spacing: 16) {
                 LiveActivityCard()
 
-                Card(title: "Окно лимита (5 часов)", subtitle: model.plan.isSubscription ? "подписка \(model.plan.title)" : nil) {
+                if model.plan.isSubscription {
+                    AccountLimitsCard()
+                }
+
+                Card(title: "Окно 5 часов по логам этого Mac", subtitle: model.plan.isSubscription ? "подписка \(model.plan.title)" : nil) {
                     WindowSummaryView()
                 }
 

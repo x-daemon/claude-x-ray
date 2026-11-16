@@ -86,6 +86,16 @@ public enum Fmt {
         return "\(count) \(form)"
     }
 
+    /// Time until an event: `45 мин`, `2 ч 10 мин`, `3 дня 4 ч`.
+    public static func span(_ interval: TimeInterval) -> String {
+        let seconds = max(0, interval)
+        guard seconds >= 86_400 else { return duration(seconds) }
+        let days = Int(seconds / 86_400)
+        let hours = Int(seconds.truncatingRemainder(dividingBy: 86_400) / 3600)
+        let dayText = plural(days, "день", "дня", "дней")
+        return hours > 0 ? "\(dayText) \(hours) ч" : dayText
+    }
+
     /// How long ago, in the largest whole unit: `только что`, `12 мин назад`, `3 ч назад`, `4 дня назад`.
     public static func ago(_ interval: TimeInterval) -> String {
         let seconds = max(0, interval)

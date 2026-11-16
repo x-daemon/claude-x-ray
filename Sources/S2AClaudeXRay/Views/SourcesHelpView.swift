@@ -83,6 +83,9 @@ struct SourceFoldersCard: View {
                 Divider()
                 HStack(spacing: 8) {
                     SettingsLink { Text("Изменить папки…") }
+                    Button("Импортировать лог…") {
+                        TranscriptImportPanel.run(model: model)
+                    }
                     Button("Пересканировать") {
                         Task { await model.fullRescan() }
                     }
@@ -116,6 +119,14 @@ struct CloudSessionsCard: View {
                 way(
                     "antenna.radiowaves.left.and.right",
                     "**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом Mac, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую."
+                )
+                way(
+                    "square.and.arrow.down",
+                    "**Облачная сессия:** попросите её прислать свой лог («пришли лог сессии для X-Ray») и перетащите файл в окно X-Ray. Сессия появится со всеми токенами, инструментами и стоимостью на момент выгрузки."
+                )
+                way(
+                    "gauge.with.dots.needle.33percent",
+                    "**Лимиты всего аккаунта**, включая облако и чаты, X-Ray берёт из строки статуса Claude Code: «Настройки → Лимиты аккаунта»."
                 )
             }
             .font(.callout)

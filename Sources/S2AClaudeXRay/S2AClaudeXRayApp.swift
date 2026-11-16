@@ -15,7 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-@main
+/// Launched by `AppEntry` (which also handles `--statusline`).
 struct S2AClaudeXRayApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var model = AppModel()
@@ -44,6 +44,13 @@ struct S2AClaudeXRayApp: App {
                     Task { await model.fullRescan() }
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
+
+                Divider()
+
+                Button("Импортировать лог сессии…") {
+                    TranscriptImportPanel.run(model: model)
+                }
+                .keyboardShortcut("i", modifiers: .command)
             }
         }
 

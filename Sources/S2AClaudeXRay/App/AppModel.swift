@@ -86,6 +86,10 @@ final class AppModel {
     private(set) var modelOrder: [String] = []
     /// Recent activity (prompts, tool calls, results, context updates) for the live trace.
     private(set) var activity = ActivityStore()
+    /// Plan usage of the whole account, as Claude Code last reported it to its status line.
+    private(set) var planUsage: PlanUsage?
+    /// Whether X-Ray is connected to Claude Code's status line.
+    private(set) var statusLineState: StatusLineInstaller.State = .notInstalled
 
     // MARK: Settings
 
@@ -131,6 +135,8 @@ final class AppModel {
         guard !started else { return }
         started = true
         restartWatching()
+        reloadPlanUsage()
+        refreshStatusLineState()
         ticker = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
         }
@@ -141,6 +147,7 @@ final class AppModel {
     private func tick() {
         now = Date()
         tickCount += 1
+        reloadPlanUsage()
         // FSEvents covers live updates; a slow poll catches folders created later.
         if tickCount % 4 == 0 {
             Task { await rescan() }
@@ -152,7 +159,7 @@ final class AppModel {
 
     private func restartWatching() {
         watcher?.stop()
-        let existing = directories.filter { FileManager.default.fileExists(atPath: $0.path) }.map(\.path)
+        let existing = scanDirectories.filter { FileManager.default.fileExists(atPath: $0.path) }.map(\.path)
         guard !existing.isEmpty else {
             watcher = nil
             return
@@ -173,8 +180,9 @@ final class AppModel {
             return
         }
         isScanning = true
+        reloadPlanUsage()
         let result = await ingestor.scan(
-            directories: directories,
+            directories: scanDirectories,
             activitySince: Date().addingTimeInterval(-Self.activityRetention)
         )
         let changed = store.merge(result.events)
@@ -210,6 +218,89 @@ final class AppModel {
         priced = pricing.price(store.events)
         windows = UsageWindows.compute(priced)
         modelOrder = Analytics.group(priced) { ModelCatalog.displayName(for: $0.model) }.map(\.key)
+    }
+
+    /// The configured folders plus X-Ray's folder of imported transcripts, once it exists.
+    var scanDirectories: [URL] {
+        let imported = XRayPaths.imported
+        guard FileManager.default.fileExists(atPath: imported.path),
+              !directories.contains(where: { $0.standardizedFileURL == imported.standardizedFileURL }) else {
+            return directories
+        }
+        return directories + [imported]
+    }
+
+    // MARK: Account plan usage
+
+    func reloadPlanUsage() {
+        let loaded = PlanUsageFile.load()
+        if loaded != planUsage {
+            planUsage = loaded
+        }
+    }
+
+    func refreshStatusLineState() {
+        statusLineState = StatusLineInstaller.state()
+    }
+
+    /// Connects X-Ray to Claude Code's status line. Returns an error message on failure.
+    func installStatusLine() -> String? {
+        defer { refreshStatusLineState() }
+        do {
+            try StatusLineInstaller.install()
+            return nil
+        } catch {
+            return error.localizedDescription
+        }
+    }
+
+    func uninstallStatusLine() -> String? {
+        defer { refreshStatusLineState() }
+        do {
+            try StatusLineInstaller.uninstall()
+            return nil
+        } catch {
+            return error.localizedDescription
+        }
+    }
+
+    // MARK: Import
+
+    /// Copies transcripts (`.jsonl`, or `.zip` archives of them) into X-Ray's import folder,
+    /// for example logs of cloud sessions. Returns how many files were taken.
+    @discardableResult
+    func importTranscripts(_ urls: [URL]) -> Int {
+        let fileManager = FileManager.default
+        let target = XRayPaths.imported.appendingPathComponent("sessions", isDirectory: true)
+        try? fileManager.createDirectory(at: target, withIntermediateDirectories: true)
+        var imported = 0
+        for url in urls {
+            switch url.pathExtension.lowercased() {
+            case "jsonl":
+                let destination = target.appendingPathComponent(url.lastPathComponent)
+                try? fileManager.removeItem(at: destination)
+                if (try? fileManager.copyItem(at: url, to: destination)) != nil {
+                    imported += 1
+                }
+            case "zip":
+                let unzip = Process()
+                unzip.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+                unzip.arguments = ["-x", "-k", url.path, target.path]
+                if (try? unzip.run()) != nil {
+                    unzip.waitUntilExit()
+                    if unzip.terminationStatus == 0 {
+                        imported += 1
+                    }
+                }
+            default:
+                continue
+            }
+        }
+        if imported > 0 {
+            restartWatching()
+            Task { await rescan() }
+        }
+        return imported
     }
 
     // MARK: Settings
@@ -363,10 +454,19 @@ final class AppModel {
     }
 
     var menuBarTitle: String {
-        if let window = activeWindow {
-            return Fmt.usd(window.summary.cost.total)
+        var parts: [String] = []
+        // The account's real 5-hour usage, while it is recent enough to trust.
+        if let window = planUsage?.fiveHour, let captured = planUsage?.capturedAt,
+           now.timeIntervalSince(captured) < 3 * 3600, !window.hasReset(at: now) {
+            parts.append(Fmt.percent(window.fraction(at: now)))
         }
-        return hasData ? "—" : "X-Ray"
+        if let window = activeWindow {
+            parts.append(Fmt.usd(window.summary.cost.total))
+        }
+        if parts.isEmpty {
+            return hasData ? "—" : "X-Ray"
+        }
+        return parts.joined(separator: " · ")
     }
 
     // MARK: Chart colors

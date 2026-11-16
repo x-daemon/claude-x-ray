@@ -9,12 +9,14 @@ struct SettingsView: View {
                 .tabItem { Label("Оформление", systemImage: "paintpalette") }
             SourcesSettings()
                 .tabItem { Label("Источники", systemImage: "folder") }
+            AccountLimitsSettings()
+                .tabItem { Label("Лимиты аккаунта", systemImage: "gauge.with.dots.needle.33percent") }
             PricingSettings()
                 .tabItem { Label("Цены", systemImage: "dollarsign.circle") }
             PlanSettings()
                 .tabItem { Label("Подписка", systemImage: "person.crop.circle") }
         }
-        .frame(width: 760, height: 500)
+        .frame(width: 760, height: 560)
     }
 }
 
@@ -49,6 +51,8 @@ struct SourcesSettings: View {
             HStack {
                 Button("Добавить папку…") { addFolder() }
                 Button("По умолчанию") { model.resetDirectories() }
+                Button("Импортировать лог…") { TranscriptImportPanel.run(model: model) }
+                    .help("Скопировать лог сессии (.jsonl или .zip), например облачной, в папку импорта X-Ray")
                 Spacer()
                 Button("Пересканировать всё") { Task { await model.fullRescan() } }
             }

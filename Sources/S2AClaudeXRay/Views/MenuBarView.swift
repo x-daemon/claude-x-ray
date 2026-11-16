@@ -30,6 +30,12 @@ struct MenuBarView: View {
             Divider()
 
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
+                if let window = model.planUsage?.fiveHour {
+                    PlanWindowRow(title: "Лимит 5 ч", window: window, now: model.now)
+                }
+                if let window = model.planUsage?.sevenDay {
+                    PlanWindowRow(title: "Неделя", window: window, now: model.now)
+                }
                 GridRow {
                     Text("Сегодня").foregroundStyle(.secondary)
                     Text(Fmt.usd(today.cost.total)).monospacedDigit()
@@ -72,6 +78,25 @@ struct MenuBarView: View {
         }
         .padding(14)
         .frame(width: 340)
+    }
+}
+
+/// Account limit window in the menu bar popover.
+struct PlanWindowRow: View {
+    let title: String
+    let window: PlanUsage.Window
+    let now: Date
+
+    var body: some View {
+        let fraction = window.fraction(at: now)
+        GridRow {
+            Text(title).foregroundStyle(.secondary)
+            Text(Fmt.percent(fraction))
+                .monospacedDigit()
+                .foregroundStyle(fraction >= 0.7 ? LimitGauge.color(for: fraction) : Color.primary)
+            Text(window.hasReset(at: now) ? "сброшен" : "сброс через \(Fmt.span(window.resetsAt.timeIntervalSince(now)))")
+                .foregroundStyle(.secondary)
+        }
     }
 }
 

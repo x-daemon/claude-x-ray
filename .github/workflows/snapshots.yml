@@ -21,6 +21,17 @@ jobs:
       - name: Demo data
         run: python3 scripts/demo-data.py "$RUNNER_TEMP/xray-demo"
 
+      - name: Status line command
+        # Feeds Claude Code's status line JSON to the app binary the way Claude Code does;
+        # it prints the status line and saves the account's plan usage for the app.
+        run: |
+          BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
+          NOW=$(date +%s)
+          printf '{"session_id":"demo","model":{"id":"claude-opus-5-5","display_name":"Opus 5.5"},"version":"2.1.325","context_window":{"used_percentage":42},"rate_limits":{"five_hour":{"used_percentage":37.5,"resets_at":%d},"seven_day":{"used_percentage":22,"resets_at":%d}}}' $((NOW + 7800)) $((NOW + 3 * 86400 + 5000)) > "$RUNNER_TEMP/statusline.json"
+          "$BIN" --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline.txt"
+          grep -q "5 ч 38%" "$RUNNER_TEMP/statusline.txt"
+          cat "$HOME/Library/Application Support/S2AClaudeXRay/plan-usage.json"
+
       - name: Capture screens
         run: |
           set +e

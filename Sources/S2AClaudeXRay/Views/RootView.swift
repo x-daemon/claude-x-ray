@@ -36,6 +36,10 @@ struct RootView: View {
                 }
             }
             .navigationTitle(model.selection?.title ?? "S2A Claude X-Ray")
+            .dropDestination(for: URL.self) { urls, _ in
+                // Session logs dropped on the window, for example from a cloud session.
+                model.importTranscripts(urls) > 0
+            }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     if model.selection != .live && model.selection != .trace {

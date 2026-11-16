@@ -39,6 +39,11 @@ enum SnapshotRunner {
         if let status = model.liveStatus {
             log.append("live state: \(status.state.title) — \(status.state.detail ?? "")")
         }
+        if let usage = model.planUsage {
+            log.append("plan usage: 5h \(usage.fiveHour?.usedPercentage ?? -1)%, 7d \(usage.sevenDay?.usedPercentage ?? -1)%, captured \(usage.capturedAt)")
+        } else {
+            log.append("plan usage: none")
+        }
         guard let window = mainWindow() else {
             log.append("no main window; windows: \(NSApp.windows.map { "\($0.title) \($0.frame)" })")
             write(log, to: directory)

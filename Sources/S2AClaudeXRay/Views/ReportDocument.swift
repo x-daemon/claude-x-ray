@@ -53,7 +53,7 @@ struct ReportDocument: View {
                         RankedBarList(rows: projectRows(events, total: summary.cost.total), labelWidth: 170)
                     }
                     Card(title: "Самые дорогие сессии") {
-                        RankedBarList(rows: sessionRows(sessions), labelWidth: 200)
+                        RankedBarList(rows: sessionRows(sessions), labelWidth: 230)
                     }
                 }
 
@@ -137,7 +137,7 @@ struct ReportDocument: View {
             RankedBarRow(
                 id: session.id,
                 label: "\(session.projectName) · \(Fmt.dateTime(session.start))",
-                detail: "\(session.modelsLabel) · \(Fmt.plural(session.requests, "запрос", "запроса", "запросов")) · пик контекста \(Fmt.tokens(session.peakContextTokens))",
+                detail: "\(Fmt.plural(session.requests, "запрос", "запроса", "запросов")) · пик контекста \(Fmt.tokens(session.peakContextTokens)) · \(Fmt.duration(session.duration))",
                 value: session.cost,
                 valueText: Fmt.usd(session.cost)
             )
@@ -216,7 +216,7 @@ struct ReportCover: View {
                     .font(.callout)
                     .opacity(0.88)
                 if let previous, let change = ReportKPIRow.change(summary.cost.total, previous.cost.total) {
-                    Label("\(Fmt.percent(abs(change))) к прошлому периоду", systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right")
+                    Label("\(change >= 0 ? "+" : "−")\(Fmt.percent(abs(change))) к прошлому периоду", systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right")
                         .font(.callout.weight(.medium))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)

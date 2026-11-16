@@ -83,12 +83,15 @@ struct CostTimelineChart: View {
         }
         let scale = model.colorScale(for: points.map(\.series))
         let selectedBucket = selected.flatMap { date in buckets.first { $0.start <= date && date < $0.end } }
+        // Thin bars leave air between days; past ~40 buckets they share the slot instead.
+        let barWidth: MarkDimension = buckets.count <= 40 ? .fixed(20) : .ratio(0.8)
 
         Chart {
             ForEach(points) { point in
                 BarMark(
                     x: .value("Дата", point.date, unit: unit),
-                    y: .value("USD", point.cost)
+                    y: .value("USD", point.cost),
+                    width: barWidth
                 )
                 .foregroundStyle(by: .value("Модель", point.series))
             }
@@ -253,6 +256,7 @@ struct ActivityHeatmap: View {
                 }
             }
             .chartForegroundStyleScale(range: Gradient(colors: Palette.sequential))
+            .chartLegend(.hidden)
             .chartXScale(domain: Self.hours)
             .chartYScale(domain: Self.days)
             .chartXAxis {
@@ -276,6 +280,18 @@ struct ActivityHeatmap: View {
                 }
             }
             .frame(height: 220)
+
+            HStack(spacing: 6) {
+                Text("меньше")
+                HStack(spacing: 2) {
+                    ForEach(Array(Palette.sequential.enumerated()), id: \.offset) { _, color in
+                        RoundedRectangle(cornerRadius: 2).fill(color).frame(width: 16, height: 9)
+                    }
+                }
+                Text("больше · до \(Fmt.usd(cells.map(\.cost).max() ?? 0)) за час")
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
 
             if showsHint {
                 Group {

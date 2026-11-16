@@ -46,6 +46,30 @@ jobs:
           cat "$OUT/snapshots.log" "$OUT/app-output.txt" 2>/dev/null
           exit 0
 
+      - name: Capture empty states
+        run: |
+          set +e
+          BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
+          capture() {
+            out="$RUNNER_TEMP/snapshots/$1"
+            mkdir -p "$out"
+            CLAUDE_CONFIG_DIR="$2" XRAY_SNAPSHOT_DIR="$out" XRAY_SNAPSHOT_SCREENS=live,trace "$BIN" > "$out/app-output.txt" 2>&1 &
+            app=$!
+            for i in $(seq 1 60); do
+              kill -0 $app 2>/dev/null || break
+              sleep 2
+            done
+            kill $app 2>/dev/null
+            wait $app
+            ls -la "$out"
+            cat "$out/snapshots.log" 2>/dev/null
+          }
+          # Claude Code last ran 4 days ago, then no transcripts at all.
+          python3 scripts/demo-data.py "$RUNNER_TEMP/xray-stale" --ago 4
+          capture stale "$RUNNER_TEMP/xray-stale"
+          capture empty "$RUNNER_TEMP/xray-none"
+          exit 0
+
       - name: Publish to the snapshots branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

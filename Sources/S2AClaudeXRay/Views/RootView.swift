@@ -24,7 +24,7 @@ struct RootView: View {
         } detail: {
             Group {
                 if !model.hasData && model.lastScan != nil {
-                    EmptyStateView()
+                    SourcesHelpView(title: "Логи Claude Code не найдены", systemImage: "tray")
                 } else {
                     detail(for: model.selection ?? .live)
                 }
@@ -76,25 +76,41 @@ struct RootView: View {
     }
 }
 
-/// Footer of the sidebar: when the data was last read.
+/// Footer of the sidebar: when the data was last read and when Claude Code last wrote a log.
 struct ScanStatusView: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
-        HStack(spacing: 6) {
-            if model.isScanning {
-                ProgressView().controlSize(.small)
-                Text("Чтение логов…")
-            } else if let last = model.lastScan {
-                Image(systemName: "dot.radiowaves.left.and.right").foregroundStyle(Palette.good)
-                Text("Обновлено \(last.formatted(date: .omitted, time: .standard))")
-            } else {
-                Text("Ожидание…")
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 6) {
+                if model.isScanning {
+                    ProgressView().controlSize(.small)
+                    Text("Чтение логов…")
+                } else if let last = model.lastScan {
+                    Image(systemName: "dot.radiowaves.left.and.right").foregroundStyle(Palette.good)
+                    Text("Обновлено \(last.formatted(date: .omitted, time: .standard))")
+                } else {
+                    Text("Ожидание…")
+                }
+                Spacer()
             }
-            Spacer()
+            if model.lastScan != nil {
+                Text(lastLogLine)
+                    .padding(.leading, 22)
+            }
         }
         .font(.caption)
         .foregroundStyle(.secondary)
-        .help("Записей: \(model.priced.count). Новые строки логов подхватываются автоматически.")
+        .help(helpText)
+    }
+
+    private var lastLogLine: String {
+        guard let newest = model.newestTranscript else { return "Логов на этом Mac нет" }
+        return "Последний лог: \(Fmt.ago(model.now.timeIntervalSince(newest)))"
+    }
+
+    private var helpText: String {
+        let files = model.lastScanResult?.filesSeen ?? 0
+        return "\(Fmt.plural(files, "лог", "лога", "логов")), \(Fmt.plural(model.priced.count, "ответ", "ответа", "ответов")) модели. Новые строки логов подхватываются автоматически. Облачные сессии сюда не попадают: их логи остаются на серверах Anthropic."
     }
 }

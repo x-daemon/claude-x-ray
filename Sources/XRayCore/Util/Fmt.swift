@@ -86,6 +86,15 @@ public enum Fmt {
         return "\(count) \(form)"
     }
 
+    /// How long ago, in the largest whole unit: `только что`, `12 мин назад`, `3 ч назад`, `4 дня назад`.
+    public static func ago(_ interval: TimeInterval) -> String {
+        let seconds = max(0, interval)
+        if seconds < 60 { return "только что" }
+        if seconds < 3600 { return "\(Int(seconds / 60)) мин назад" }
+        if seconds < 86_400 { return "\(Int(seconds / 3600)) ч назад" }
+        return plural(Int(seconds / 86_400), "день", "дня", "дней") + " назад"
+    }
+
     /// `14.11 17:23`
     public static func dateTime(_ date: Date, calendar: Calendar = .current) -> String {
         let c = calendar.dateComponents([.day, .month, .hour, .minute], from: date)

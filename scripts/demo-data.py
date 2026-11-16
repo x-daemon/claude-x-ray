@@ -2,8 +2,11 @@
 """Generates synthetic Claude Code transcripts for demos, screenshots and manual testing.
 
 Usage:
-    python3 scripts/demo-data.py /tmp/xray-demo
+    python3 scripts/demo-data.py /tmp/xray-demo [--ago DAYS]
     CLAUDE_CONFIG_DIR=/tmp/xray-demo swift run S2AClaudeXRay
+
+--ago DAYS moves everything DAYS into the past, as if Claude Code last ran then
+(for the "no recent activity" screens).
 
 Writes <dir>/projects/<project>/<session>.jsonl shaped like real transcripts:
 one line per content block (with the usage repeated, as Claude Code does),
@@ -123,6 +126,10 @@ class Session:
     def save(self):
         with open(self.path, "w", encoding="utf-8") as f:
             f.write("\n".join(self.lines) + "\n")
+        # The file was last written when its last entry was.
+        stamps = [json.loads(line).get("timestamp") for line in self.lines]
+        last = max(datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc) for s in stamps if s)
+        os.utime(self.path, (last.timestamp(), last.timestamp()))
 
 
 def tool(name, **inputs):
@@ -278,10 +285,16 @@ def live(root):
 
 
 def main():
-    if len(sys.argv) != 2:
+    global NOW
+    args = sys.argv[1:]
+    if "--ago" in args:
+        i = args.index("--ago")
+        NOW -= timedelta(days=float(args[i + 1]))
+        del args[i:i + 2]
+    if len(args) != 1:
         print(__doc__)
         sys.exit(1)
-    root = sys.argv[1]
+    root = args[0]
     os.makedirs(os.path.join(root, "projects"), exist_ok=True)
     history(root)
     live(root)

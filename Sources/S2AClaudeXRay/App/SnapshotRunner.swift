@@ -5,10 +5,17 @@ import XRayCore
 /// CI/debug aid. With `XRAY_SNAPSHOT_DIR` set, the app opens every screen (and every
 /// live-trace tab) in light and dark appearance, saves a PNG of the main window for
 /// each into that folder, writes `snapshots.log` and quits.
+/// `XRAY_SNAPSHOT_SCREENS=live,trace` limits the captures to those screens.
 @MainActor
 enum SnapshotRunner {
     static var directory: URL? {
         ProcessInfo.processInfo.environment["XRAY_SNAPSHOT_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) }
+    }
+
+    static var screens: Set<String>? {
+        ProcessInfo.processInfo.environment["XRAY_SNAPSHOT_SCREENS"].map {
+            Set($0.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+        }
     }
 
     static func runIfRequested(model: AppModel) {
@@ -51,16 +58,19 @@ enum SnapshotRunner {
             (.system, "light", .aqua, [.live, .trace, .overview], [.feed]),
         ]
         for pass in passes {
+            let items = pass.items.filter { screens?.contains($0.rawValue) ?? true }
+            guard !items.isEmpty else { continue }
             UserDefaults.standard.set(pass.theme.rawValue, forKey: AppTheme.storageKey)
             NSApp.appearance = NSAppearance(named: pass.appearance)
             let prefix = "\(pass.theme.rawValue)-\(pass.mode)"
-            for item in pass.items {
+            for item in items {
                 model.selection = item
                 if item == .sessions {
                     model.selectedSessionID = SessionAnalytics.sessions(model.periodEvents).first?.id
                 }
                 if item == .trace {
-                    for tab in pass.tabs {
+                    // Without recent activity every tab shows the same explanation.
+                    for tab in model.traceSessions.isEmpty ? [.feed] : pass.tabs {
                         model.traceTab = tab
                         log.append(await capture(window, name: "\(prefix)-\(item.rawValue)-\(tab.rawValue)", directory: directory))
                     }

@@ -83,28 +83,6 @@ struct ChartTooltip: View {
     }
 }
 
-/// Shown when no transcripts were found.
-struct EmptyStateView: View {
-    @Environment(AppModel.self) private var model
-
-    var body: some View {
-        ContentUnavailableView {
-            Label("Логи Claude Code не найдены", systemImage: "tray")
-        } description: {
-            VStack(spacing: 6) {
-                Text("S2A Claude X-Ray читает транскрипты сессий Claude Code (*.jsonl). Искали здесь:")
-                ForEach(model.directories, id: \.self) { url in
-                    Text(url.path).font(.system(.caption, design: .monospaced))
-                }
-                Text("Запустите Claude Code хотя бы раз или укажите другую папку в настройках.")
-            }
-        } actions: {
-            SettingsLink { Text("Открыть настройки") }
-            Button("Пересканировать") { Task { await model.fullRescan() } }
-        }
-    }
-}
-
 extension View {
     /// Y axis labelled in dollars.
     func usdYAxis() -> some View {

@@ -2,12 +2,13 @@
 # Builds the universal app and packages it for download:
 #   dist/S2A-Claude-X-Ray-<version>.dmg   (drag to Applications)
 #   dist/S2A-Claude-X-Ray-<version>.zip
+#   dist/S2A-Claude-X-Ray.zip               (the same, for releases/latest/download/…)
 #   dist/SHA256SUMS.txt
-# Usage: VERSION=0.2.0 ./scripts/package.sh
+# Usage: VERSION=0.2.1 ./scripts/package.sh
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-VERSION="${VERSION:-0.2.0}"
+VERSION="${VERSION:-0.2.1}"
 NAME="S2A-Claude-X-Ray-${VERSION}"
 APP="build/S2A Claude X-Ray.app"
 
@@ -16,6 +17,8 @@ UNIVERSAL="${UNIVERSAL:-1}" VERSION="$VERSION" ./scripts/build-app.sh
 rm -rf dist
 mkdir -p dist
 ditto -c -k --keepParent "$APP" "dist/${NAME}.zip"
+# Same archive without the version, so releases/latest/download/S2A-Claude-X-Ray.zip always works.
+cp "dist/${NAME}.zip" "dist/S2A-Claude-X-Ray.zip"
 
 STAGE="build/dmg"
 rm -rf "$STAGE"

@@ -62,10 +62,10 @@ struct TraceView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else {
-                ContentUnavailableView(
-                    "Нет активности за последние 3 дня",
+                SourcesHelpView(
+                    title: "Нет активности за последние 3 дня",
                     systemImage: "point.3.connected.trianglepath.dotted",
-                    description: Text("Как только Claude Code начнёт работать, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.")
+                    message: "Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст."
                 )
             }
         }

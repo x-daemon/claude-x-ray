@@ -285,6 +285,15 @@ final class AppModel {
 
     var hasData: Bool { !priced.isEmpty }
 
+    /// Scanned folders and what each holds; before the first scan, the configured folders.
+    var sourceStats: [SourceStat] {
+        if let sources = lastScanResult?.sources, !sources.isEmpty { return sources }
+        return directories.map { SourceStat(directory: $0, exists: FileManager.default.fileExists(atPath: $0.path)) }
+    }
+
+    /// When Claude Code last wrote a transcript in the scanned folders.
+    var newestTranscript: Date? { lastScanResult?.newestModification }
+
     var periodInterval: DateInterval? {
         period.interval(now: now, firstEvent: priced.first?.event.timestamp)
     }

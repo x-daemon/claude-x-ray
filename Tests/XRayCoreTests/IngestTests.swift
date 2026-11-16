@@ -117,9 +117,44 @@ final class TranscriptIngestorTests: XCTestCase {
     }
 
     func testIgnoresMissingDirectories() async {
-        let result = await TranscriptIngestor().scan(directories: [URL(fileURLWithPath: "/nonexistent-\(UUID().uuidString)")])
+        let missing = URL(fileURLWithPath: "/nonexistent-\(UUID().uuidString)")
+        let result = await TranscriptIngestor().scan(directories: [missing])
         XCTAssertEqual(result.filesSeen, 0)
         XCTAssertTrue(result.events.isEmpty)
+        XCTAssertEqual(result.sources, [SourceStat(directory: missing, exists: false)])
+        XCTAssertNil(result.newestModification)
+    }
+
+    func testReportsWhatEachFolderHolds() async throws {
+        let root = Fixture.temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let project = root.appendingPathComponent("-Users-me-code-app", isDirectory: true)
+        let subagents = project.appendingPathComponent("session-a/subagents", isDirectory: true)
+        try FileManager.default.createDirectory(at: subagents, withIntermediateDirectories: true)
+        let older = project.appendingPathComponent("session-a.jsonl")
+        let newer = subagents.appendingPathComponent("agent-1.jsonl")
+        try Data((Fixture.assistantLine(id: "m1") + "\n").utf8).write(to: older)
+        try Data((Fixture.assistantLine(id: "m2") + "\n").utf8).write(to: newer)
+        try Data("ignored".utf8).write(to: project.appendingPathComponent("notes.txt"))
+        let olderDate = Fixture.date(2026, 11, 10, 9)
+        let newerDate = Fixture.date(2026, 11, 12, 18, 40)
+        try FileManager.default.setAttributes([.modificationDate: olderDate], ofItemAtPath: older.path)
+        try FileManager.default.setAttributes([.modificationDate: newerDate], ofItemAtPath: newer.path)
+        let missing = root.appendingPathComponent("missing", isDirectory: true)
+
+        let ingestor = TranscriptIngestor()
+        let first = await ingestor.scan(directories: [root, missing])
+        XCTAssertEqual(first.sources.map(\.directory), [root, missing])
+        XCTAssertEqual(first.sources.map(\.exists), [true, false])
+        XCTAssertEqual(first.sources.map(\.files), [2, 0])
+        XCTAssertEqual(first.sources[0].newestModification, newerDate)
+        XCTAssertNil(first.sources[1].newestModification)
+        XCTAssertEqual(first.newestModification, newerDate)
+
+        // A rescan with nothing new still reports every folder in full.
+        let second = await ingestor.scan(directories: [root, missing])
+        XCTAssertTrue(second.events.isEmpty)
+        XCTAssertEqual(second.sources, first.sources)
     }
 
     func testLocatorHonoursClaudeConfigDir() {

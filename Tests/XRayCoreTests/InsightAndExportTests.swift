@@ -113,5 +113,12 @@ final class FmtTests: XCTestCase {
         XCTAssertEqual(Fmt.plural(3, "раз", "раза", "раз"), "3 раза")
         XCTAssertEqual(Fmt.plural(12, "раз", "раза", "раз"), "12 раз")
         XCTAssertEqual(Fmt.plural(21, "событие", "события", "событий"), "21 событие")
+        XCTAssertEqual(Fmt.ago(-5), "только что")
+        XCTAssertEqual(Fmt.ago(42), "только что")
+        XCTAssertEqual(Fmt.ago(12 * 60 + 30), "12 мин назад")
+        XCTAssertEqual(Fmt.ago(3 * 3600 + 59 * 60), "3 ч назад")
+        XCTAssertEqual(Fmt.ago(86_400 + 5), "1 день назад")
+        XCTAssertEqual(Fmt.ago(4 * 86_400 + 3600), "4 дня назад")
+        XCTAssertEqual(Fmt.ago(11 * 86_400), "11 дней назад")
     }
 }

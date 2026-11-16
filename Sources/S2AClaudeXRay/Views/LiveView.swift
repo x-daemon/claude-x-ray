@@ -270,6 +270,48 @@ struct LiveActivityCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        } else {
+            NoRecentActivityBanner()
         }
+    }
+}
+
+/// Live screen when no local session wrote anything for 3 days: when Claude Code last ran
+/// here and why cloud sessions are missing.
+struct NoRecentActivityBanner: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "moon.zzz")
+                .font(.title2)
+                .foregroundStyle(Palette.accent)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("На этом Mac Claude Code не работал последние 3 дня")
+                    .font(.headline)
+                Text(lastWriteLine)
+                    .foregroundStyle(.secondary)
+                Text("Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray не видит: их логи остаются на серверах Anthropic.")
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .font(.callout)
+            Spacer(minLength: 12)
+            Button("Как увидеть сессию") {
+                model.selection = .trace
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Palette.card))
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Palette.hairline))
+    }
+
+    private var lastWriteLine: String {
+        guard let newest = model.newestTranscript else {
+            return "Логов Claude Code на этом Mac пока нет."
+        }
+        return "Последняя запись в логах: \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest)))."
     }
 }

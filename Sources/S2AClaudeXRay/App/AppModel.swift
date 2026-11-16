@@ -90,6 +90,14 @@ final class AppModel {
     private(set) var planUsage: PlanUsage?
     /// Whether X-Ray is connected to Claude Code's status line.
     private(set) var statusLineState: StatusLineInstaller.State = .notInstalled
+    /// The receiver for transcripts pushed by cloud sessions.
+    private(set) var receiverStatus = TranscriptReceiver.Status()
+    private(set) var receiverEnabled = UserDefaults.standard.bool(forKey: "receiver.enabled")
+    private(set) var receiverPort: UInt16 = {
+        let stored = UserDefaults.standard.integer(forKey: "receiver.port")
+        return (1024...65535).contains(stored) ? UInt16(stored) : TranscriptReceiver.defaultPort
+    }()
+    private(set) var receiverToken = ""
 
     // MARK: Settings
 
@@ -108,6 +116,7 @@ final class AppModel {
     var selectedSessionID: String?
 
     @ObservationIgnored private var store = UsageStore()
+    @ObservationIgnored private var receiver: TranscriptReceiver?
     private let ingestor = TranscriptIngestor()
     @ObservationIgnored private var watcher: DirectoryWatcher?
     @ObservationIgnored private var ticker: Timer?
@@ -134,6 +143,7 @@ final class AppModel {
     func start() {
         guard !started else { return }
         started = true
+        startReceiverIfNeeded()
         restartWatching()
         reloadPlanUsage()
         refreshStatusLineState()
@@ -220,14 +230,72 @@ final class AppModel {
         modelOrder = Analytics.group(priced) { ModelCatalog.displayName(for: $0.model) }.map(\.key)
     }
 
-    /// The configured folders plus X-Ray's folder of imported transcripts, once it exists.
+    /// The configured folders plus X-Ray's own folders (imported logs, logs pushed by cloud
+    /// sessions) once they exist.
     var scanDirectories: [URL] {
-        let imported = XRayPaths.imported
-        guard FileManager.default.fileExists(atPath: imported.path),
-              !directories.contains(where: { $0.standardizedFileURL == imported.standardizedFileURL }) else {
-            return directories
+        var result = directories
+        for folder in [XRayPaths.imported, XRayPaths.cloud]
+        where FileManager.default.fileExists(atPath: folder.path)
+            && !result.contains(where: { $0.standardizedFileURL == folder.standardizedFileURL }) {
+            result.append(folder)
         }
-        return directories + [imported]
+        return result
+    }
+
+    // MARK: Cloud receiver
+
+    /// Starts the receiver when it is switched on, or when `XRAY_RECEIVER_PORT` /
+    /// `XRAY_RECEIVER_TOKEN` are set (used by CI).
+    private func startReceiverIfNeeded() {
+        let environment = ProcessInfo.processInfo.environment
+        if let port = environment["XRAY_RECEIVER_PORT"].flatMap(UInt16.init), let token = environment["XRAY_RECEIVER_TOKEN"], !token.isEmpty {
+            receiverPort = port
+            receiverToken = token
+            receiverEnabled = true
+        } else {
+            receiverToken = TranscriptReceiver.loadOrCreateToken()
+        }
+        if receiverEnabled {
+            startReceiver()
+        }
+    }
+
+    private func startReceiver() {
+        try? FileManager.default.createDirectory(at: XRayPaths.cloud, withIntermediateDirectories: true)
+        if receiver == nil {
+            receiver = TranscriptReceiver { [weak self] status in
+                Task { @MainActor in self?.receiverStatus = status }
+            }
+        }
+        receiver?.start(port: receiverPort, token: receiverToken)
+        restartWatching()
+    }
+
+    func setReceiverEnabled(_ enabled: Bool) {
+        receiverEnabled = enabled
+        UserDefaults.standard.set(enabled, forKey: "receiver.enabled")
+        if enabled {
+            startReceiver()
+        } else {
+            receiver?.stop()
+        }
+    }
+
+    func setReceiverPort(_ port: UInt16) {
+        guard port != receiverPort, port >= 1024 else { return }
+        receiverPort = port
+        UserDefaults.standard.set(Int(port), forKey: "receiver.port")
+        if receiverEnabled {
+            startReceiver()
+        }
+    }
+
+    /// Replaces the access token; cloud sessions need the new one (re-enter it in the cloud environment).
+    func regenerateReceiverToken() {
+        receiverToken = TranscriptReceiver.createToken()
+        if receiverEnabled {
+            startReceiver()
+        }
     }
 
     // MARK: Account plan usage

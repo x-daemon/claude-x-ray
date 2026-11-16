@@ -35,7 +35,12 @@ enum SnapshotRunner {
             if model.lastScan != nil && !model.isScanning && mainWindow() != nil { break }
             try? await Task.sleep(nanoseconds: 250_000_000)
         }
+        if let delay = ProcessInfo.processInfo.environment["XRAY_SNAPSHOT_DELAY"].flatMap(Double.init), delay > 0 {
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            await model.rescan()
+        }
         log.append("events: \(model.priced.count), activity items: \(model.activity.count), trace sessions: \(model.traceSessions.count)")
+        log.append("receiver: listening \(model.receiverStatus.listening), uploads \(model.receiverStatus.uploads), lines \(model.receiverStatus.lines), rejected \(model.receiverStatus.rejectedAuth)")
         if let status = model.liveStatus {
             log.append("live state: \(status.state.title) — \(status.state.detail ?? "")")
         }

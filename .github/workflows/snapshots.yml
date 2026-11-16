@@ -81,6 +81,38 @@ jobs:
           capture empty "$RUNNER_TEMP/xray-none"
           exit 0
 
+      - name: Cloud receiver
+        # Starts the app with the receiver on, pushes a demo transcript through the real hook
+        # script, checks the token is enforced and captures the screens that show it.
+        run: |
+          set +e
+          BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
+          OUT="$RUNNER_TEMP/snapshots/cloud"
+          mkdir -p "$OUT" "$RUNNER_TEMP/xray-nolocal"
+          CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-nolocal" XRAY_RECEIVER_PORT=47318 XRAY_RECEIVER_TOKEN=ci-token \
+            XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_SCREENS=live,trace,sessions XRAY_SNAPSHOT_DELAY=12 \
+            "$BIN" > "$OUT/app-output.txt" 2>&1 &
+          APP=$!
+          for i in $(seq 1 30); do curl -s http://127.0.0.1:47318/health && break; sleep 1; done
+          echo
+          LIVE=$(ls -t "$RUNNER_TEMP"/xray-demo/projects/*/*.jsonl | head -1)
+          echo "wrong token: $(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Authorization: Bearer nope' \
+            -H 'X-Path: -demo/x.jsonl' --data-binary @"$LIVE" http://127.0.0.1:47318/v1/transcript)"
+          # The cloud proxy adds the token header; here curl's config file stands in for it.
+          printf 'header = "Authorization: Bearer ci-token"\n' > "$RUNNER_TEMP/.curlrc"
+          mkdir -p "$RUNNER_TEMP/cloud-home/.claude/projects/-home-user-demo"
+          cp "$LIVE" "$RUNNER_TEMP/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl"
+          echo '{"session_id":"cloud-session","transcript_path":"'"$RUNNER_TEMP"'/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl"}' \
+            | CURL_HOME="$RUNNER_TEMP" XRAY_PUSH_URL=http://127.0.0.1:47318/v1/transcript python3 cloud/xray-push.py
+          sleep 4
+          ls -laR "$HOME/Library/Application Support/S2AClaudeXRay/cloud"
+          cmp "$RUNNER_TEMP/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl" \
+            "$HOME/Library/Application Support/S2AClaudeXRay/cloud/-home-user-demo/cloud-session.jsonl" && echo "received copy is identical"
+          for i in $(seq 1 60); do kill -0 $APP 2>/dev/null || break; sleep 2; done
+          kill $APP 2>/dev/null
+          cat "$OUT/snapshots.log"
+          exit 0
+
       - name: Publish to the snapshots branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

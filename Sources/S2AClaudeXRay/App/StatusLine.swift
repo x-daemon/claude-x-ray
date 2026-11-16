@@ -15,6 +15,10 @@ enum XRayPaths {
     static var statusLineConfig: URL { support.appendingPathComponent("statusline.json") }
     /// Imported transcripts (for example from cloud sessions); always scanned.
     static var imported: URL { support.appendingPathComponent("imported", isDirectory: true) }
+    /// Transcripts that cloud sessions push to the receiver; always scanned.
+    static var cloud: URL { support.appendingPathComponent("cloud", isDirectory: true) }
+    /// Access token of the receiver.
+    static var receiverToken: URL { support.appendingPathComponent("receiver-token") }
 }
 
 enum PlanUsageFile {

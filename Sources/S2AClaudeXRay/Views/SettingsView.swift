@@ -11,12 +11,14 @@ struct SettingsView: View {
                 .tabItem { Label("Источники", systemImage: "folder") }
             AccountLimitsSettings()
                 .tabItem { Label("Лимиты аккаунта", systemImage: "gauge.with.dots.needle.33percent") }
+            CloudReceiverSettings()
+                .tabItem { Label("Облако", systemImage: "icloud.and.arrow.down") }
             PricingSettings()
                 .tabItem { Label("Цены", systemImage: "dollarsign.circle") }
             PlanSettings()
                 .tabItem { Label("Подписка", systemImage: "person.crop.circle") }
         }
-        .frame(width: 760, height: 560)
+        .frame(width: 780, height: 600)
     }
 }
 

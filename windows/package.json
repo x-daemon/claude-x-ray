@@ -1,0 +1,27 @@
+{
+  "name": "s2a-claude-x-ray",
+  "productName": "S2A Claude X-Ray",
+  "version": "0.6.0",
+  "description": "Usage, live trace and reports for Claude Code on Windows",
+  "author": "S2A",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder --win --x64 --arm64 --publish never"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "echarts": "^6.1.0",
+    "electron": "^45.3.3",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

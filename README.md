@@ -2,7 +2,7 @@
 
 <img src="Resources/AppIcon.png" width="128" alt="S2A Claude X-Ray">
 
-Нативное приложение для macOS, которое в реальном времени и по истории показывает, как вы используете **Claude Code**: сколько токенов уходит и на что, что Claude делает прямо сейчас и где можно сэкономить.
+Приложение для **macOS** и **Windows**, которое в реальном времени и по истории показывает, как вы используете **Claude Code**: сколько токенов уходит и на что, что Claude делает прямо сейчас и где можно сэкономить. На Mac оно нативное (SwiftUI), на Windows — то же приложение на Electron с теми же экранами, графиками и темой S2A (папка [`windows/`](windows)).
 
 Сделано для подписки **Pro/Max**: суммы показываются как **API‑эквивалент**, то есть сколько те же токены стоили бы по прайс‑листу API. Деньги не списываются, но по этим цифрам видно, как быстро расходуются лимиты 5‑часового окна и недели.
 
@@ -74,7 +74,25 @@ open "/Applications/S2A Claude X-Ray.app"
 xattr -dr com.apple.quarantine "/Applications/S2A Claude X-Ray.app"
 ```
 
-Workflow **Release** (вручную или по тегу `v*`) прогоняет тесты, собирает DMG и ZIP (`scripts/package.sh`) и публикует релиз.
+### Windows
+
+Windows 10 и 11, x64 и ARM64. Скачайте и запустите установщик:
+
+- [`S2A-Claude-X-Ray-Setup.exe`](https://github.com/x-daemon/claude-x-ray/releases/latest/download/S2A-Claude-X-Ray-Setup.exe) — x64 (обычные ПК и ноутбуки);
+- `S2A-Claude-X-Ray-Setup-<версия>-arm64.exe` — ARM64 (Snapdragon), на странице [Releases](../../releases);
+- `S2A-Claude-X-Ray-<версия>-win-x64.zip` / `-win-arm64.zip` — портативная версия без установки.
+
+Или в PowerShell:
+
+```powershell
+Invoke-WebRequest https://github.com/x-daemon/claude-x-ray/releases/latest/download/S2A-Claude-X-Ray-Setup.exe -OutFile "$env:TEMP\S2A-Claude-X-Ray-Setup.exe"; Start-Process "$env:TEMP\S2A-Claude-X-Ray-Setup.exe"
+```
+
+Установщик ставит приложение для текущего пользователя (без прав администратора) в `%LOCALAPPDATA%\Programs\S2A Claude X-Ray`. Сборка не подписана сертификатом, поэтому Windows SmartScreen при первом запуске покажет «Система Windows защитила ваш компьютер»: нажмите «Подробнее» → «Выполнить в любом случае».
+
+На Windows X-Ray живёт в области уведомлений (трее): щелчок по значку открывает сводку окна 5 часов и лимитов, закрытие главного окна не останавливает мониторинг. Логи читаются из `%USERPROFILE%\.claude\projects` (или `%CLAUDE_CONFIG_DIR%\projects`); для Claude Code в WSL добавьте папку `\\wsl$\<дистрибутив>\home\<пользователь>\.claude\projects` в «Настройки → Источники». Настройки и принятые логи облачных сессий лежат в `%APPDATA%\S2AClaudeXRay`.
+
+Workflow **Release** (вручную или по тегу `v*`) прогоняет тесты, собирает DMG и ZIP для macOS (`scripts/package.sh`) и установщики для Windows (electron-builder на windows-latest) и публикует всё в одном релизе. Workflow **Windows** на каждом изменении `windows/` проверяет сборку, режим строки статуса, приём облачных логов и снимает все экраны и PDF-отчёт (ветка `snapshots-windows`).
 
 ## Как это работает
 
@@ -137,7 +155,13 @@ Sources/XRayCore        — ядро без UI (только Foundation): пар
 Sources/S2AClaudeXRay   — приложение SwiftUI + Swift Charts + MenuBarExtra
 Tests/XRayCoreTests     — тесты ядра на синтетических транскриптах
 scripts/build-app.sh    — сборка .app
+windows/src/core        — то же ядро на TypeScript (тесты: npm test)
+windows/src/main        — Electron: окна, трей, чтение логов, приём облачных логов, строка статуса
+windows/src/renderer    — интерфейс (Preact + ECharts) с темой S2A, светлой и тёмной
+windows/scripts/dev-server.ts — интерфейс в браузере на демо-данных, без Electron
 ```
+
+Сборка Windows-версии (Node.js 22): `cd windows && npm ci && npm test && npm start`; установщики — `npm run dist` (на Windows).
 
 ## Ограничения
 

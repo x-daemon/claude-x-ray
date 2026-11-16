@@ -1,14 +1,15 @@
 name: Release
 
-# Builds the universal app, runs the tests, packages DMG + ZIP, publishes a GitHub
-# release and mirrors the files to the `dist` branch. Run it manually or push a v* tag.
+# Builds the universal macOS app (DMG + ZIP) and the Windows app (installers + ZIPs), runs the
+# tests, publishes a GitHub release and mirrors the files to the `dist` branch (files under
+# 95 MB). Run it manually or push a v* tag.
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version, e.g. 0.5.0
+        description: Version, e.g. 0.6.0
         required: true
-        default: "0.5.0"
+        default: "0.6.0"
   push:
     tags: ["v*"]
 
@@ -16,7 +17,59 @@ permissions:
   contents: write
 
 jobs:
+  windows:
+    # Windows installers (NSIS) and portable ZIPs for x64 and ARM64, built on Windows.
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+        working-directory: windows
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: windows/package-lock.json
+
+      - name: Version
+        id: version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then V="$INPUT_VERSION"; else V="${GITHUB_REF_NAME#v}"; fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+      - name: Install, check and test
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
+      - name: Package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          npm run build
+          npx electron-builder --win nsis zip --x64 --publish never
+          npx electron-builder --win nsis zip --arm64 --publish never
+          mkdir -p out
+          cp release/*.exe release/*.zip out/
+          # Same x64 installer without the version, so releases/latest/download/S2A-Claude-X-Ray-Setup.exe always works.
+          cp "release/S2A-Claude-X-Ray-Setup-$VERSION-x64.exe" out/S2A-Claude-X-Ray-Setup.exe
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-dist
+          path: windows/out/*
+          retention-days: 7
+
   release:
+    needs: windows
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
@@ -40,6 +93,18 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: ./scripts/package.sh
 
+      - name: Windows files
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-dist
+          path: dist
+
+      - name: Checksums
+        run: |
+          cd dist
+          shasum -a 256 ./*.dmg ./*.zip ./*.exe > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
       - name: GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,6 +124,8 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           cd dist
+          # Git refuses files over 100 MB; the large Windows files stay on the release page only.
+          find . -type f -size +95M -print -delete
           git init -q -b dist
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

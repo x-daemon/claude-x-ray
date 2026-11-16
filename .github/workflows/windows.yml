@@ -1,0 +1,122 @@
+name: Windows
+
+# Windows app (Electron, windows/): type check, tests, the status line mode, the cloud receiver
+# fed by the real push hook, every screen and the PDF report in snapshot mode, and the
+# installers. Screens go to the snapshots-windows branch, files to the run's artifacts.
+on:
+  push:
+    paths: ["windows/**", ".github/workflows/windows.yml", "scripts/demo-data.py", "cloud/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 50
+    defaults:
+      run:
+        shell: bash
+        working-directory: windows
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: windows/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Status line mode
+        run: |
+          export XRAY_SUPPORT_DIR="$RUNNER_TEMP/xray-support"
+          NOW=$(date +%s)
+          printf '{"session_id":"demo","model":{"id":"claude-opus-5-5","display_name":"Opus 5.5"},"version":"2.1.325","context_window":{"used_percentage":42},"rate_limits":{"five_hour":{"used_percentage":37.5,"resets_at":%d},"seven_day":{"used_percentage":22,"resets_at":%d}}}' $((NOW + 7800)) $((NOW + 3 * 86400 + 5000)) > "$RUNNER_TEMP/statusline.json"
+          time ./node_modules/.bin/electron . --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline.txt"
+          grep -q "5 ч 38%" "$RUNNER_TEMP/statusline.txt"
+          cat "$XRAY_SUPPORT_DIR/plan-usage.json"
+
+      - name: Package
+        run: |
+          npx electron-builder --win nsis zip --x64 --publish never
+          npx electron-builder --win nsis zip --arm64 --publish never
+          ls -la release
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installers
+          path: |
+            windows/release/*.exe
+            windows/release/*.zip
+          retention-days: 14
+
+      - name: Demo transcripts
+        working-directory: .
+        run: python scripts/demo-data.py "$(cygpath -m "$RUNNER_TEMP")/xray-demo"
+
+      - name: Snapshots and cloud receiver
+        if: success() || failure()
+        run: |
+          set +e
+          T="$(cygpath -m "$RUNNER_TEMP")"
+          export XRAY_SUPPORT_DIR="$T/xray-support"
+          OUT="$T/snapshots"
+          mkdir -p "$OUT"
+          CLAUDE_CONFIG_DIR="$T/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" XRAY_RECEIVER_PORT=47318 XRAY_RECEIVER_TOKEN=ci-token \
+            ./node_modules/.bin/electron . > "$OUT/app-output.txt" 2>&1 &
+          APP=$!
+          for i in $(seq 1 60); do curl -s http://127.0.0.1:47318/health && break; sleep 1; done
+          echo
+          LIVE=$(ls -t "$T"/xray-demo/projects/*/*.jsonl | head -1)
+          echo "wrong token: $(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Authorization: Bearer nope' \
+            -H 'X-Path: -demo/x.jsonl' --data-binary @"$LIVE" http://127.0.0.1:47318/v1/transcript)"
+          # The cloud proxy adds the token header; curl's config file stands in for it here.
+          printf 'header = "Authorization: Bearer ci-token"\n' > "$T/.curlrc"
+          mkdir -p "$T/cloud-home/.claude/projects/-home-user-demo"
+          cp "$LIVE" "$T/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl"
+          echo '{"session_id":"cloud-session","transcript_path":"'"$T"'/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl"}' \
+            | CURL_HOME="$T" XRAY_PUSH_URL=http://127.0.0.1:47318/v1/transcript python ../cloud/xray-push.py
+          sleep 4
+          ls -laR "$XRAY_SUPPORT_DIR/cloud"
+          cmp "$T/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl" \
+            "$XRAY_SUPPORT_DIR/cloud/-home-user-demo/cloud-session.jsonl" && echo "received copy is identical" | tee "$OUT/receiver.txt"
+          for i in $(seq 1 180); do kill -0 $APP 2>/dev/null || break; sleep 2; done
+          kill $APP 2>/dev/null
+          ls -la "$OUT"
+          cat "$OUT/snapshots.log" "$OUT/app-output.txt"
+          test -s "$OUT/report.pdf" && test -s "$OUT/s2a-light-live.png" && test -s "$OUT/receiver.txt"
+
+      - name: Upload snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-snapshots
+          path: ${{ runner.temp }}/snapshots
+          retention-days: 14
+
+      - name: Publish to the snapshots-windows branch
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd "$RUNNER_TEMP/snapshots" || exit 0
+          git init -q -b snapshots-windows
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Windows snapshots of ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" snapshots-windows

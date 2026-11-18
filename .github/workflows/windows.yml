@@ -90,7 +90,9 @@ jobs:
             -H 'X-Path: -home-user-demo/cloud-session.jsonl' --data-binary @"$LIVE" http://127.0.0.1:47318/v1/transcript)"
           sleep 4
           ls -laR "$XRAY_SUPPORT_DIR/cloud"
-          cmp "$LIVE" "$XRAY_SUPPORT_DIR/cloud/-home-user-demo/cloud-session.jsonl" && echo "received copy is identical" | tee "$OUT/receiver.txt"
+          # Python writes the demo transcripts with CRLF on Windows; the receiver stores lines with LF.
+          tr -d '\r' < "$LIVE" > "$T/expected.jsonl"
+          cmp "$T/expected.jsonl" "$XRAY_SUPPORT_DIR/cloud/-home-user-demo/cloud-session.jsonl" && echo "received copy is identical" | tee "$OUT/receiver.txt"
           for i in $(seq 1 180); do kill -0 $APP 2>/dev/null || break; sleep 2; done
           kill $APP 2>/dev/null
           ls -la "$OUT"

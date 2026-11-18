@@ -1,8 +1,7 @@
 name: Windows
 
-# Windows app (Electron, windows/): type check, tests, the status line mode, the cloud receiver
-# fed by the real push hook, every screen and the PDF report in snapshot mode, and the
-# installers. Screens go to the snapshots-windows branch, files to the run's artifacts.
+# Windows app (Electron, windows/): type check, tests, the status line mode, the cloud receiver,
+# every screen and the PDF report in snapshot mode, and the installers. Screens go to the snapshots-windows branch, files to the run's artifacts.
 on:
   push:
     paths: ["windows/**", ".github/workflows/windows.yml", "scripts/demo-data.py", "cloud/**"]
@@ -84,16 +83,14 @@ jobs:
           LIVE=$(ls -t "$T"/xray-demo/projects/*/*.jsonl | head -1)
           echo "wrong token: $(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Authorization: Bearer nope' \
             -H 'X-Path: -demo/x.jsonl' --data-binary @"$LIVE" http://127.0.0.1:47318/v1/transcript)"
-          # The cloud proxy adds the token header; curl's config file stands in for it here.
-          printf 'header = "Authorization: Bearer ci-token"\n' > "$T/.curlrc"
-          mkdir -p "$T/cloud-home/.claude/projects/-home-user-demo"
-          cp "$LIVE" "$T/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl"
-          echo '{"session_id":"cloud-session","transcript_path":"'"$T"'/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl"}' \
-            | CURL_HOME="$T" XRAY_PUSH_URL=http://127.0.0.1:47318/v1/transcript python ../cloud/xray-push.py
+          # The push hook (cloud/xray-push.py) runs in Linux cloud sessions and is tested end to end
+          # in the macOS snapshots workflow; here curl sends the same request the hook makes.
+          echo "right token: $(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Authorization: Bearer ci-token' \
+            -H 'Content-Type: application/x-ndjson' -H 'X-Session-Id: cloud-session' \
+            -H 'X-Path: -home-user-demo/cloud-session.jsonl' --data-binary @"$LIVE" http://127.0.0.1:47318/v1/transcript)"
           sleep 4
           ls -laR "$XRAY_SUPPORT_DIR/cloud"
-          cmp "$T/cloud-home/.claude/projects/-home-user-demo/cloud-session.jsonl" \
-            "$XRAY_SUPPORT_DIR/cloud/-home-user-demo/cloud-session.jsonl" && echo "received copy is identical" | tee "$OUT/receiver.txt"
+          cmp "$LIVE" "$XRAY_SUPPORT_DIR/cloud/-home-user-demo/cloud-session.jsonl" && echo "received copy is identical" | tee "$OUT/receiver.txt"
           for i in $(seq 1 180); do kill -0 $APP 2>/dev/null || break; sleep 2; done
           kill $APP 2>/dev/null
           ls -la "$OUT"

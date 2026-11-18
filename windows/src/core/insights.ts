@@ -3,6 +3,7 @@
 import { sessionProject, sessionSummaries, UsageSummary } from "./analytics";
 import { Fmt } from "./fmt";
 import { cacheWrite, contextTokens, isFastMode, isTopTier, modelFamily } from "./model";
+import { cacheMissAdvice, cacheMissTitle, droppedReasonTitle, requestIssues } from "./llm";
 import { costAsModel, costTotal, matchPrice, type ModelPrice, type PricedEvent, type PricingTable } from "./pricing";
 
 export type InsightSeverity = "good" | "info" | "warning" | "critical";
@@ -228,6 +229,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     }
   }
 
+  // Request-level issues reported by the API.
+  insights.push(...requestInsights(pricing, events, total));
+
   // Estimated prices.
   {
     const models = [...new Set(events.filter((e) => e.isEstimated).map((e) => e.event.model))].sort();
@@ -245,4 +249,79 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
   return insights.sort((a, b) =>
     a.severity !== b.severity ? severityRank[b.severity] - severityRank[a.severity] : (b.potentialSavings ?? 0) - (a.potentialSavings ?? 0),
   );
+}
+
+/** Cache misses with a cause, reasoning the API dropped, refusals, cut-off answers, fallbacks. */
+function requestInsights(pricing: PricingTable, events: PricedEvent[], total: number): Insight[] {
+  const issues = requestIssues(pricing, events);
+  const insights: Insight[] = [];
+
+  if (issues.realMisses > 0) {
+    const real = issues.misses.filter((g) => g.reason !== "previous_message_not_found" && g.reason !== "unavailable");
+    const top = real[0];
+    const parts = real.map((g) => `${cacheMissTitle(g.reason)} — ${Fmt.plural(g.count, "раз", "раза", "раз")}, ${Fmt.tokens(g.missedTokens)} токенов`);
+    const share = total > 0 ? issues.realExtraCost / total : 0;
+    insights.push({
+      id: "cache.misses",
+      severity: share >= 0.05 || issues.realMisses >= 10 ? "warning" : "info",
+      kind: "freeWin",
+      title: "Кэш сбрасывался из-за изменений в запросе",
+      detail: `API сообщило о ${Fmt.plural(issues.realMisses, "промахе", "промахах", "промахах")} кэша с понятной причиной: ${parts.join("; ")}. Эти токены записаны в кэш заново вместо дешёвого чтения: ≈${Fmt.usd(issues.realExtraCost)}.`,
+      recommendation: top ? cacheMissAdvice(top.reason) : undefined,
+      metric: `${issues.realMisses}`,
+      potentialSavings: issues.realExtraCost > 0 ? issues.realExtraCost : undefined,
+    });
+  }
+
+  if (issues.droppedRequests > 0) {
+    const reasons = issues.dropped.map((g) => `${droppedReasonTitle(g.reason)} — ${Fmt.plural(g.blocks, "блок", "блока", "блоков")}`);
+    insights.push({
+      id: "thinking.dropped",
+      severity: issues.droppedRequests >= 10 ? "warning" : "info",
+      kind: "freeWin",
+      title: "Модель теряла свои прежние размышления",
+      detail: `В ${Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")} API убрало из истории размышления модели: ${reasons.join("; ")}. Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.`,
+      recommendation: "Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными.",
+      metric: `${issues.droppedRequests}`,
+    });
+  }
+
+  if (issues.truncated > 0) {
+    insights.push({
+      id: "stop.max_tokens", severity: "warning", kind: "observation",
+      title: "Ответы обрывались на лимите вывода",
+      detail: `${Fmt.plural(issues.truncated, "ответ", "ответа", "ответов")} остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос.`,
+      recommendation: "Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями.",
+      metric: `${issues.truncated}`,
+    });
+  }
+
+  if (issues.refusals.size > 0) {
+    const count = [...issues.refusals.values()].reduce((a, b) => a + b, 0);
+    const categories = [...issues.refusals.entries()].map(([c, n]) => `${c}: ${n}`).join(", ");
+    insights.push({
+      id: "stop.refusal", severity: "info", kind: "observation",
+      title: "Модель отказывала в ответе",
+      detail: `${Fmt.plural(count, "отказ", "отказа", "отказов")} по категориям защитных классификаторов (${categories}).${issues.fallbacks > 0 ? ` ${Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")} дала резервная модель.` : ""}`,
+      metric: `${count}`,
+    });
+  } else if (issues.fallbacks > 0) {
+    insights.push({
+      id: "stop.fallback", severity: "info", kind: "observation",
+      title: "Отвечала резервная модель",
+      detail: `${Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")} дала резервная модель после отказа основной.`,
+      metric: `${issues.fallbacks}`,
+    });
+  }
+
+  if (issues.modelSwitches > 0) {
+    insights.push({
+      id: "model.switched", severity: "info", kind: "observation",
+      title: "Запросы обслуживала другая модель",
+      detail: `В ${Fmt.plural(issues.modelSwitches, "запросе", "запросах", "запросах")} ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие.`,
+      metric: `${issues.modelSwitches}`,
+    });
+  }
+
+  return insights;
 }

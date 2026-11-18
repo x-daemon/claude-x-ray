@@ -17,6 +17,7 @@ import { toolCat } from "../../core/trace";
 import { Card, Chip, Chips, DetailBlock, Icon, KeyValues, RankedBarList, Segmented, Toggle } from "../ui";
 import { SourcesHelp } from "./sources";
 import { TraceContextView } from "./traceContext";
+import { TraceLLMView } from "./traceLLM";
 import { itemChips, itemTitle, rowIcon, ToolStatusChip, TraceStatusBanner, UsageLine } from "./traceParts";
 import { TraceTimelineView } from "./traceTimeline";
 import { TraceToolsView } from "./traceTools";
@@ -46,6 +47,7 @@ export function TraceView() {
       <div class="trace-body" data-scroll>
         {s.traceTab === "feed" ? <TraceFeed key={sessionID} trace={trace} usage={usage} hideContent={hideContent} />
           : s.traceTab === "flow" ? <TraceFlow key={sessionID} trace={trace} usage={usage} hideContent={hideContent} />
+            : s.traceTab === "llm" ? <TraceLLMView key={sessionID} trace={trace} />
             : s.traceTab === "timeline" ? <TraceTimelineView trace={trace} usage={usage} />
               : s.traceTab === "context" ? <TraceContextView trace={trace} usage={usage} />
                 : <TraceToolsView trace={trace} />}

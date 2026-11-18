@@ -9,6 +9,8 @@ import Foundation
 public enum ActivityParser {
     /// Maximum length of stored detail text (prompts, outputs, commands).
     public static let detailLimit = 2_000
+    /// Tool arguments are kept up to this many characters (file contents are in `detail` already).
+    public static let inputLimit = 1_200
 
     public static func parse(
         line: Data,
@@ -142,6 +144,12 @@ public enum ActivityParser {
         item.toolUseID = block["tool_use_id"] as? String
         item.outputBytes = text.utf8.count
         item.permission = permissionLabel(entry["permissionDecision"])
+        if let decision = entry["permissionDecision"] as? [String: Any] {
+            item.decision = decision["decision"] as? String
+            item.decidedBy = (decision["reasonType"] as? String) ?? (decision["source"] as? String)
+            item.ruleSource = decision["ruleSource"] as? String
+        }
+        item.sandboxed = entry["sandboxed"] as? Bool
 
         if let patch = result?["structuredPatch"] as? [[String: Any]] {
             var added = 0
@@ -183,6 +191,7 @@ public enum ActivityParser {
                 let text = (block["thinking"] as? String) ?? ""
                 item = base.item(index, .thinking, title: text.isEmpty ? "Размышление" : Snippet.firstLine(text, 140), detail: text.isEmpty ? nil : Snippet.truncate(text, detailLimit))
                 item.thinkingMs = entry["thinkingDurationMs"] as? Int
+                item.thinkingDisplay = (entry["thinkingDisplay"] as? String) ?? (blockType == "redacted_thinking" ? "redacted" : nil)
             case "text":
                 let text = (block["text"] as? String) ?? ""
                 guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { continue }
@@ -197,6 +206,13 @@ public enum ActivityParser {
                 item.target = description.target
                 item.fileAction = description.fileAction
                 item.inputStreamMs = entry["toolInputStreamMs"] as? Int
+                // wireToolInputs holds the arguments as the model generated them; the block holds what ran.
+                let wire = item.toolUseID.flatMap { (entry["wireToolInputs"] as? [String: Any])?[$0] }
+                item.rawInput = Snippet.compactJSON(wire ?? input, limit: inputLimit)
+                if wire != nil {
+                    let ran = Snippet.compactJSON(input, limit: inputLimit)
+                    if ran != item.rawInput { item.execInput = ran }
+                }
             case let type where type.hasSuffix("_tool_result"):
                 let text = textContent(block["content"])
                 item = base.item(index, .toolResult, title: text.isEmpty ? type : Snippet.firstLine(text, 140), detail: text.isEmpty ? nil : Snippet.truncate(text, detailLimit))

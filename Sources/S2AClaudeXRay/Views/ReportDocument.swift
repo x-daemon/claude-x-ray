@@ -82,6 +82,8 @@ struct ReportDocument: View {
                     }
                 }
 
+                RequestHealthCard(events: events)
+
                 ReportInsights(events: events)
             }
 

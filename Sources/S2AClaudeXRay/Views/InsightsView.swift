@@ -31,6 +31,8 @@ struct InsightsView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                RequestHealthCard(events: events)
+
                 if insights.isEmpty {
                     ContentUnavailableView("Нет данных для анализа", systemImage: "lightbulb", description: Text("Выберите период, в котором были сессии Claude Code."))
                         .frame(maxWidth: .infinity, minHeight: 240)

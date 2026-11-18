@@ -67,14 +67,51 @@ public enum TranscriptParser {
             projectPath: entry.cwd ?? fallbackProject,
             gitBranch: entry.gitBranch.flatMap { $0.isEmpty ? nil : $0 },
             isSidechain: entry.isSidechain ?? false,
-            effort: entry.effort,
+            // The effort of this turn; `effort` alone is the session default.
+            effort: entry.perTurnEffort ?? entry.effort,
             speed: usage.speed,
             serviceTier: usage.serviceTier,
             clientVersion: entry.version,
             tokens: tokens,
             webSearchRequests: usage.serverToolUse?.webSearchRequests ?? 0,
-            webFetchRequests: usage.serverToolUse?.webFetchRequests ?? 0
+            webFetchRequests: usage.serverToolUse?.webFetchRequests ?? 0,
+            details: details(entry: entry, message: message, usage: usage)
         )
+    }
+
+    /// Stop reason, cache diagnosis, input transformations, context edits and iterations of a request.
+    private static func details(entry: Entry, message: Message, usage: Usage) -> RequestDetails? {
+        var details = RequestDetails()
+        details.stopReason = message.stopReason.flatMap { $0.isEmpty ? nil : $0 }
+        details.stopCategory = message.stopDetails?.category
+        details.requestedModel = entry.requestedModel
+        details.advisorModel = entry.advisorModel
+        details.inferenceGeo = usage.inferenceGeo.flatMap { $0.isEmpty ? nil : $0 }
+        details.cacheTTL = entry.promptCacheRequested
+        if let miss = message.diagnostics?.cacheMissReason, let reason = miss.type {
+            details.cacheMiss = CacheMiss(reason: reason, missedTokens: miss.missedTokens)
+        }
+        details.transformations = (message.inputTransformations ?? []).map {
+            InputTransformation(type: $0.type ?? "unknown", reason: $0.reason, path: $0.path)
+        }
+        details.contextEdits = (message.contextManagement?.appliedEdits ?? []).map {
+            ContextEdit(type: $0.type ?? "unknown", clearedTokens: $0.clearedInputTokens, clearedToolUses: $0.clearedToolUses)
+        }
+        let iterations = (usage.iterations ?? []).map { item in
+            RequestIteration(
+                type: item.type ?? "message",
+                model: item.model,
+                input: item.inputTokens ?? 0,
+                output: item.outputTokens ?? 0,
+                cacheRead: item.cacheReadInputTokens ?? 0,
+                cacheWrite: item.cacheCreationInputTokens ?? ((item.cacheCreation?.ephemeral5m ?? 0) + (item.cacheCreation?.ephemeral1h ?? 0))
+            )
+        }
+        // A single plain "message" step is the request itself; keep only what adds information.
+        if iterations.count > 1 || iterations.contains(where: { $0.type != "message" }) {
+            details.iterations = iterations
+        }
+        return details.isEmpty ? nil : details
     }
 
     // MARK: - Dates
@@ -115,12 +152,17 @@ private struct Entry: Decodable {
     let gitBranch: String?
     let isSidechain: Bool?
     let effort: String?
+    let perTurnEffort: String?
+    let requestedModel: String?
+    let advisorModel: String?
+    let promptCacheRequested: String?
     let version: String?
     let requestId: String?
     let message: Message?
 
     enum CodingKeys: String, CodingKey {
-        case type, uuid, timestamp, sessionId, cwd, gitBranch, isSidechain, effort, version, requestId, message
+        case type, uuid, timestamp, sessionId, cwd, gitBranch, isSidechain, effort, perTurnEffort, requestedModel, advisorModel
+        case promptCacheRequested, version, requestId, message
     }
 
     init(from decoder: Decoder) throws {
@@ -133,6 +175,10 @@ private struct Entry: Decodable {
         gitBranch = c.lenient(String.self, .gitBranch)
         isSidechain = c.lenient(Bool.self, .isSidechain)
         effort = c.lenient(String.self, .effort)
+        perTurnEffort = c.lenient(String.self, .perTurnEffort)
+        requestedModel = c.lenient(String.self, .requestedModel)
+        advisorModel = c.lenient(String.self, .advisorModel)
+        promptCacheRequested = c.lenient(String.self, .promptCacheRequested)
         version = c.lenient(String.self, .version)
         requestId = c.lenient(String.self, .requestId)
         message = c.lenient(Message.self, .message)
@@ -143,14 +189,143 @@ private struct Message: Decodable {
     let id: String?
     let model: String?
     let usage: Usage?
+    let stopReason: String?
+    let stopDetails: StopDetails?
+    let diagnostics: Diagnostics?
+    let inputTransformations: [Transformation]?
+    let contextManagement: ContextManagement?
 
-    enum CodingKeys: String, CodingKey { case id, model, usage }
+    enum CodingKeys: String, CodingKey {
+        case id, model, usage, diagnostics
+        case stopReason = "stop_reason"
+        case stopDetails = "stop_details"
+        case inputTransformations = "input_transformations"
+        case contextManagement = "context_management"
+    }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id = c.lenient(String.self, .id)
         model = c.lenient(String.self, .model)
         usage = c.lenient(Usage.self, .usage)
+        stopReason = c.lenient(String.self, .stopReason)
+        stopDetails = c.lenient(StopDetails.self, .stopDetails)
+        diagnostics = c.lenient(Diagnostics.self, .diagnostics)
+        inputTransformations = c.lenient([Transformation].self, .inputTransformations)
+        contextManagement = c.lenient(ContextManagement.self, .contextManagement)
+    }
+}
+
+private struct StopDetails: Decodable {
+    let category: String?
+
+    enum CodingKeys: String, CodingKey { case category }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        category = c.lenient(String.self, .category)
+    }
+}
+
+private struct Diagnostics: Decodable {
+    let cacheMissReason: MissReason?
+
+    enum CodingKeys: String, CodingKey { case cacheMissReason = "cache_miss_reason" }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        cacheMissReason = c.lenient(MissReason.self, .cacheMissReason)
+    }
+}
+
+private struct MissReason: Decodable {
+    let type: String?
+    let missedTokens: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case missedTokens = "cache_missed_input_tokens"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        type = c.lenient(String.self, .type)
+        missedTokens = c.lenient(Int.self, .missedTokens)
+    }
+}
+
+private struct Transformation: Decodable {
+    let type: String?
+    let reason: String?
+    let path: String?
+
+    enum CodingKeys: String, CodingKey { case type, reason, path }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        type = c.lenient(String.self, .type)
+        reason = c.lenient(String.self, .reason)
+        path = c.lenient(String.self, .path)
+    }
+}
+
+private struct ContextManagement: Decodable {
+    let appliedEdits: [AppliedEdit]?
+
+    enum CodingKeys: String, CodingKey { case appliedEdits = "applied_edits" }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        appliedEdits = c.lenient([AppliedEdit].self, .appliedEdits)
+    }
+}
+
+private struct AppliedEdit: Decodable {
+    let type: String?
+    let clearedInputTokens: Int?
+    let clearedToolUses: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case clearedInputTokens = "cleared_input_tokens"
+        case clearedToolUses = "cleared_tool_uses"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        type = c.lenient(String.self, .type)
+        clearedInputTokens = c.lenient(Int.self, .clearedInputTokens)
+        clearedToolUses = c.lenient(Int.self, .clearedToolUses)
+    }
+}
+
+private struct Iteration: Decodable {
+    let type: String?
+    let model: String?
+    let inputTokens: Int?
+    let outputTokens: Int?
+    let cacheReadInputTokens: Int?
+    let cacheCreationInputTokens: Int?
+    let cacheCreation: CacheCreation?
+
+    enum CodingKeys: String, CodingKey {
+        case type, model
+        case inputTokens = "input_tokens"
+        case outputTokens = "output_tokens"
+        case cacheReadInputTokens = "cache_read_input_tokens"
+        case cacheCreationInputTokens = "cache_creation_input_tokens"
+        case cacheCreation = "cache_creation"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        type = c.lenient(String.self, .type)
+        model = c.lenient(String.self, .model)
+        inputTokens = c.lenient(Int.self, .inputTokens)
+        outputTokens = c.lenient(Int.self, .outputTokens)
+        cacheReadInputTokens = c.lenient(Int.self, .cacheReadInputTokens)
+        cacheCreationInputTokens = c.lenient(Int.self, .cacheCreationInputTokens)
+        cacheCreation = c.lenient(CacheCreation.self, .cacheCreation)
     }
 }
 
@@ -164,6 +339,8 @@ private struct Usage: Decodable {
     let serverToolUse: ServerToolUse?
     let serviceTier: String?
     let speed: String?
+    let inferenceGeo: String?
+    let iterations: [Iteration]?
 
     enum CodingKeys: String, CodingKey {
         case inputTokens = "input_tokens"
@@ -175,6 +352,8 @@ private struct Usage: Decodable {
         case serverToolUse = "server_tool_use"
         case serviceTier = "service_tier"
         case speed
+        case inferenceGeo = "inference_geo"
+        case iterations
     }
 
     init(from decoder: Decoder) throws {
@@ -188,6 +367,8 @@ private struct Usage: Decodable {
         serverToolUse = c.lenient(ServerToolUse.self, .serverToolUse)
         serviceTier = c.lenient(String.self, .serviceTier)
         speed = c.lenient(String.self, .speed)
+        inferenceGeo = c.lenient(String.self, .inferenceGeo)
+        iterations = c.lenient([Iteration].self, .iterations)
     }
 }
 

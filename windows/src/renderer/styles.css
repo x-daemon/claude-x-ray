@@ -287,6 +287,28 @@ button { font: inherit; color: inherit; }
 .gantt-prompt { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed var(--c-user); }
 .gantt-cursor { position: absolute; top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--other) 60%, transparent); pointer-events: none; }
 
+/* LLM requests */
+.call-card { gap: 8px; }
+.call-card.issue { border-left: 3px solid var(--warning); }
+.call-head { all: unset; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; width: 100%; min-width: 0; }
+.call-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+.token-bars { display: grid; grid-template-columns: 44px minmax(80px, 1fr) minmax(0, auto); gap: 4px 10px; align-items: center; }
+.token-track { height: 10px; display: flex; align-items: center; min-width: 0; }
+.segbar.thin { height: 10px; gap: 1px; }
+.segbar.thin > span:first-child { border-radius: 3px 0 0 3px; }
+.segbar.thin > span:last-child { border-radius: 0 3px 3px 0; }
+.segbar.thin > span:only-child { border-radius: 3px; }
+.call-body { border-top: 1px solid var(--hairline); padding-top: 10px; }
+.action { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--page) 60%, var(--card)); }
+.action-meta { padding-left: 21px; }
+.loop-prompt { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--c-user) 9%, var(--card)); border: 1px solid var(--hairline); }
+.loop-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) 18px minmax(0, 1fr) 18px minmax(0, 1fr); gap: 8px 6px; align-items: stretch; }
+.loop-head { padding: 0 2px; }
+.loop-cell { background: var(--card); border: 1px solid var(--hairline); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.loop-cell.sidechain { margin-left: 18px; border-style: dashed; }
+.loop-cell .note { color: var(--text2); font-style: italic; }
+.loop-arrow { display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 15px; }
+
 /* Sessions */
 .split-view { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 .split-top { flex: 0 0 46%; min-height: 220px; display: flex; flex-direction: column; border-bottom: 1px solid var(--hairline); }

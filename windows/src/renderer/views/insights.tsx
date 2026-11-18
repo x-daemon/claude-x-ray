@@ -6,6 +6,7 @@ import * as I from "../icons";
 import { PERIODS, useStore } from "../state";
 import { severityColor, severityIcon } from "../traceStyle";
 import { Icon, Label, StatTile, Tiles } from "../ui";
+import { RequestHealthCard } from "./requestHealth";
 
 export function InsightsView() {
   const s = useStore();
@@ -35,6 +36,7 @@ export function InsightsView() {
       {s.isSubscription ? (
         <Label icon={I.Info} class="callout secondary" text="На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита." />
       ) : null}
+      <RequestHealthCard events={events} />
       {insights.length === 0 ? (
         <div class="unavailable tall">
           <Icon icon={I.Lightbulb} size={32} class="secondary light" />

@@ -2,7 +2,7 @@ import SwiftUI
 import XRayCore
 
 enum TraceTab: String, CaseIterable, Identifiable {
-    case feed, flow, timeline, context, tools
+    case feed, flow, llm, timeline, context, tools
 
     var id: Self { self }
 
@@ -10,6 +10,7 @@ enum TraceTab: String, CaseIterable, Identifiable {
         switch self {
         case .feed: return "Лента"
         case .flow: return "Поток"
+        case .llm: return "LLM-запросы"
         case .timeline: return "Таймлайн"
         case .context: return "Контекст"
         case .tools: return "Инструменты · MCP · скиллы"
@@ -55,6 +56,7 @@ struct TraceView: View {
                     switch model.traceTab {
                     case .feed: TraceFeedView(trace: trace, usage: usage, hideContent: hideContent)
                     case .flow: TraceFlowView(trace: trace, usage: usage, hideContent: hideContent)
+                    case .llm: TraceLLMView(trace: trace, usage: usage, hideContent: hideContent)
                     case .timeline: TraceTimelineView(trace: trace, usage: usage)
                     case .context: TraceContextView(trace: trace, usage: usage)
                     case .tools: TraceToolsView(trace: trace)

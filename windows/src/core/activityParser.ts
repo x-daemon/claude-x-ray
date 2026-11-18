@@ -7,6 +7,8 @@ import { Fmt } from "./fmt";
 import { parseDate } from "./transcript";
 
 export const DETAIL_LIMIT = 2_000;
+/** Tool arguments are kept up to this many characters (file contents are in `detail` already). */
+export const INPUT_LIMIT = 1_200;
 
 type Json = Record<string, unknown>;
 const obj = (v: unknown): Json | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Json) : undefined);
@@ -139,6 +141,13 @@ function toolResult(block: Json, entry: Json, base: Base, index: number): Activi
   it.toolUseID = str(block.tool_use_id);
   it.outputBytes = new TextEncoder().encode(text).length;
   it.permission = permissionLabel(entry.permissionDecision);
+  const decision = obj(entry.permissionDecision);
+  if (decision) {
+    it.decision = str(decision.decision);
+    it.decidedBy = str(decision.reasonType) ?? str(decision.source);
+    it.ruleSource = str(decision.ruleSource);
+  }
+  if (typeof entry.sandboxed === "boolean") it.sandboxed = entry.sandboxed;
   const patch = Array.isArray(result?.structuredPatch) ? (result!.structuredPatch as unknown[]) : undefined;
   if (patch) {
     let added = 0;
@@ -180,6 +189,7 @@ function parseAssistant(entry: Json, base: Base): ActivityItem[] {
       const text = str(block.thinking) ?? "";
       it = item(base, index, "thinking", text ? Snippet.firstLine(text, 140) : "Размышление", text ? Snippet.truncate(text, DETAIL_LIMIT) : undefined);
       it.thinkingMs = int(entry.thinkingDurationMs);
+      it.thinkingDisplay = str(entry.thinkingDisplay) ?? (blockType === "redacted_thinking" ? "redacted" : undefined);
     } else if (blockType === "text") {
       const text = str(block.text) ?? "";
       if (!text.trim()) return;
@@ -193,6 +203,14 @@ function parseAssistant(entry: Json, base: Base): ActivityItem[] {
       it.target = description.target;
       it.fileAction = description.fileAction;
       it.inputStreamMs = int(entry.toolInputStreamMs);
+      // wireToolInputs holds the arguments as the model generated them; the block holds what ran.
+      const executed = block.input ?? {};
+      const wire = it.toolUseID ? obj(entry.wireToolInputs)?.[it.toolUseID] : undefined;
+      it.rawInput = Snippet.compactJSON(wire ?? executed, INPUT_LIMIT);
+      if (wire !== undefined) {
+        const ran = Snippet.compactJSON(executed, INPUT_LIMIT);
+        if (ran !== it.rawInput) it.execInput = ran;
+      }
     } else if (blockType.endsWith("_tool_result")) {
       const text = textContent(block.content);
       it = item(base, index, "toolResult", text ? Snippet.firstLine(text, 140) : blockType, text ? Snippet.truncate(text, DETAIL_LIMIT) : undefined);

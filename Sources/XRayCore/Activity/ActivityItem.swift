@@ -94,6 +94,20 @@ public struct ActivityItem: Identifiable, Hashable, Sendable {
     /// Lines added / removed by an edit (from the structured patch).
     public var linesAdded: Int?
     public var linesRemoved: Int?
+    /// Thinking: how the API returned the text (`omitted`, `summarized`, `updates`).
+    public var thinkingDisplay: String?
+    /// Tool call: the arguments as the model generated them (compact JSON, truncated).
+    public var rawInput: String?
+    /// Tool call: the arguments Claude Code ran, when it changed the model's arguments.
+    public var execInput: String?
+    /// Tool result: accept or reject.
+    public var decision: String?
+    /// Tool result: who decided (classifier, rule, user, hook...).
+    public var decidedBy: String?
+    /// Tool result: where the deciding rule came from (cliArg, localSettings...).
+    public var ruleSource: String?
+    /// Tool result: the command ran in the sandbox.
+    public var sandboxed: Bool?
 
     // Context
     public var context: ContextPayload?

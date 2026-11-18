@@ -53,6 +53,20 @@ export interface ActivityItem {
   outputBytes?: number;
   linesAdded?: number;
   linesRemoved?: number;
+  /** Thinking: how the API returned the text ("omitted", "summarized", "updates"). */
+  thinkingDisplay?: string;
+  /** Tool call: the arguments as the model generated them (compact JSON, truncated). */
+  rawInput?: string;
+  /** Tool call: the arguments Claude Code ran, when it changed the model's arguments. */
+  execInput?: string;
+  /** Tool result: accept or reject. */
+  decision?: string;
+  /** Tool result: who decided (classifier, rule, user, hook...). */
+  decidedBy?: string;
+  /** Tool result: where the deciding rule came from (cliArg, localSettings...). */
+  ruleSource?: string;
+  /** Tool result: the command ran in the sandbox. */
+  sandboxed?: boolean;
   // Context
   context?: ContextPayload;
 }

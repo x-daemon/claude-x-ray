@@ -100,6 +100,7 @@ public struct InsightEngine {
         insights += subagents(events, summary: summary)
         insights += concentration(events, summary: summary)
         insights += fastMode(events, summary: summary)
+        insights += requestIssues(events, summary: summary)
         insights += estimatedPrices(events)
 
         return insights.sorted {
@@ -286,6 +287,81 @@ public struct InsightEngine {
             metric: "\(fast.count)",
             potentialSavings: premium
         )]
+    }
+
+    /// Cache misses with a cause, reasoning the API dropped, refusals, cut-off answers, fallbacks.
+    private func requestIssues(_ events: [PricedEvent], summary: UsageSummary) -> [Insight] {
+        let issues = RequestIssues.of(events, pricing: pricing)
+        let total = summary.cost.total
+        var insights: [Insight] = []
+
+        if issues.realMisses > 0 {
+            let real = issues.misses.filter { LLMCalls.isRealMiss($0.reason) }
+            let parts = real.map { "\(LLMCalls.cacheMissTitle($0.reason)) — \(Fmt.plural($0.count, "раз", "раза", "раз")), \(Fmt.tokens($0.missedTokens)) токенов" }
+            let share = total > 0 ? issues.realExtraCost / total : 0
+            insights.append(Insight(
+                id: "cache.misses",
+                severity: share >= 0.05 || issues.realMisses >= 10 ? .warning : .info,
+                kind: .freeWin,
+                title: "Кэш сбрасывался из-за изменений в запросе",
+                detail: "API сообщило о \(Fmt.plural(issues.realMisses, "промахе", "промахах", "промахах")) кэша с понятной причиной: \(parts.joined(separator: "; ")). Эти токены записаны в кэш заново вместо дешёвого чтения: ≈\(Fmt.usd(issues.realExtraCost)).",
+                recommendation: real.first.map { LLMCalls.cacheMissAdvice($0.reason) },
+                metric: "\(issues.realMisses)",
+                potentialSavings: issues.realExtraCost > 0 ? issues.realExtraCost : nil
+            ))
+        }
+
+        if issues.droppedRequests > 0 {
+            let reasons = issues.dropped.map { "\(LLMCalls.droppedReasonTitle($0.reason)) — \(Fmt.plural($0.blocks, "блок", "блока", "блоков"))" }
+            insights.append(Insight(
+                id: "thinking.dropped",
+                severity: issues.droppedRequests >= 10 ? .warning : .info,
+                kind: .freeWin,
+                title: "Модель теряла свои прежние размышления",
+                detail: "В \(Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")) API убрало из истории размышления модели: \(reasons.joined(separator: "; ")). Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.",
+                recommendation: "Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными.",
+                metric: "\(issues.droppedRequests)"
+            ))
+        }
+
+        if issues.truncated > 0 {
+            insights.append(Insight(
+                id: "stop.max_tokens", severity: .warning, kind: .observation,
+                title: "Ответы обрывались на лимите вывода",
+                detail: "\(Fmt.plural(issues.truncated, "ответ", "ответа", "ответов")) остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос.",
+                recommendation: "Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями.",
+                metric: "\(issues.truncated)"
+            ))
+        }
+
+        if !issues.refusals.isEmpty {
+            let count = issues.refusals.values.reduce(0, +)
+            let categories = issues.refusals.sorted { $0.key < $1.key }.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
+            let fallback = issues.fallbacks > 0 ? " \(Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")) дала резервная модель." : ""
+            insights.append(Insight(
+                id: "stop.refusal", severity: .info, kind: .observation,
+                title: "Модель отказывала в ответе",
+                detail: "\(Fmt.plural(count, "отказ", "отказа", "отказов")) по категориям защитных классификаторов (\(categories)).\(fallback)",
+                metric: "\(count)"
+            ))
+        } else if issues.fallbacks > 0 {
+            insights.append(Insight(
+                id: "stop.fallback", severity: .info, kind: .observation,
+                title: "Отвечала резервная модель",
+                detail: "\(Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")) дала резервная модель после отказа основной.",
+                metric: "\(issues.fallbacks)"
+            ))
+        }
+
+        if issues.modelSwitches > 0 {
+            insights.append(Insight(
+                id: "model.switched", severity: .info, kind: .observation,
+                title: "Запросы обслуживала другая модель",
+                detail: "В \(Fmt.plural(issues.modelSwitches, "запросе", "запросах", "запросах")) ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие.",
+                metric: "\(issues.modelSwitches)"
+            ))
+        }
+        return insights
     }
 
     private func estimatedPrices(_ events: [PricedEvent]) -> [Insight] {

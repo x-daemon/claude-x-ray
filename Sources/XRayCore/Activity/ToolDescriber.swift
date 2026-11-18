@@ -221,7 +221,7 @@ public enum Snippet {
 
     public static func compactJSON(_ object: Any, limit: Int = 800) -> String {
         guard JSONSerialization.isValidJSONObject(object),
-              let data = try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys]),
+              let data = try? JSONSerialization.data(withJSONObject: object, options: [.sortedKeys, .withoutEscapingSlashes]),
               let text = String(data: data, encoding: .utf8) else { return "" }
         return truncate(text, limit)
     }

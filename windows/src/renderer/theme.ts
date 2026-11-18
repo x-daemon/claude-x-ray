@@ -96,6 +96,8 @@ export function applyPalette(theme: ThemeName, dark: boolean): Palette {
     "--c-model": p.roles.model, "--c-user": p.roles.user, "--c-tool": p.roles.tool, "--c-context": p.roles.context,
     "--c-subagent": p.roles.subagent, "--c-skill": p.roles.skill, "--c-mcp": p.roles.mcp,
     "--good": p.status.good, "--warning": p.status.warning, "--serious": p.status.serious, "--critical": p.status.critical,
+    // Token segments, in the cost-component colors: input, output, cache read, cache write; thinking.
+    "--seg-input": p.series[0], "--seg-output": p.series[1], "--seg-read": p.series[2], "--seg-write": p.series[3], "--seg-thinking": p.series[5],
   };
   for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
   return p;

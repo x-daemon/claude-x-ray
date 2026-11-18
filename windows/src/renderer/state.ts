@@ -4,6 +4,7 @@ import { useEffect, useState } from "preact/hooks";
 import type { ActivityItem } from "../core/activity";
 import { Analytics, sessionSummaries, startOf, Windows, type CalendarUnit, type Interval, type SessionSummary, type UsageWindow } from "../core/analytics";
 import { Fmt } from "../core/fmt";
+import { buildLLMCalls, type LLMCall } from "../core/llm";
 import { displayModelName, type UsageEvent } from "../core/model";
 import type { PlanUsage } from "../core/plan";
 import { priceEvents, type PricedEvent, type PricingTable } from "../core/pricing";
@@ -14,7 +15,7 @@ import { applyPalette, palette, type Palette } from "./theme";
 
 export type Screen = "live" | "trace" | "overview" | "sessions" | "projects" | "models" | "insights" | "reports" | "settings";
 export type Period = "today" | "week" | "month" | "quarter" | "all";
-export type TraceTab = "feed" | "flow" | "timeline" | "context" | "tools";
+export type TraceTab = "feed" | "flow" | "llm" | "timeline" | "context" | "tools";
 
 export const SCREENS: { id: Screen; title: string }[] = [
   { id: "live", title: "Сейчас" },
@@ -38,6 +39,7 @@ export const PERIODS: { id: Period; title: string }[] = [
 export const TRACE_TABS: { id: TraceTab; title: string }[] = [
   { id: "feed", title: "Лента" },
   { id: "flow", title: "Поток" },
+  { id: "llm", title: "LLM-запросы" },
   { id: "timeline", title: "Таймлайн" },
   { id: "context", title: "Контекст" },
   { id: "tools", title: "Инструменты · MCP · скиллы" },
@@ -355,6 +357,13 @@ export class Store {
       for (const p of this.priced) if (p.event.sessionID === sessionID) result.set(p.event.messageID, p);
       return result;
     });
+  }
+
+  /** Model requests of a session with their actions, usage and API details. */
+  llmCalls(sessionID: string): LLMCall[] {
+    return this.memo(`llm|${sessionID}`, `${this.activityVersion}|${this.pricedVersion}|${Math.floor(this.now / 15_000)}`, () =>
+      buildLLMCalls(this.trace(sessionID), this.usageByMessage(sessionID)),
+    );
   }
 
   /** Tray tooltip: the account's 5-hour usage and the current window's cost, labelled. */

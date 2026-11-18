@@ -14,6 +14,7 @@ import { applyPalette } from "../theme";
 import { C } from "../traceStyle";
 import { Button, Card, Icon, RankedBarList, type RankedRow } from "../ui";
 import { InsightCard } from "./insights";
+import { RequestHealthCard } from "./requestHealth";
 import { ActivityHeatmap, CostComposition, CostTimelineChart, unitTitle } from "./overview";
 
 export function ReportsView() {
@@ -163,6 +164,7 @@ export function ReportDocument() {
               <div class="callout secondary">{rhythm(cells, summary.totalCost)}</div>
             </div>
           </Card>
+          <RequestHealthCard events={events} />
           <ReportInsights events={events} />
         </>
       )}

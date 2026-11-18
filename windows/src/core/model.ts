@@ -40,6 +40,57 @@ export function addTokens(into: Tokens, t: Tokens): Tokens {
   return into;
 }
 
+/** A step the API ran inside one request (main answer, fallback model, server-side compaction). */
+export interface RequestIteration {
+  type: string;
+  model?: string;
+  input: number;
+  output: number;
+  cacheRead: number;
+  cacheWrite: number;
+}
+
+/** A change the API made to the request before the model saw it (e.g. a thinking block dropped). */
+export interface InputTransformation {
+  type: string;
+  reason?: string;
+  path?: string;
+}
+
+/** Context the server cleared before the request (context editing). */
+export interface ContextEdit {
+  type: string;
+  clearedTokens?: number;
+  clearedToolUses?: number;
+}
+
+/**
+ * API-level details of one model request, as Claude Code records them: why the response ended,
+ * the cache diagnosis, what the API changed in the input, and the steps it ran.
+ */
+export interface RequestDetails {
+  /** end_turn, tool_use, max_tokens, stop_sequence, pause_turn, refusal. */
+  stopReason?: string;
+  /** stop_details.category of a refusal (cyber, bio...). */
+  stopCategory?: string;
+  /** Model Claude Code asked for, when the transcript has it. */
+  requestedModel?: string;
+  /** Advisor tool model configured for the request. */
+  advisorModel?: string;
+  /** Where inference ran (usage.inference_geo). */
+  inferenceGeo?: string;
+  /** Cache TTL Claude Code requested ("5m" or "1h"). */
+  cacheTTL?: string;
+  /** Why the prompt cache missed, from the API's cache diagnostics. */
+  cacheMiss?: { reason: string; missedTokens?: number };
+  /** Changes the API made to the input, e.g. thinking blocks it dropped. */
+  transformations?: InputTransformation[];
+  /** Context the server cleared (context editing). */
+  contextEdits?: ContextEdit[];
+  /** Steps of the request when there was more than the main answer. */
+  iterations?: RequestIteration[];
+}
+
 /** One billed model request recorded by Claude Code. */
 export interface UsageEvent {
   /** Anthropic message id (msg_...). */
@@ -64,6 +115,8 @@ export interface UsageEvent {
   tokens: Tokens;
   webSearchRequests: number;
   webFetchRequests: number;
+  /** API-level details (stop reason, cache diagnosis...). */
+  details?: RequestDetails;
 }
 
 /**

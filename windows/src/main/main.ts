@@ -379,7 +379,7 @@ async function runSnapshots(dir: string): Promise<void> {
   await sleep(1500);
   log.push(`events: ${service.usage.count}, activity items: ${service.activity.count}, files: ${service.scan.filesSeen}`);
   const screens = (process.env.XRAY_SNAPSHOT_SCREENS ?? "live,trace,overview,sessions,projects,models,insights,reports,settings").split(",");
-  const tabs = ["feed", "flow", "timeline", "context", "tools"];
+  const tabs = ["feed", "flow", "llm", "timeline", "context", "tools"];
   const passes: { theme: Settings["theme"]; appearance: Settings["appearance"]; name: string; screens: string[] }[] = [
     { theme: "s2a", appearance: "light", name: "s2a-light", screens },
     { theme: "s2a", appearance: "dark", name: "s2a-dark", screens },

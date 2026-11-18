@@ -1,5 +1,5 @@
 // Transcript parsing and de-duplication. Port of XRayCore/Ingest/TranscriptParser.swift and UsageStore.swift.
-import { dedupeKey, totalTokens, type Tokens, type UsageEvent } from "./model";
+import { dedupeKey, totalTokens, type ContextEdit, type InputTransformation, type RequestDetails, type RequestIteration, type Tokens, type UsageEvent } from "./model";
 
 type Json = Record<string, unknown>;
 
@@ -63,6 +63,7 @@ export function parseUsageLine(line: string, fallbackSessionID = "unknown", fall
 
   const serverTools = obj(usage.server_tool_use);
   const gitBranch = str(entry.gitBranch);
+  const details = requestDetails(entry, message, usage);
   return {
     messageID,
     requestID: str(entry.requestId),
@@ -72,14 +73,59 @@ export function parseUsageLine(line: string, fallbackSessionID = "unknown", fall
     projectPath: str(entry.cwd) ?? fallbackProject,
     gitBranch: gitBranch ? gitBranch : undefined,
     isSidechain: bool(entry.isSidechain) ?? false,
-    effort: str(entry.effort),
+    // The effort of this turn; `effort` alone is the session default.
+    effort: str(entry.perTurnEffort) ?? str(entry.effort),
     speed: str(usage.speed),
     serviceTier: str(usage.service_tier),
     clientVersion: str(entry.version),
     tokens,
     webSearchRequests: int(serverTools?.web_search_requests) ?? 0,
     webFetchRequests: int(serverTools?.web_fetch_requests) ?? 0,
+    details,
   };
+}
+
+const arr = (v: unknown): Json[] => (Array.isArray(v) ? (v.map(obj).filter(Boolean) as Json[]) : []);
+
+/** Stop reason, cache diagnosis, input transformations, context edits and iterations of a request. */
+function requestDetails(entry: Json, message: Json, usage: Json): RequestDetails | undefined {
+  const details: RequestDetails = {};
+  const stopReason = str(message.stop_reason);
+  if (stopReason) details.stopReason = stopReason;
+  const category = str(obj(message.stop_details)?.category);
+  if (category) details.stopCategory = category;
+  const requested = str(entry.requestedModel);
+  if (requested) details.requestedModel = requested;
+  const advisor = str(entry.advisorModel);
+  if (advisor) details.advisorModel = advisor;
+  const geo = str(usage.inference_geo);
+  if (geo) details.inferenceGeo = geo;
+  const ttl = str(entry.promptCacheRequested);
+  if (ttl) details.cacheTTL = ttl;
+  const miss = obj(obj(message.diagnostics)?.cache_miss_reason);
+  const missType = str(miss?.type);
+  if (missType) details.cacheMiss = { reason: missType, missedTokens: int(miss?.cache_missed_input_tokens) };
+  const transformations: InputTransformation[] = arr(message.input_transformations)
+    .map((t) => ({ type: str(t.type) ?? "unknown", reason: str(t.reason), path: str(t.path) }));
+  if (transformations.length) details.transformations = transformations;
+  const edits: ContextEdit[] = arr(obj(message.context_management)?.applied_edits)
+    .map((e) => ({ type: str(e.type) ?? "unknown", clearedTokens: int(e.cleared_input_tokens), clearedToolUses: int(e.cleared_tool_uses) }));
+  if (edits.length) details.contextEdits = edits;
+  const iterations: RequestIteration[] = arr(usage.iterations).map((i) => {
+    const creation = obj(i.cache_creation);
+    const write = int(i.cache_creation_input_tokens) ?? (int(creation?.ephemeral_5m_input_tokens) ?? 0) + (int(creation?.ephemeral_1h_input_tokens) ?? 0);
+    return {
+      type: str(i.type) ?? "message",
+      model: str(i.model),
+      input: int(i.input_tokens) ?? 0,
+      output: int(i.output_tokens) ?? 0,
+      cacheRead: int(i.cache_read_input_tokens) ?? 0,
+      cacheWrite: write,
+    };
+  });
+  // A single plain "message" step is the request itself; keep only what adds information.
+  if (iterations.length > 1 || iterations.some((i) => i.type !== "message")) details.iterations = iterations;
+  return Object.keys(details).length ? details : undefined;
 }
 
 /**

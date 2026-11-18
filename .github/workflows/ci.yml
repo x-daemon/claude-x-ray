@@ -35,3 +35,17 @@ jobs:
           name: S2A-Claude-X-Ray
           path: build/S2A-Claude-X-Ray.zip
           retention-days: 14
+
+  cloud-hook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test the cloud push hook
+        run: python3 cloud/test_xray_push.py
+
+      - name: Setup script matches the hook
+        run: |
+          python3 scripts/make-setup-script.py
+          git diff --exit-code cloud/setup-environment.sh

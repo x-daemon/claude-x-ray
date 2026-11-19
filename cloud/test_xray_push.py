@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Tests for cloud/xray-push.py against small local receivers: uploads never queue up behind a
-slow or sleeping computer, a hook that fires during an upload still gets its lines sent, a failed
-upload is tried again without waiting for another hook, the end of a turn written after the Stop
-hook still goes out, long and partial lines, several receivers at once.
-Run: python3 cloud/test_xray_push.py"""
+slow or sleeping computer, lines written after the last hook still go out while the uploader
+watches the transcript, a hook that fires as it lets go still gets its lines sent, a failed
+upload is tried again without another hook but an unreachable proxy is not, long and partial
+lines, several receivers at once. Run: python3 cloud/test_xray_push.py"""
 import http.server, importlib.util, json, os, shutil, socket, subprocess, sys, tempfile, threading, time, unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -71,7 +71,8 @@ class XRayPushTest(unittest.TestCase):
         cls.base = tempfile.mkdtemp(prefix="xray-push-test-")
         # Own state folder and short pauses, so the test neither touches the real hook's state
         # nor waits a minute for retries.
-        os.environ.update(XRAY_PUSH_STATE=os.path.join(cls.base, "state"), XRAY_PUSH_RETRIES="0.3,0.6", XRAY_PUSH_SETTLE="0.5")
+        os.environ.update(XRAY_PUSH_STATE=os.path.join(cls.base, "state"), XRAY_PUSH_RETRIES="0.3,0.6",
+                          XRAY_PUSH_LINGER="0.6", XRAY_PUSH_POLL="0.05")
         # A copy under a unique name, so the test can count the uploader processes it started.
         cls.hook_path = os.path.join(cls.base, "xray-push-under-test.py")
         shutil.copy(os.path.join(HERE, "xray-push.py"), cls.hook_path)
@@ -83,7 +84,7 @@ class XRayPushTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.base, ignore_errors=True)
-        for name in ("XRAY_PUSH_STATE", "XRAY_PUSH_RETRIES", "XRAY_PUSH_SETTLE"):
+        for name in ("XRAY_PUSH_STATE", "XRAY_PUSH_RETRIES", "XRAY_PUSH_LINGER", "XRAY_PUSH_POLL"):
             os.environ.pop(name, None)
 
     def setUp(self):
@@ -158,26 +159,26 @@ class XRayPushTest(unittest.TestCase):
         self.assertLessEqual(peak[0], 5, "no queue of waiting processes (30 hooks fired)")
 
     def test_a_hook_that_fires_while_the_upload_finishes_gets_its_lines_sent(self):
-        # The late hook comes after the running upload looked at the file for the last time and
+        # The late hook comes after the watching uploader looked at the file for the last time and
         # before it released the lock: it finds the lock taken and leaves its lines to that upload.
         fast = self.receiver()
         path, relative = self.transcript("race")
         self.append(path, 0)
-        original, injected = self.hook.upload, [False]
+        original, injected = self.hook.watch, [False]
 
-        def upload_then_late_hook(*args):
+        def watch_then_late_hook(*args):
             seen = original(*args)
             if not injected[0]:
                 injected[0] = True
                 self.append(path, 1)
-                self.hook.push(fast.url, path, "test", False)
+                self.hook.push(fast.url, path, "test")
             return seen
 
-        self.hook.upload = upload_then_late_hook
+        self.hook.watch = watch_then_late_hook
         try:
-            self.hook.push(fast.url, path, "test", False)
+            self.hook.push(fast.url, path, "test")
         finally:
-            self.hook.upload = original
+            self.hook.watch = original
         self.assertTrue(injected[0])
         self.assertEqual(fast.received(relative), self.contents(path))
 
@@ -194,15 +195,32 @@ class XRayPushTest(unittest.TestCase):
             errors = f.read().splitlines()
         self.assertEqual(len([e for e in errors if "127.0.0.1:%d" % flaky.server.server_port in e]), 2, errors)
 
-    def test_the_end_of_a_turn_written_after_the_stop_hook_is_sent(self):
+    def test_lines_written_after_the_last_hook_still_go_out(self):
+        # Claude Code does not always run the Stop hook: the reply after the last tool call has
+        # to arrive anyway, while the uploader keeps watching the transcript.
         fast = self.receiver()
-        path, relative = self.transcript("stop")
+        path, relative = self.transcript("tail")
         self.append(path, 0)
-        self.fire(path, [fast.url], event="Stop")
-        time.sleep(0.2)
-        self.append(path, 1)  # Claude Code writes this right after the hook
+        self.fire(path, [fast.url], event="PostToolUse")
+        for n in (1, 2):
+            time.sleep(0.3)
+            self.append(path, n)
         self.settle()
         self.assertEqual(fast.received(relative), self.contents(path))
+
+    def test_an_unreachable_proxy_is_not_retried(self):
+        # Connection refused means the container's proxy is gone (a restart): the uploader stops
+        # at once so that the next hook, with the new proxy address, takes over.
+        path, relative = self.transcript("gone")
+        self.append(path, 0)
+        down = closed_port_url()
+        started = time.time()
+        self.fire(path, [down])
+        self.settle()
+        self.assertLess(time.time() - started, 0.3 + 0.6, "no retries")
+        with open(os.path.join(self.hook.STATE, "errors.log")) as f:
+            errors = [e for e in f.read().splitlines() if down.split("//")[1].split("/")[0] in e]
+        self.assertEqual(len(errors), 1, errors)
 
     def test_a_line_longer_than_a_chunk_is_sent_whole(self):
         fast = self.receiver()

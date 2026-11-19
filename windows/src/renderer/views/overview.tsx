@@ -225,7 +225,7 @@ export function ActivityHeatmap({ cells, showsHint = true }: { cells: HeatCell[]
       <div class="heatmap" onMouseLeave={() => setHovered(undefined)}>
         {DAYS.map((day, d) => (
           <>
-            <span class="caption2 secondary heat-day" key={day}>{day}</span>
+            <span class="caption2 secondary heat-day" key={day}>{tr(day)}</span>
             {HOURS.map((hour, h) => {
               const cell = cells[d * 24 + h];
               const color = cell.cost > 0 ? rampColor(ramp, max > min ? (cell.cost - min) / (max - min) : 1) : "var(--empty)";

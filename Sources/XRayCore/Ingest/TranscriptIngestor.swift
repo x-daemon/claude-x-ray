@@ -67,7 +67,7 @@ public actor TranscriptIngestor {
                 includingPropertiesForKeys: [.isRegularFileKey, .contentModificationDateKey],
                 options: [.skipsHiddenFiles]
             ) else {
-                result.errors.append("Нет доступа к \(directory.path)")
+                result.errors.append(L("Нет доступа к \(directory.path)"))
                 continue
             }
 

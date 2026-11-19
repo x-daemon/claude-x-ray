@@ -10,20 +10,21 @@ import * as I from "../icons";
 import { store, useStore } from "../state";
 import { C } from "../traceStyle";
 import { Card, Icon, Legend, StatTile, Tiles } from "../ui";
+import { L, N, titled } from "../../core/i18n";
 
 type SortKey = "start" | "project" | "duration" | "requests" | "peak" | "cache" | "cost";
 
-const COLUMNS: { title: string; key?: SortKey; numeric?: boolean }[] = [
-  { title: "Начало", key: "start" },
-  { title: "Проект", key: "project" },
-  { title: "Ветка" },
-  { title: "Модели" },
-  { title: "Длительность", key: "duration", numeric: true },
-  { title: "Запросы", key: "requests", numeric: true },
-  { title: "Пик контекста", key: "peak", numeric: true },
-  { title: "Кэш", key: "cache", numeric: true },
+const COLUMNS: { title: string; key?: SortKey; numeric?: boolean }[] = titled([
+  { title: N("Начало"), key: "start" },
+  { title: N("Проект"), key: "project" },
+  { title: N("Ветка") },
+  { title: N("Модели") },
+  { title: N("Длительность"), key: "duration", numeric: true },
+  { title: N("Запросы"), key: "requests", numeric: true },
+  { title: N("Пик контекста"), key: "peak", numeric: true },
+  { title: N("Кэш"), key: "cache", numeric: true },
   { title: "USD", key: "cost", numeric: true },
-];
+]);
 
 function sortValue(s: SessionSummary, key: SortKey): number | string {
   switch (key) {
@@ -59,7 +60,7 @@ export function SessionsView() {
     <div class="split-view">
       <div class="split-top">
         <div class="row gap-12 toolbar-row">
-          <input class="search" type="search" placeholder="Проект, ветка или модель" value={query} onInput={(e) => setQuery((e.currentTarget as HTMLInputElement).value)} />
+          <input class="search" type="search" placeholder={L`Проект, ветка или модель`} value={query} onInput={(e) => setQuery((e.currentTarget as HTMLInputElement).value)} />
           <span class="spacer" />
           <span class="caption secondary">{Fmt.plural(rows.length, "сессия", "сессии", "сессий")}</span>
         </div>
@@ -95,7 +96,7 @@ export function SessionsView() {
               ))}
             </tbody>
           </table>
-          {rows.length === 0 ? <div class="empty-note secondary">Сессий за период нет</div> : null}
+          {rows.length === 0 ? <div class="empty-note secondary">{L`Сессий за период нет`}</div> : null}
         </div>
       </div>
       <div class="split-bottom" data-scroll>
@@ -104,8 +105,8 @@ export function SessionsView() {
         ) : (
           <div class="unavailable">
             <Icon icon={I.Rows3} size={32} class="secondary light" />
-            <h3>Выберите сессию</h3>
-            <div class="secondary">Детали, рост контекста и стоимость каждого запроса.</div>
+            <h3>{L`Выберите сессию`}</h3>
+            <div class="secondary">{L`Детали, рост контекста и стоимость каждого запроса.`}</div>
           </div>
         )}
       </div>
@@ -142,7 +143,7 @@ function SessionDetail({ session, events }: { session: SessionSummary; events: P
       },
       xAxis: { type: "time", ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: (v: number) => Fmt.time(v, false) } },
       yAxis: { type: "value", ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: tokenAxisLabel } },
-      series: [line("Основная сессия", p.roles.model, main), ...(side.length ? [line("Субагент", p.roles.subagent, side)] : [])],
+      series: [line(L`Основная сессия`, p.roles.model, main), ...(side.length ? [line(L`Субагент`, p.roles.subagent, side)] : [])],
     };
   }, [events, p]);
 
@@ -170,8 +171,8 @@ function SessionDetail({ session, events }: { session: SessionSummary; events: P
       xAxis: { type: "time", ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: (v: number) => Fmt.time(v, false) } },
       yAxis: { type: "value", ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: usdAxisLabel } },
       series: [
-        bar("Остальное", p.roles.model, (e) => costTotal(e.cost) - e.cost.cacheWrite, false),
-        bar("Запись в кэш", p.series[3], (e) => e.cost.cacheWrite, true),
+        bar(L`Остальное`, p.roles.model, (e) => costTotal(e.cost) - e.cost.cacheWrite, false),
+        bar(L`Запись в кэш`, p.series[3], (e) => e.cost.cacheWrite, true),
       ],
     };
   }, [events, p]);
@@ -184,19 +185,19 @@ function SessionDetail({ session, events }: { session: SessionSummary; events: P
         <span class="secondary nowrap">{Fmt.dateTime(session.start)} – {Fmt.dateTime(session.end)}</span>
       </div>
       <Tiles>
-        <StatTile title="Стоимость" value={Fmt.usd(cost)} caption={`${Fmt.usd(session.summary.costPerRequest)} за запрос`} />
-        <StatTile title="Токены" value={Fmt.tokens(session.summary.totalTokens)} caption={`вывод ${Fmt.tokens(session.summary.tokens.output)}`} />
-        <StatTile title="Пик контекста" value={Fmt.tokens(session.peakContextTokens)} caption={`средний ${Fmt.tokens(Math.trunc(session.summary.averageContextTokens))}`} />
-        <StatTile title="Кэш" value={Fmt.percent(session.summary.cacheHitRate)} caption={`запись ${Fmt.usd(session.summary.cost.cacheWrite)}`} />
-        <StatTile title="Субагенты" value={Fmt.usd(session.sidechainCost)} caption={cost > 0 ? `${Fmt.percent(session.sidechainCost / cost)} стоимости` : undefined} />
+        <StatTile title={L`Стоимость`} value={Fmt.usd(cost)} caption={L`${Fmt.usd(session.summary.costPerRequest)} за запрос`} />
+        <StatTile title={L`Токены`} value={Fmt.tokens(session.summary.totalTokens)} caption={L`вывод ${Fmt.tokens(session.summary.tokens.output)}`} />
+        <StatTile title={L`Пик контекста`} value={Fmt.tokens(session.peakContextTokens)} caption={L`средний ${Fmt.tokens(Math.trunc(session.summary.averageContextTokens))}`} />
+        <StatTile title={L`Кэш`} value={Fmt.percent(session.summary.cacheHitRate)} caption={L`запись ${Fmt.usd(session.summary.cost.cacheWrite)}`} />
+        <StatTile title={L`Субагенты`} value={Fmt.usd(session.sidechainCost)} caption={cost > 0 ? L`${Fmt.percent(session.sidechainCost / cost)} стоимости` : undefined} />
       </Tiles>
-      <Card title="Рост контекста" subtitle="токенов в промпте на каждый запрос">
-        <EChart option={contextOption} height={170} label="Рост контекста" />
-        {side.length ? <Legend items={[{ name: "Основная сессия", color: C.model }, { name: "Субагент", color: C.subagent }]} /> : null}
+      <Card title={L`Рост контекста`} subtitle={L`токенов в промпте на каждый запрос`}>
+        <EChart option={contextOption} height={170} label={L`Рост контекста`} />
+        {side.length ? <Legend items={[{ name: L`Основная сессия`, color: C.model }, { name: L`Субагент`, color: C.subagent }]} /> : null}
       </Card>
-      <Card title="Стоимость запросов" subtitle="запись в кэш выделена отдельно">
-        <EChart option={costOption} height={150} label="Стоимость запросов" />
-        <Legend items={[{ name: "Остальное", color: C.model }, { name: "Запись в кэш", color: p.series[3] }]} />
+      <Card title={L`Стоимость запросов`} subtitle={L`запись в кэш выделена отдельно`}>
+        <EChart option={costOption} height={150} label={L`Стоимость запросов`} />
+        <Legend items={[{ name: L`Остальное`, color: C.model }, { name: L`Запись в кэш`, color: p.series[3] }]} />
       </Card>
     </div>
   );

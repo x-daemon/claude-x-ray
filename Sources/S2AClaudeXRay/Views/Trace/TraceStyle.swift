@@ -36,18 +36,18 @@ enum TraceStyle {
 
     static func label(for kind: ActivityKind) -> String {
         switch kind {
-        case .prompt: return "Промпт"
-        case .queued: return "Сообщение"
-        case .interrupted: return "Прерывание"
-        case .thinking: return "Размышление"
-        case .reply: return "Ответ"
-        case .toolCall: return "Инструмент"
-        case .toolResult: return "Результат"
-        case .hook: return "Хук"
-        case .compact: return "Сжатие"
-        case .context: return "Контекст"
-        case .apiError: return "Ошибка"
-        case .note: return "Заметка"
+        case .prompt: return L("Промпт")
+        case .queued: return L("Сообщение")
+        case .interrupted: return L("Прерывание")
+        case .thinking: return L("Размышление")
+        case .reply: return L("Ответ")
+        case .toolCall: return L("Инструмент")
+        case .toolResult: return L("Результат")
+        case .hook: return L("Хук")
+        case .compact: return L("Сжатие")
+        case .context: return L("Контекст")
+        case .apiError: return L("Ошибка")
+        case .note: return L("Заметка")
         }
     }
 
@@ -112,10 +112,10 @@ enum TraceStyle {
 
     static func title(for outcome: TurnOutcome) -> String {
         switch outcome {
-        case .inProgress: return "идёт"
-        case .completed: return "завершён"
-        case .interrupted: return "прерван"
-        case .failed: return "ошибка"
+        case .inProgress: return L("идёт")
+        case .completed: return L("завершён")
+        case .interrupted: return L("прерван")
+        case .failed: return L("ошибка")
         }
     }
 

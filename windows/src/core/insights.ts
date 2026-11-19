@@ -5,13 +5,14 @@ import { Fmt } from "./fmt";
 import { cacheWrite, contextTokens, isFastMode, isTopTier, modelFamily } from "./model";
 import { cacheMissAdvice, cacheMissTitle, droppedReasonTitle, requestIssues } from "./llm";
 import { costAsModel, costTotal, matchPrice, type ModelPrice, type PricedEvent, type PricingTable } from "./pricing";
+import { L, labels, N } from "./i18n";
 
 export type InsightSeverity = "good" | "info" | "warning" | "critical";
 export type InsightKind = "freeWin" | "tradeoff" | "observation";
 
 export const severityRank: Record<InsightSeverity, number> = { good: 0, info: 1, warning: 2, critical: 3 };
-export const severityLabel: Record<InsightSeverity, string> = { good: "Хорошо", info: "Совет", warning: "Внимание", critical: "Критично" };
-export const kindLabel: Record<InsightKind, string> = { freeWin: "Без потери качества", tradeoff: "Компромисс", observation: "Наблюдение" };
+export const severityLabel: Record<InsightSeverity, string> = labels({ good: N("Хорошо"), info: N("Совет"), warning: N("Внимание"), critical: N("Критично") });
+export const kindLabel: Record<InsightKind, string> = labels({ freeWin: N("Без потери качества"), tradeoff: N("Компромисс"), observation: N("Наблюдение") });
 
 export interface Insight {
   id: string;
@@ -51,16 +52,16 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (hit >= 0.85) {
       insights.push({
         id: "cache.hit", severity: "good", kind: "observation",
-        title: "Кэш промптов работает хорошо",
-        detail: `${metric} контекста читается из кэша — это самый дешёвый вид входных токенов.`,
+        title: L`Кэш промптов работает хорошо`,
+        detail: L`${metric} контекста читается из кэша — это самый дешёвый вид входных токенов.`,
         metric,
       });
     } else {
       insights.push({
         id: "cache.hit", severity: hit < 0.6 ? "warning" : "info", kind: "freeWin",
-        title: "Низкая доля попаданий в кэш",
-        detail: `Из кэша читается только ${metric} контекста. Остальное оплачивается как свежий ввод или как запись в кэш, которая дороже ввода.`,
-        recommendation: "Не меняйте модель и настройки посреди сессии, держите CLAUDE.md и системные инструкции стабильными, между задачами начинайте новую сессию (/clear), а не продолжайте старую с другим контекстом.",
+        title: L`Низкая доля попаданий в кэш`,
+        detail: L`Из кэша читается только ${metric} контекста. Остальное оплачивается как свежий ввод или как запись в кэш, которая дороже ввода.`,
+        recommendation: L`Не меняйте модель и настройки посреди сессии, держите CLAUDE.md и системные инструкции стабильными, между задачами начинайте новую сессию (/clear), а не продолжайте старую с другим контекстом.`,
         metric,
       });
     }
@@ -72,15 +73,15 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (share >= 0.25) {
       const writes = cacheWrite(summary.tokens);
       const oneHourShare = writes > 0 ? summary.tokens.cacheWrite1h / writes : 0;
-      let detail = `Запись в кэш — ${Fmt.percent(share)} стоимости (${Fmt.usd(summary.cost.cacheWrite)}).`;
+      let detail = L`Запись в кэш — ${Fmt.percent(share)} стоимости (${Fmt.usd(summary.cost.cacheWrite)}).`;
       if (oneHourShare > 0.5) {
-        detail += ` ${Fmt.percent(oneHourShare)} записей идут с TTL 1 час: такая запись стоит 2× цены ввода (TTL 5 минут — 1.25×), зато переживает паузы до часа.`;
+        detail += L` ${Fmt.percent(oneHourShare)} записей идут с TTL 1 час: такая запись стоит 2× цены ввода (TTL 5 минут — 1.25×), зато переживает паузы до часа.`;
       }
       insights.push({
         id: "cache.writes", severity: share >= 0.4 ? "warning" : "info", kind: "freeWin",
-        title: "Много платите за запись в кэш",
+        title: L`Много платите за запись в кэш`,
         detail,
-        recommendation: "Каждый раз, когда начало контекста меняется, весь контекст после изменения записывается в кэш заново. Сокращайте контекст (/compact), не переключайте модель внутри длинной сессии и начинайте новую задачу с /clear.",
+        recommendation: L`Каждый раз, когда начало контекста меняется, весь контекст после изменения записывается в кэш заново. Сокращайте контекст (/compact), не переключайте модель внутри длинной сессии и начинайте новую задачу с /clear.`,
         metric: Fmt.percent(share),
       });
     }
@@ -119,9 +120,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (count >= 3 && cost / total >= 0.03) {
       insights.push({
         id: "cache.rewarm", severity: cost / total >= 0.1 ? "warning" : "info", kind: "freeWin",
-        title: "Паузы обнуляют кэш",
-        detail: `${count} раз после паузы длиннее срока жизни кэша весь контекст сессии записывался заново: ${Fmt.usd(cost)} за запись.`,
-        recommendation: "Возвращаясь после перерыва к новой задаче, начинайте её с /clear. Если нужен прежний контекст, сделайте /compact перед перерывом, чтобы перезаписывать меньше.",
+        title: L`Паузы обнуляют кэш`,
+        detail: L`${count} раз после паузы длиннее срока жизни кэша весь контекст сессии записывался заново: ${Fmt.usd(cost)} за запись.`,
+        recommendation: L`Возвращаясь после перерыва к новой задаче, начинайте её с /clear. Если нужен прежний контекст, сделайте /compact перед перерывом, чтобы перезаписывать меньше.`,
         metric: `${count}×`,
         potentialSavings: avoidable,
       });
@@ -136,9 +137,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (large.length && share >= 0.2) {
       insights.push({
         id: "context.large", severity: share >= 0.5 ? "warning" : "info", kind: "freeWin",
-        title: "Дорогой длинный контекст",
-        detail: `${Fmt.percent(share)} стоимости (${Fmt.usd(largeCost)}) приходится на запросы с контекстом больше ${Fmt.tokens(largeContextThreshold)} токенов. Средний контекст запроса — ${Fmt.tokens(Math.trunc(summary.averageContextTokens))}.`,
-        recommendation: "Каждый ход заново отправляет весь контекст сессии. Делайте /compact на длинных задачах, /clear между независимыми задачами, не читайте большие файлы и логи целиком и держите CLAUDE.md коротким.",
+        title: L`Дорогой длинный контекст`,
+        detail: L`${Fmt.percent(share)} стоимости (${Fmt.usd(largeCost)}) приходится на запросы с контекстом больше ${Fmt.tokens(largeContextThreshold)} токенов. Средний контекст запроса — ${Fmt.tokens(Math.trunc(summary.averageContextTokens))}.`,
+        recommendation: L`Каждый ход заново отправляет весь контекст сессии. Делайте /compact на длинных задачах, /clear между независимыми задачами, не читайте большие файлы и логи целиком и держите CLAUDE.md коротким.`,
         metric: Fmt.percent(share),
       });
     }
@@ -154,9 +155,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
       const cheaperName = pricing.models.find((m) => m.modelPrefix === cheaperModelPrefix)?.displayName ?? cheaperModelPrefix;
       insights.push({
         id: "model.mix", severity: "info", kind: "tradeoff",
-        title: "Почти всё уходит на старшие модели",
-        detail: `${Fmt.percent(share)} стоимости — Opus/Fable. Те же запросы на ${cheaperName} стоили бы ${Fmt.usd(whatIf)} вместо ${Fmt.usd(topCost)}.`,
-        recommendation: `Для рутинных задач (правки, тесты, поиск по коду) переключайтесь на ${cheaperName} командой /model. На подписке это обычно медленнее расходует лимит окна. Качество на сложных задачах может отличаться — проверьте на своих.`,
+        title: L`Почти всё уходит на старшие модели`,
+        detail: L`${Fmt.percent(share)} стоимости — Opus/Fable. Те же запросы на ${cheaperName} стоили бы ${Fmt.usd(whatIf)} вместо ${Fmt.usd(topCost)}.`,
+        recommendation: L`Для рутинных задач (правки, тесты, поиск по коду) переключайтесь на ${cheaperName} командой /model. На подписке это обычно медленнее расходует лимит окна. Качество на сложных задачах может отличаться — проверьте на своих.`,
         metric: Fmt.percent(share),
         potentialSavings: topCost - whatIf,
       });
@@ -171,9 +172,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (requestShare >= 0.5 && thinkingShare >= 0.3) {
       insights.push({
         id: "effort.high", severity: "info", kind: "tradeoff",
-        title: "Высокий effort по умолчанию",
-        detail: `${Fmt.percent(requestShare)} запросов идут с effort xhigh/max; размышления — ${Fmt.percent(thinkingShare)} выходных токенов.`,
-        recommendation: "Высокий effort окупается на сложных задачах. Для простых правок и вопросов понизьте effort в настройках модели Claude Code — это сокращает размышления и число вызовов инструментов.",
+        title: L`Высокий effort по умолчанию`,
+        detail: L`${Fmt.percent(requestShare)} запросов идут с effort xhigh/max; размышления — ${Fmt.percent(thinkingShare)} выходных токенов.`,
+        recommendation: L`Высокий effort окупается на сложных задачах. Для простых правок и вопросов понизьте effort в настройках модели Claude Code — это сокращает размышления и число вызовов инструментов.`,
         metric: Fmt.percent(requestShare),
       });
     }
@@ -186,9 +187,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (share >= 0.3) {
       insights.push({
         id: "subagents", severity: "info", kind: "observation",
-        title: "Субагенты — заметная часть расходов",
-        detail: `${Fmt.percent(share)} стоимости (${Fmt.usd(sidechain)}) тратят субагенты. Каждый начинает со своего контекста и не делит кэш с основной сессией.`,
-        recommendation: "Субагенты выгодны для объёмного чтения и поиска. Для мелких шагов, которым нужен контекст основной сессии, они обходятся дороже.",
+        title: L`Субагенты — заметная часть расходов`,
+        detail: L`${Fmt.percent(share)} стоимости (${Fmt.usd(sidechain)}) тратят субагенты. Каждый начинает со своего контекста и не делит кэш с основной сессией.`,
+        recommendation: L`Субагенты выгодны для объёмного чтения и поиска. Для мелких шагов, которым нужен контекст основной сессии, они обходятся дороже.`,
         metric: Fmt.percent(share),
       });
     }
@@ -203,9 +204,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
       if (share >= 0.3) {
         insights.push({
           id: "sessions.concentration", severity: "info", kind: "observation",
-          title: "Одна сессия съела большую часть",
-          detail: `Сессия в «${sessionProject(top)}» от ${Fmt.dateTime(top.start)} — ${Fmt.percent(share)} стоимости периода (${Fmt.usd(top.summary.totalCost)}, ${top.summary.requests} запросов, пик контекста ${Fmt.tokens(top.peakContextTokens)}).`,
-          recommendation: "Длинные сессии дорожают с каждым ходом: весь накопленный контекст отправляется снова. Дробите большие задачи на сессии поменьше.",
+          title: L`Одна сессия съела большую часть`,
+          detail: L`Сессия в «${sessionProject(top)}» от ${Fmt.dateTime(top.start)} — ${Fmt.percent(share)} стоимости периода (${Fmt.usd(top.summary.totalCost)}, ${top.summary.requests} запросов, пик контекста ${Fmt.tokens(top.peakContextTokens)}).`,
+          recommendation: L`Длинные сессии дорожают с каждым ходом: весь накопленный контекст отправляется снова. Дробите большие задачи на сессии поменьше.`,
           metric: Fmt.percent(share),
         });
       }
@@ -221,8 +222,8 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
       insights.push({
         id: "fast.mode", severity: "info", kind: "tradeoff",
         title: "Fast mode",
-        detail: `${fast.length} запросов шли в fast mode: ${Fmt.usd(fastCost)}, из них наценка за скорость — ${Fmt.usd(premium)}.`,
-        recommendation: "Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач.",
+        detail: L`${fast.length} запросов шли в fast mode: ${Fmt.usd(fastCost)}, из них наценка за скорость — ${Fmt.usd(premium)}.`,
+        recommendation: L`Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач.`,
         metric: `${fast.length}`,
         potentialSavings: premium,
       });
@@ -238,9 +239,9 @@ export function analyzeInsights(pricing: PricingTable, events: PricedEvent[], op
     if (models.length) {
       insights.push({
         id: "pricing.estimated", severity: "info", kind: "observation",
-        title: "Цены для части моделей оценены",
-        detail: `Для ${models.join(", ")} нет точной строки в таблице цен; стоимость взята по семейству модели.`,
-        recommendation: "Добавьте эти модели в «Настройки → Цены».",
+        title: L`Цены для части моделей оценены`,
+        detail: L`Для ${models.join(", ")} нет точной строки в таблице цен; стоимость взята по семейству модели.`,
+        recommendation: L`Добавьте эти модели в «Настройки → Цены».`,
         metric: `${models.length}`,
       });
     }
@@ -259,14 +260,14 @@ function requestInsights(pricing: PricingTable, events: PricedEvent[], total: nu
   if (issues.realMisses > 0) {
     const real = issues.misses.filter((g) => g.reason !== "previous_message_not_found" && g.reason !== "unavailable");
     const top = real[0];
-    const parts = real.map((g) => `${cacheMissTitle(g.reason)} — ${Fmt.plural(g.count, "раз", "раза", "раз")}, ${Fmt.tokens(g.missedTokens)} токенов`);
+    const parts = real.map((g) => L`${cacheMissTitle(g.reason)} — ${Fmt.plural(g.count, "раз", "раза", "раз")}, ${Fmt.tokens(g.missedTokens)} токенов`);
     const share = total > 0 ? issues.realExtraCost / total : 0;
     insights.push({
       id: "cache.misses",
       severity: share >= 0.05 || issues.realMisses >= 10 ? "warning" : "info",
       kind: "freeWin",
-      title: "Кэш сбрасывался из-за изменений в запросе",
-      detail: `API сообщило о ${Fmt.plural(issues.realMisses, "промахе", "промахах", "промахах")} кэша с понятной причиной: ${parts.join("; ")}. Эти токены записаны в кэш заново вместо дешёвого чтения: ≈${Fmt.usd(issues.realExtraCost)}.`,
+      title: L`Кэш сбрасывался из-за изменений в запросе`,
+      detail: L`API сообщило о ${Fmt.plural(issues.realMisses, "промахе", "промахах", "промахах")} кэша с понятной причиной: ${parts.join("; ")}. Эти токены записаны в кэш заново вместо дешёвого чтения: ≈${Fmt.usd(issues.realExtraCost)}.`,
       recommendation: top ? cacheMissAdvice(top.reason) : undefined,
       metric: `${issues.realMisses}`,
       potentialSavings: issues.realExtraCost > 0 ? issues.realExtraCost : undefined,
@@ -279,9 +280,9 @@ function requestInsights(pricing: PricingTable, events: PricedEvent[], total: nu
       id: "thinking.dropped",
       severity: issues.droppedRequests >= 10 ? "warning" : "info",
       kind: "freeWin",
-      title: "Модель теряла свои прежние размышления",
-      detail: `В ${Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")} API убрало из истории размышления модели: ${reasons.join("; ")}. Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.`,
-      recommendation: "Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными.",
+      title: L`Модель теряла свои прежние размышления`,
+      detail: L`В ${Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")} API убрало из истории размышления модели: ${reasons.join("; ")}. Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.`,
+      recommendation: L`Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными.`,
       metric: `${issues.droppedRequests}`,
     });
   }
@@ -289,9 +290,9 @@ function requestInsights(pricing: PricingTable, events: PricedEvent[], total: nu
   if (issues.truncated > 0) {
     insights.push({
       id: "stop.max_tokens", severity: "warning", kind: "observation",
-      title: "Ответы обрывались на лимите вывода",
-      detail: `${Fmt.plural(issues.truncated, "ответ", "ответа", "ответов")} остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос.`,
-      recommendation: "Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями.",
+      title: L`Ответы обрывались на лимите вывода`,
+      detail: L`${Fmt.plural(issues.truncated, "ответ", "ответа", "ответов")} остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос.`,
+      recommendation: L`Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями.`,
       metric: `${issues.truncated}`,
     });
   }
@@ -301,15 +302,15 @@ function requestInsights(pricing: PricingTable, events: PricedEvent[], total: nu
     const categories = [...issues.refusals.entries()].map(([c, n]) => `${c}: ${n}`).join(", ");
     insights.push({
       id: "stop.refusal", severity: "info", kind: "observation",
-      title: "Модель отказывала в ответе",
-      detail: `${Fmt.plural(count, "отказ", "отказа", "отказов")} по категориям защитных классификаторов (${categories}).${issues.fallbacks > 0 ? ` ${Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")} дала резервная модель.` : ""}`,
+      title: L`Модель отказывала в ответе`,
+      detail: L`${Fmt.plural(count, "отказ", "отказа", "отказов")} по категориям защитных классификаторов (${categories}).${issues.fallbacks > 0 ? L` ${Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")} дала резервная модель.` : ""}`,
       metric: `${count}`,
     });
   } else if (issues.fallbacks > 0) {
     insights.push({
       id: "stop.fallback", severity: "info", kind: "observation",
-      title: "Отвечала резервная модель",
-      detail: `${Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")} дала резервная модель после отказа основной.`,
+      title: L`Отвечала резервная модель`,
+      detail: L`${Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")} дала резервная модель после отказа основной.`,
       metric: `${issues.fallbacks}`,
     });
   }
@@ -317,8 +318,8 @@ function requestInsights(pricing: PricingTable, events: PricedEvent[], total: nu
   if (issues.modelSwitches > 0) {
     insights.push({
       id: "model.switched", severity: "info", kind: "observation",
-      title: "Запросы обслуживала другая модель",
-      detail: `В ${Fmt.plural(issues.modelSwitches, "запросе", "запросах", "запросах")} ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие.`,
+      title: L`Запросы обслуживала другая модель`,
+      detail: L`В ${Fmt.plural(issues.modelSwitches, "запросе", "запросах", "запросах")} ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие.`,
       metric: `${issues.modelSwitches}`,
     });
   }

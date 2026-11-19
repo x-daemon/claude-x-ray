@@ -14,9 +14,9 @@ struct ReportsView: View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Button {
-                    savePDF(name: "S2A Claude X-Ray — отчёт \(stamp).pdf")
+                    savePDF(name: L("S2A Claude X-Ray — отчёт \(stamp).pdf"))
                 } label: {
-                    Label("Сохранить PDF…", systemImage: "doc.richtext")
+                    Label(L("Сохранить PDF…"), systemImage: "doc.richtext")
                 }
                 .keyboardShortcut("s", modifiers: .command)
 
@@ -24,20 +24,20 @@ struct ReportsView: View {
                     Button("Markdown…") {
                         save(markdown(), name: "claude-xray-\(stamp).md", type: UTType(filenameExtension: "md") ?? .plainText)
                     }
-                    Button("CSV по дням…") {
+                    Button(L("CSV по дням…")) {
                         save(ReportExporter.dailyCSV(model.periodEvents), name: "claude-xray-daily-\(stamp).csv", type: .commaSeparatedText)
                     }
-                    Button("CSV по сессиям…") {
+                    Button(L("CSV по сессиям…")) {
                         save(ReportExporter.sessionsCSV(SessionAnalytics.sessions(model.periodEvents)), name: "claude-xray-sessions-\(stamp).csv", type: .commaSeparatedText)
                     }
                     Divider()
-                    Button("Копировать как Markdown") {
+                    Button(L("Копировать как Markdown")) {
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(markdown(), forType: .string)
-                        status = "Отчёт скопирован в буфер обмена"
+                        status = L("Отчёт скопирован в буфер обмена")
                     }
                 } label: {
-                    Label("Данные", systemImage: "tablecells")
+                    Label(L("Данные"), systemImage: "tablecells")
                 }
                 .fixedSize()
 
@@ -63,7 +63,7 @@ struct ReportsView: View {
     private func markdown() -> String {
         let events = model.periodEvents
         return ReportExporter.markdown(
-            title: "S2A Claude X-Ray — отчёт об использовании Claude Code",
+            title: L("S2A Claude X-Ray — отчёт об использовании Claude Code"),
             periodLabel: model.period.title,
             events: events,
             insights: InsightEngine(pricing: model.pricing).analyze(events)
@@ -72,7 +72,7 @@ struct ReportsView: View {
 
     private func savePDF(name: String) {
         guard let data = ReportPDF.data(for: model) else {
-            status = "Не удалось построить PDF"
+            status = L("Не удалось построить PDF")
             return
         }
         let panel = NSSavePanel()
@@ -82,10 +82,10 @@ struct ReportsView: View {
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             try data.write(to: url, options: .atomic)
-            status = "Сохранено: \(url.lastPathComponent)"
+            status = L("Сохранено: \(url.lastPathComponent)")
             NSWorkspace.shared.activateFileViewerSelecting([url])
         } catch {
-            status = "Не удалось сохранить: \(error.localizedDescription)"
+            status = L("Не удалось сохранить: \(error.localizedDescription)")
         }
     }
 
@@ -97,9 +97,9 @@ struct ReportsView: View {
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             try text.write(to: url, atomically: true, encoding: .utf8)
-            status = "Сохранено: \(url.lastPathComponent)"
+            status = L("Сохранено: \(url.lastPathComponent)")
         } catch {
-            status = "Не удалось сохранить: \(error.localizedDescription)"
+            status = L("Не удалось сохранить: \(error.localizedDescription)")
         }
     }
 }

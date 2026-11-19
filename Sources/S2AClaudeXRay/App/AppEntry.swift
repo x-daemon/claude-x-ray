@@ -6,6 +6,7 @@ import Foundation
 @MainActor
 enum AppEntry {
     static func main() {
+        AppLanguage.apply(AppLanguage.setting)
         if CommandLine.arguments.dropFirst().contains(StatusLineCommand.flag) {
             StatusLineCommand.run()
             return

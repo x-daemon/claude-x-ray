@@ -31,23 +31,23 @@ struct MenuBarView: View {
 
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
                 if let window = model.planUsage?.fiveHour {
-                    PlanWindowRow(title: "Лимит 5 ч", window: window, now: model.now)
+                    PlanWindowRow(title: L("Лимит 5 ч"), window: window, now: model.now)
                 }
                 if let window = model.planUsage?.sevenDay {
-                    PlanWindowRow(title: "Неделя", window: window, now: model.now)
+                    PlanWindowRow(title: L("Неделя"), window: window, now: model.now)
                 }
                 GridRow {
-                    Text("Сегодня").foregroundStyle(.secondary)
+                    Text(L("Сегодня")).foregroundStyle(.secondary)
                     Text(Fmt.usd(today.cost.total)).monospacedDigit()
-                    Text("\(Fmt.tokens(today.tokens.total)) ток.").foregroundStyle(.secondary)
+                    Text(L("\(Fmt.tokens(today.tokens.total)) ток.")).foregroundStyle(.secondary)
                 }
                 GridRow {
-                    Text("Темп за час").foregroundStyle(.secondary)
-                    Text("\(Fmt.usd(burn.costPerHour))/ч").monospacedDigit()
-                    Text("\(burn.requests) запр.").foregroundStyle(.secondary)
+                    Text(L("Темп за час")).foregroundStyle(.secondary)
+                    Text(L("\(Fmt.usd(burn.costPerHour))/ч")).monospacedDigit()
+                    Text(L("\(burn.requests) запр.")).foregroundStyle(.secondary)
                 }
                 GridRow {
-                    Text("Кэш сегодня").foregroundStyle(.secondary)
+                    Text(L("Кэш сегодня")).foregroundStyle(.secondary)
                     Text(today.requests > 0 ? Fmt.percent(today.tokens.cacheHitRate) : "—").monospacedDigit()
                     Text("")
                 }
@@ -57,7 +57,7 @@ struct MenuBarView: View {
             Divider()
 
             HStack {
-                Button("Открыть X-Ray") {
+                Button(L("Открыть X-Ray")) {
                     openWindow(id: "main")
                     NSApp.activate()
                 }
@@ -67,13 +67,13 @@ struct MenuBarView: View {
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
-                .help("Обновить")
+                .help(L("Обновить"))
                 SettingsLink {
                     Image(systemName: "gearshape")
                 }
-                .help("Настройки")
+                .help(L("Настройки"))
                 Spacer()
-                Button("Выйти") { NSApp.terminate(nil) }
+                Button(L("Выйти")) { NSApp.terminate(nil) }
             }
         }
         .padding(14)
@@ -94,7 +94,7 @@ struct PlanWindowRow: View {
             Text(Fmt.percent(fraction))
                 .monospacedDigit()
                 .foregroundStyle(fraction >= 0.7 ? LimitGauge.color(for: fraction) : Color.primary)
-            Text(window.hasReset(at: now) ? "сброшен" : "сброс через \(Fmt.span(window.resetsAt.timeIntervalSince(now)))")
+            Text(window.hasReset(at: now) ? L("сброшен") : L("сброс через \(Fmt.span(window.resetsAt.timeIntervalSince(now)))"))
                 .foregroundStyle(.secondary)
         }
     }
@@ -116,7 +116,7 @@ struct MenuBarStatusLine: View {
                     if let detail = status.state.detail {
                         Text(detail).font(.system(.caption, design: .monospaced)).lineLimit(2)
                     }
-                    Text("ответов модели \(status.stepsInTurn) · инструментов \(status.toolsInTurn)")
+                    Text(L("ответов модели \(status.stepsInTurn) · инструментов \(status.toolsInTurn)"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

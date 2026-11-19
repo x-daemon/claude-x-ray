@@ -6,17 +6,17 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             AppearanceSettings()
-                .tabItem { Label("Оформление", systemImage: "paintpalette") }
+                .tabItem { Label(L("Язык и оформление"), systemImage: "paintpalette") }
             SourcesSettings()
-                .tabItem { Label("Источники", systemImage: "folder") }
+                .tabItem { Label(L("Источники"), systemImage: "folder") }
             AccountLimitsSettings()
-                .tabItem { Label("Лимиты аккаунта", systemImage: "gauge.with.dots.needle.33percent") }
+                .tabItem { Label(L("Лимиты аккаунта"), systemImage: "gauge.with.dots.needle.33percent") }
             CloudReceiverSettings()
-                .tabItem { Label("Облако", systemImage: "icloud.and.arrow.down") }
+                .tabItem { Label(L("Облако"), systemImage: "icloud.and.arrow.down") }
             PricingSettings()
-                .tabItem { Label("Цены", systemImage: "dollarsign.circle") }
+                .tabItem { Label(L("Цены"), systemImage: "dollarsign.circle") }
             PlanSettings()
-                .tabItem { Label("Подписка", systemImage: "person.crop.circle") }
+                .tabItem { Label(L("Подписка"), systemImage: "person.crop.circle") }
         }
         .frame(width: 780, height: 600)
     }
@@ -28,7 +28,7 @@ struct SourcesSettings: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Папки с транскриптами Claude Code (*.jsonl). Обычно это ~/.claude/projects; если задан CLAUDE_CONFIG_DIR — его подпапка projects.")
+            Text(L("Папки с транскриптами Claude Code (*.jsonl). Обычно это ~/.claude/projects; если задан CLAUDE_CONFIG_DIR — его подпапка projects."))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -44,23 +44,23 @@ struct SourcesSettings: View {
                             Image(systemName: "minus.circle")
                         }
                         .buttonStyle(.borderless)
-                        .help("Убрать папку")
+                        .help(L("Убрать папку"))
                     }
                 }
             }
             .frame(minHeight: 140)
 
             HStack {
-                Button("Добавить папку…") { addFolder() }
-                Button("По умолчанию") { model.resetDirectories() }
-                Button("Импортировать лог…") { TranscriptImportPanel.run(model: model) }
-                    .help("Скопировать лог сессии (.jsonl или .zip), например облачной, в папку импорта X-Ray")
+                Button(L("Добавить папку…")) { addFolder() }
+                Button(L("По умолчанию")) { model.resetDirectories() }
+                Button(L("Импортировать лог…")) { TranscriptImportPanel.run(model: model) }
+                    .help(L("Скопировать лог сессии (.jsonl или .zip), например облачной, в папку импорта X-Ray"))
                 Spacer()
-                Button("Пересканировать всё") { Task { await model.fullRescan() } }
+                Button(L("Пересканировать всё")) { Task { await model.fullRescan() } }
             }
 
             if let result = model.lastScanResult {
-                Text("Последнее чтение: файлов \(result.filesSeen), новых строк \(result.linesRead), за \(String(format: "%.2f", result.duration)) с. Всего запросов в базе: \(model.priced.count).")
+                Text(L("Последнее чтение: файлов \(result.filesSeen), новых строк \(result.linesRead), за \(String(format: "%.2f", result.duration)) с. Всего запросов в базе: \(model.priced.count)."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 ForEach(result.errors, id: \.self) { error in
@@ -68,7 +68,7 @@ struct SourcesSettings: View {
                 }
             }
 
-            Text("Приложение только читает эти файлы и никуда не отправляет данные.")
+            Text(L("Приложение только читает эти файлы и никуда не отправляет данные."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -94,24 +94,24 @@ struct PricingSettings: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("USD за 1 млн токенов. \(model.pricing.sourceNote). Цены меняются — сверяйте с platform.claude.com/docs/en/about-claude/pricing. На подписке это API-эквивалент, а не списание.")
+            Text(L("USD за 1 млн токенов. \(L10n.tr(model.pricing.sourceNote)). Цены меняются — сверяйте с platform.claude.com/docs/en/about-claude/pricing. На подписке это API-эквивалент, а не списание."))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             Table(model.pricing.models) {
-                TableColumn("Модель") { price in
+                TableColumn(L("Модель")) { price in
                     VStack(alignment: .leading, spacing: 1) {
                         Text(price.displayName)
                         Text(price.modelPrefix).font(.caption).foregroundStyle(.secondary)
                     }
-                    .help(price.note ?? "")
+                    .help(price.note.map(L10n.tr) ?? "")
                 }
                 .width(min: 140, ideal: 170)
-                TableColumn("Ввод") { price in priceField(price.modelPrefix, \.input) }
-                TableColumn("Вывод") { price in priceField(price.modelPrefix, \.output) }
-                TableColumn("Чтение кэша") { price in priceField(price.modelPrefix, \.cacheRead) }
-                TableColumn("Запись 5 мин") { price in priceField(price.modelPrefix, \.cacheWrite5m) }
-                TableColumn("Запись 1 ч") { price in priceField(price.modelPrefix, \.cacheWrite1h) }
+                TableColumn(L("Ввод")) { price in priceField(price.modelPrefix, \.input) }
+                TableColumn(L("Вывод")) { price in priceField(price.modelPrefix, \.output) }
+                TableColumn(L("Чтение кэша")) { price in priceField(price.modelPrefix, \.cacheRead) }
+                TableColumn(L("Запись 5 мин")) { price in priceField(price.modelPrefix, \.cacheWrite5m) }
+                TableColumn(L("Запись 1 ч")) { price in priceField(price.modelPrefix, \.cacheWrite1h) }
                 TableColumn("") { price in
                     Button {
                         model.removePrice(prefix: price.modelPrefix)
@@ -119,22 +119,22 @@ struct PricingSettings: View {
                         Image(systemName: "trash")
                     }
                     .buttonStyle(.borderless)
-                    .help("Удалить строку")
+                    .help(L("Удалить строку"))
                 }
                 .width(28)
             }
 
             HStack {
-                TextField("id модели, например claude-sonnet-4-5", text: $newPrefix)
+                TextField(L("id модели, например claude-sonnet-4-5"), text: $newPrefix)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 280)
-                Button("Добавить") {
+                Button(L("Добавить")) {
                     model.addPrice(prefix: newPrefix)
                     newPrefix = ""
                 }
                 .disabled(newPrefix.trimmingCharacters(in: .whitespaces).isEmpty)
                 Spacer()
-                Button("Сбросить к стандартным") { model.resetPricing() }
+                Button(L("Сбросить к стандартным")) { model.resetPricing() }
             }
         }
         .padding(20)
@@ -154,7 +154,7 @@ struct PlanSettings: View {
 
     var body: some View {
         Form {
-            Picker("Тариф", selection: Binding(get: { model.plan }, set: { model.setPlan($0) })) {
+            Picker(L("Тариф"), selection: Binding(get: { model.plan }, set: { model.setPlan($0) })) {
                 ForEach(SubscriptionPlan.allCases) { plan in
                     Text(plan.title).tag(plan)
                 }
@@ -162,8 +162,8 @@ struct PlanSettings: View {
             .pickerStyle(.radioGroup)
 
             Section {
-                Text("На Pro и Max лимиты считаются в 5-часовых окнах, которые начинаются с первого запроса, и дополнительно за неделю. Точный размер лимита Anthropic не публикует, и в логах его нет. Поэтому X-Ray показывает API-эквивалент окна и сравнивает его с вашим самым загруженным окном в истории.")
-                Text("Чем меньше API-эквивалент на задачу (кэш, короткий контекст, подходящая модель), тем медленнее расходуется лимит.")
+                Text(L("На Pro и Max лимиты считаются в 5-часовых окнах, которые начинаются с первого запроса, и дополнительно за неделю. Точный размер лимита Anthropic не публикует, и в логах его нет. Поэтому X-Ray показывает API-эквивалент окна и сравнивает его с вашим самым загруженным окном в истории."))
+                Text(L("Чем меньше API-эквивалент на задачу (кэш, короткий контекст, подходящая модель), тем медленнее расходуется лимит."))
             }
             .foregroundStyle(.secondary)
         }
@@ -172,15 +172,46 @@ struct PlanSettings: View {
     }
 }
 
-/// Theme (S2A or System), light/dark preference and a preview of the active palette.
+/// Interface language, theme (S2A or System), light/dark preference and a preview of the palette.
 struct AppearanceSettings: View {
+    @Environment(AppModel.self) private var model
     @AppStorage(AppTheme.storageKey) private var themeRaw = AppTheme.s2a.rawValue
     @AppStorage(AppAppearance.storageKey) private var appearanceRaw = AppAppearance.auto.rawValue
+    @AppStorage(AppLanguage.storageKey) private var languageRaw = AppLanguage.system
+
+    /// Applies a new language before the windows rebuild, then reads the logs again: activity
+    /// titles are written in the language they were read in.
+    private var languageSelection: Binding<String> {
+        Binding(
+            get: { languageRaw },
+            set: { value in
+                let before = L10n.language
+                AppLanguage.save(value)
+                languageRaw = value
+                if L10n.language != before {
+                    Task { await model.fullRescan() }
+                }
+            }
+        )
+    }
 
     var body: some View {
         Form {
-            Section("Тема") {
-                Picker("Тема", selection: $themeRaw) {
+            Section(L("Язык интерфейса")) {
+                Picker(L("Язык интерфейса"), selection: languageSelection) {
+                    Text(L("Как в системе")).tag(AppLanguage.system)
+                    ForEach(Language.allCases) { option in
+                        Text(option.nativeName).tag(option.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                Text(L("Меню, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык macOS: русский, английский или немецкий, для других языков — английский. Системные пункты меню (Скрыть, Завершить) меняют язык после перезапуска."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Section(L("Тема")) {
+                Picker(L("Тема"), selection: $themeRaw) {
                     ForEach(AppTheme.allCases) { theme in
                         Text(theme.title).tag(theme.rawValue)
                     }
@@ -189,14 +220,14 @@ struct AppearanceSettings: View {
                 Text((AppTheme(rawValue: themeRaw) ?? .s2a).subtitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Picker("Режим", selection: $appearanceRaw) {
+                Picker(L("Режим"), selection: $appearanceRaw) {
                     ForEach(AppAppearance.allCases) { appearance in
                         Text(appearance.title).tag(appearance.rawValue)
                     }
                 }
                 .pickerStyle(.segmented)
             }
-            Section("Палитра") {
+            Section(L("Палитра")) {
                 ThemePreview()
             }
         }
@@ -212,7 +243,7 @@ struct ThemePreview: View {
                 BrandMark(size: 40)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("S2A Claude X-Ray").font(.headline)
-                    Text("акцент, поверхности и восемь цветов серий").font(.caption).foregroundStyle(.secondary)
+                    Text(L("акцент, поверхности и восемь цветов серий")).font(.caption).foregroundStyle(.secondary)
                 }
             }
             HStack(spacing: 6) {
@@ -224,23 +255,23 @@ struct ThemePreview: View {
                 }
             }
             FlowLayout(spacing: 12) {
-                Label("модель", systemImage: "square.fill").foregroundStyle(Palette.model)
-                Label("вы", systemImage: "square.fill").foregroundStyle(Palette.user)
-                Label("инструменты", systemImage: "square.fill").foregroundStyle(Palette.tool)
-                Label("контекст", systemImage: "square.fill").foregroundStyle(Palette.context)
-                Label("субагенты", systemImage: "square.fill").foregroundStyle(Palette.subagent)
-                Label("скиллы", systemImage: "square.fill").foregroundStyle(Palette.skill)
+                Label(L("модель"), systemImage: "square.fill").foregroundStyle(Palette.model)
+                Label(L("вы"), systemImage: "square.fill").foregroundStyle(Palette.user)
+                Label(L("инструменты"), systemImage: "square.fill").foregroundStyle(Palette.tool)
+                Label(L("контекст"), systemImage: "square.fill").foregroundStyle(Palette.context)
+                Label(L("субагенты"), systemImage: "square.fill").foregroundStyle(Palette.subagent)
+                Label(L("скиллы"), systemImage: "square.fill").foregroundStyle(Palette.skill)
                 Label("MCP", systemImage: "square.fill").foregroundStyle(Palette.mcp)
             }
             .font(.caption)
             .labelStyle(LegendLabelStyle())
             HStack(spacing: 8) {
-                Chip(text: "хорошо", systemImage: "checkmark.circle.fill", tint: Palette.good)
-                Chip(text: "внимание", systemImage: "exclamationmark.triangle.fill", tint: Palette.warning)
-                Chip(text: "серьёзно", systemImage: "exclamationmark.circle.fill", tint: Palette.serious)
-                Chip(text: "критично", systemImage: "xmark.octagon.fill", tint: Palette.critical)
+                Chip(text: L("хорошо"), systemImage: "checkmark.circle.fill", tint: Palette.good)
+                Chip(text: L("внимание"), systemImage: "exclamationmark.triangle.fill", tint: Palette.warning)
+                Chip(text: L("серьёзно"), systemImage: "exclamationmark.circle.fill", tint: Palette.serious)
+                Chip(text: L("критично"), systemImage: "xmark.octagon.fill", tint: Palette.critical)
             }
-            Text("Цвета серий подобраны так, чтобы соседние оставались различимы при протанопии и дейтеранопии в светлом и тёмном режиме. Статусные цвета одинаковы во всех темах и всегда идут со значком и подписью.")
+            Text(L("Цвета серий подобраны так, чтобы соседние оставались различимы при протанопии и дейтеранопии в светлом и тёмном режиме. Статусные цвета одинаковы во всех темах и всегда идут со значком и подписью."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

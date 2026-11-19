@@ -11,7 +11,7 @@ const bridge: XRayBridge = {
   onDelta: on(CHANNELS.delta) as XRayBridge["onDelta"],
   onPlanUsage: on(CHANNELS.planUsage) as XRayBridge["onPlanUsage"],
   onReceiver: on(CHANNELS.receiver) as XRayBridge["onReceiver"],
-  onSettings: (callback) => ipcRenderer.on(CHANNELS.settings, (_e, p) => callback(p.settings, p.directories)),
+  onSettings: (callback) => ipcRenderer.on(CHANNELS.settings, (_e, p) => callback(p.settings, p.directories, p.language)),
   onNavigate: on(CHANNELS.navigate) as XRayBridge["onNavigate"],
   rescan: () => ipcRenderer.invoke(CHANNELS.rescan),
   fullRescan: () => ipcRenderer.invoke(CHANNELS.fullRescan),

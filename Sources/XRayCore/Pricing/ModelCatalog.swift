@@ -11,7 +11,7 @@ public enum ModelFamily: String, CaseIterable, Sendable, Codable {
         case .haiku: return "Haiku"
         case .fable: return "Fable"
         case .mythos: return "Mythos"
-        case .other: return "Другие"
+        case .other: return L("Другие")
         }
     }
 

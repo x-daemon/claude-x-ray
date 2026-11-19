@@ -1,0 +1,3595 @@
+{
+ "comment": "Interface texts of S2A Claude X-Ray (Mac and Windows), keyed by the Russian text. {0}, {1}... are values filled in by the code; plurals are keyed one|few|many and translated one|other, {n} places the number. Run `python3 scripts/l10n.py check` after editing, then `generate`.",
+ "strings": {
+  "\n(в фоне)": {
+   "en": "\n(in the background)",
+   "de": "\n(im Hintergrund)"
+  },
+  " (1 ч)": {
+   "en": " (1 h)",
+   "de": " (1 Std.)"
+  },
+  " (5 мин)": {
+   "en": " (5 min)",
+   "de": " (5 Min.)"
+  },
+  " ({0} идёт)": {
+   "en": " ({0} running)",
+   "de": " ({0} laufend)"
+  },
+  " (до {0})": {
+   "en": " (up to {0})",
+   "de": " (bis zu {0})"
+  },
+  " (размышления {0})": {
+   "en": " (thinking {0})",
+   "de": " (Denken {0})"
+  },
+  " {0} дала резервная модель.": {
+   "en": " The fallback model gave {0}.",
+   "de": " {0} lieferte das Ersatzmodell."
+  },
+  " {0} записей идут с TTL 1 час: такая запись стоит 2× цены ввода (TTL 5 минут — 1.25×), зато переживает паузы до часа.": {
+   "en": " {0} of writes use a 1-hour TTL: such a write costs 2× the input price (5-minute TTL: 1.25×) but survives pauses of up to an hour.",
+   "de": " {0} der Schreibvorgänge haben eine TTL von 1 Stunde: Sie kosten das 2-Fache des Eingabepreises (TTL 5 Minuten: 1,25-fach), überstehen aber Pausen bis zu einer Stunde."
+  },
+  " · было {0} токенов": {
+   "en": " · was {0} tokens",
+   "de": " · vorher {0} Tokens"
+  },
+  " · все вхождения": {
+   "en": " · all occurrences",
+   "de": " · alle Vorkommen"
+  },
+  " · вход {0} · вывод {1}": {
+   "en": " · input {0} · output {1}",
+   "de": " · Eingabe {0} · Ausgabe {1}"
+  },
+  " · вход {0} · вывод {1}{2}": {
+   "en": " · input {0} · output {1}{2}",
+   "de": " · Eingabe {0} · Ausgabe {1}{2}"
+  },
+  " · запись {0}": {
+   "en": " · write {0}",
+   "de": " · Schreiben {0}"
+  },
+  " · запись {0}{1}": {
+   "en": " · write {0}{1}",
+   "de": " · Schreiben {0}{1}"
+  },
+  " · остановили продолжение": {
+   "en": " · stopped the continuation",
+   "de": " · haben die Fortsetzung gestoppt"
+  },
+  " · последний изменён {0}, {1}": {
+   "en": " · last changed {0}, {1}",
+   "de": " · zuletzt geändert {0}, {1}"
+  },
+  " · размышления {0}": {
+   "en": " · thinking {0}",
+   "de": " · Denken {0}"
+  },
+  " · субагент": {
+   "en": " · subagent",
+   "de": " · Subagent"
+  },
+  " в {0}": {
+   "en": " in {0}",
+   "de": " in {0}"
+  },
+  " записано": {
+   "en": " written",
+   "de": " geschrieben"
+  },
+  " стоимости": {
+   "en": " of cost",
+   "de": " der Kosten"
+  },
+  "## Итого": {
+   "en": "## Totals",
+   "de": "## Gesamt"
+  },
+  "## Оптимизация": {
+   "en": "## Optimization",
+   "de": "## Optimierung"
+  },
+  "## По моделям": {
+   "en": "## By model",
+   "de": "## Nach Modell"
+  },
+  "## По проектам": {
+   "en": "## By project",
+   "de": "## Nach Projekt"
+  },
+  "## Самые дорогие сессии": {
+   "en": "## Most expensive sessions",
+   "de": "## Teuerste Sitzungen"
+  },
+  "### Из чего складывается стоимость": {
+   "en": "### What the cost is made of",
+   "de": "### Woraus sich die Kosten zusammensetzen"
+  },
+  "**Claude Desktop:** сессия Code в локальной среде, а не в облачной.": {
+   "en": "**Claude Desktop:** a Code session in the local environment, not the cloud one.",
+   "de": "**Claude Desktop:** eine Code-Sitzung in der lokalen Umgebung, nicht in der Cloud."
+  },
+  "**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом Mac, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую.": {
+   "en": "**Remote Control:** `claude remote-control` in the project folder. The session runs on this Mac, you control it from the Claude app on your phone or in a browser, and X-Ray shows it live.",
+   "de": "**Remote Control:** `claude remote-control` im Projektordner. Die Sitzung läuft auf diesem Mac, Sie steuern sie über die Claude-App auf dem Handy oder im Browser, und X-Ray zeigt sie live."
+  },
+  "**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом компьютере, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую.": {
+   "en": "**Remote Control:** `claude remote-control` in the project folder. The session runs on this computer, you control it from the Claude app on your phone or in a browser, and X-Ray shows it live.",
+   "de": "**Remote Control:** `claude remote-control` im Projektordner. Die Sitzung läuft auf diesem Computer, Sie steuern sie über die Claude-App auf dem Handy oder im Browser, und X-Ray zeigt sie live."
+  },
+  "**Лимиты всего аккаунта**, включая облако и чаты, X-Ray берёт из строки статуса Claude Code: «Настройки → Лимиты аккаунта».": {
+   "en": "**Whole-account limits**, including the cloud and chats, come from Claude Code's status line: Settings → Account limits.",
+   "de": "**Limits des ganzen Kontos**, einschließlich Cloud und Chats, liest X-Ray aus der Statuszeile von Claude Code: „Einstellungen → Kontolimits“."
+  },
+  "**Облачные сессии вживую:** «Настройки → Облако». Каждая облачная сессия сама присылает сюда свой лог после каждого шага через туннель к этому Mac.": {
+   "en": "**Live cloud sessions:** Settings → Cloud. Each cloud session sends its log here after every step, through a tunnel to this Mac.",
+   "de": "**Cloud-Sitzungen live:** „Einstellungen → Cloud“. Jede Cloud-Sitzung sendet ihr Log nach jedem Schritt über einen Tunnel an diesen Mac."
+  },
+  "**Облачные сессии вживую:** «Настройки → Облако». Каждая облачная сессия сама присылает сюда свой лог после каждого шага через туннель к этому компьютеру.": {
+   "en": "**Live cloud sessions:** Settings → Cloud. Each cloud session sends its log here after every step, through a tunnel to this computer.",
+   "de": "**Cloud-Sitzungen live:** „Einstellungen → Cloud“. Jede Cloud-Sitzung sendet ihr Log nach jedem Schritt über einen Tunnel an diesen Computer."
+  },
+  "**Разово:** попросите облачную сессию прислать свой лог («пришли лог сессии для X-Ray») и перетащите файл в окно X-Ray.": {
+   "en": "**One-off:** ask the cloud session to send its log (“send the session log for X-Ray”) and drag the file into the X-Ray window.",
+   "de": "**Einmalig:** Bitten Sie die Cloud-Sitzung, ihr Log zu schicken („schick das Sitzungslog für X-Ray“), und ziehen Sie die Datei ins Fenster von X-Ray."
+  },
+  "**Терминал:** `claude` в папке проекта (PowerShell, Windows Terminal или WSL с папкой логов из «Настройки → Источники»).": {
+   "en": "**Terminal:** `claude` in the project folder (PowerShell, Windows Terminal or WSL with its log folder added in Settings → Sources).",
+   "de": "**Terminal:** `claude` im Projektordner (PowerShell, Windows Terminal oder WSL mit dem Logordner unter „Einstellungen → Quellen“)."
+  },
+  "**Терминал:** `claude` в папке проекта.": {
+   "en": "**Terminal:** `claude` in the project folder.",
+   "de": "**Terminal:** `claude` im Projektordner."
+  },
+  "**Что сделать:** {0}": {
+   "en": "**What to do:** {0}",
+   "de": "**Was tun:** {0}"
+  },
+  "+{0} строк": {
+   "en": "+{0} lines",
+   "de": "+{0} Zeilen"
+  },
+  "+{0} −{1} строк": {
+   "en": "+{0} −{1} lines",
+   "de": "+{0} −{1} Zeilen"
+  },
+  ", думал {0}": {
+   "en": ", thought {0}",
+   "de": ", dachte {0}"
+  },
+  ", ошибок: {0}": {
+   "en": ", errors: {0}",
+   "de": ", Fehler: {0}"
+  },
+  "/compact и автоматические": {
+   "en": "/compact and automatic",
+   "de": "/compact und automatische"
+  },
+  "10 мин": {
+   "en": "10 min",
+   "de": "10 Min."
+  },
+  "2 часа": {
+   "en": "2 hours",
+   "de": "2 Stunden"
+  },
+  "30 дней": {
+   "en": "30 days",
+   "de": "30 Tage"
+  },
+  "30 мин": {
+   "en": "30 min",
+   "de": "30 Min."
+  },
+  "5 ч {0}": {
+   "en": "5h {0}",
+   "de": "5 Std. {0}"
+  },
+  "5 ч {0}%": {
+   "en": "5h {0}%",
+   "de": "5 Std. {0}%"
+  },
+  "5‑часовое окно": {
+   "en": "5‑hour window",
+   "de": "5‑Stunden-Fenster"
+  },
+  "7 дней": {
+   "en": "7 days",
+   "de": "7 Tage"
+  },
+  "90 дней": {
+   "en": "90 days",
+   "de": "90 Tage"
+  },
+  ": на подписке {0} деньги не списываются": {
+   "en": ": on the {0} subscription no money is charged",
+   "de": ": Im Abo {0} wird kein Geld berechnet"
+  },
+  "> Суммы — API-эквивалент по прайс-листу. На подписке Pro/Max они не списываются, но показывают, как быстро расходуются лимиты.": {
+   "en": "> Amounts are the API equivalent at list prices. On a Pro/Max subscription they aren't charged, but they show how fast the limits are used.",
+   "de": "> Beträge sind das API-Äquivalent zum Listenpreis. Im Pro/Max-Abo werden sie nicht berechnet, zeigen aber, wie schnell die Limits verbraucht werden."
+  },
+  "API (оплата за токены)": {
+   "en": "API (pay per token)",
+   "de": "API (Abrechnung pro Token)"
+  },
+  "API ничего не отбрасывало": {
+   "en": "The API dropped nothing",
+   "de": "Die API hat nichts verworfen"
+  },
+  "API сообщило о {0} кэша с понятной причиной: {1}. Эти токены записаны в кэш заново вместо дешёвого чтения: ≈{2}.": {
+   "en": "The API reported {0} with a clear cause: {1}. These tokens were written to the cache again instead of a cheap read: ≈{2}.",
+   "de": "Die API meldete {0} mit klarer Ursache: {1}. Diese Tokens wurden neu in den Cache geschrieben statt günstig gelesen: ≈{2}."
+  },
+  "API убирало размышления из истории в {0}: {1}": {
+   "en": "The API removed thinking from the history in {0}: {1}",
+   "de": "Die API entfernte Denken aus dem Verlauf in {0}: {1}"
+  },
+  "API убрало размышление из истории: {0}{1}": {
+   "en": "The API removed thinking from the history: {0}{1}",
+   "de": "Die API entfernte Denken aus dem Verlauf: {0}{1}"
+  },
+  "API-эквивалент": {
+   "en": "API equivalent",
+   "de": "API-Äquivalent"
+  },
+  "Auto mode включён": {
+   "en": "Auto mode on",
+   "de": "Auto-Modus an"
+  },
+  "CSV по дням…": {
+   "en": "CSV by day…",
+   "de": "CSV nach Tagen…"
+  },
+  "CSV по сессиям…": {
+   "en": "CSV by session…",
+   "de": "CSV nach Sitzungen…"
+  },
+  "Claude Code выполнил с изменёнными аргументами": {
+   "en": "Claude Code ran it with changed arguments",
+   "de": "Claude Code führte es mit geänderten Argumenten aus"
+  },
+  "Claude Code после каждого ответа передаёт строке статуса процент 5‑часового и недельного лимита вашего аккаунта. Это реальные цифры подписки: они учитывают чаты, облачные сессии, Cowork и сессии на этом Mac. X-Ray подключается к строке статуса, запоминает эти цифры и показывает их на экране «Сейчас» и в строке меню.": {
+   "en": "After every reply, Claude Code passes its status line how much of your account's 5-hour and weekly limits is used. These are the subscription's real figures: they include chats, cloud sessions, Cowork and sessions on this Mac. X-Ray hooks into the status line, keeps these figures and shows them on the “Now” screen and in the menu bar.",
+   "de": "Nach jeder Antwort übergibt Claude Code seiner Statuszeile, wie viel vom 5-Stunden- und vom Wochenlimit Ihres Kontos verbraucht ist. Das sind die echten Zahlen des Abos: Sie umfassen Chats, Cloud-Sitzungen, Cowork und Sitzungen auf diesem Mac. X-Ray klinkt sich in die Statuszeile ein, merkt sich diese Zahlen und zeigt sie unter „Jetzt“ und in der Menüleiste."
+  },
+  "Claude Code после каждого ответа передаёт строке статуса процент 5‑часового и недельного лимита вашего аккаунта. Это реальные цифры подписки: они учитывают чаты, облачные сессии, Cowork и сессии на этом компьютере. X-Ray подключается к строке статуса, запоминает эти цифры и показывает их на экране «Сейчас» и в значке в области уведомлений.": {
+   "en": "After every reply, Claude Code passes its status line how much of your account's 5‑hour and weekly limits is used. These are the subscription's real figures: they include chats, cloud sessions, Cowork and sessions on this computer. X-Ray hooks into the status line, keeps these figures and shows them on the “Now” screen and in the tray icon.",
+   "de": "Nach jeder Antwort übergibt Claude Code seiner Statuszeile, wie viel vom 5‑Stunden- und vom Wochenlimit Ihres Kontos verbraucht ist. Das sind die echten Zahlen des Abos: Sie umfassen Chats, Cloud-Sitzungen, Cowork und Sitzungen auf diesem Computer. X-Ray klinkt sich in die Statuszeile ein, merkt sich diese Zahlen und zeigt sie unter „Jetzt“ und im Symbol im Infobereich."
+  },
+  "Claude получает об этом уведомление в контексте": {
+   "en": "Claude is told about it in the context",
+   "de": "Claude erhält dazu einen Hinweis im Kontext"
+  },
+  "Git-репозиторий": {
+   "en": "Git repository",
+   "de": "Git-Repository"
+  },
+  "LLM-запросы": {
+   "en": "LLM requests",
+   "de": "LLM-Anfragen"
+  },
+  "Live-трасса": {
+   "en": "Live trace",
+   "de": "Live-Trace"
+  },
+  "MCP-серверы": {
+   "en": "MCP servers",
+   "de": "MCP-Server"
+  },
+  "MCP-серверы в этой сессии не встречались": {
+   "en": "No MCP servers in this session",
+   "de": "In dieser Sitzung kamen keine MCP-Server vor"
+  },
+  "MCP-серверы и коннекторы": {
+   "en": "MCP servers and connectors",
+   "de": "MCP-Server und Konnektoren"
+  },
+  "MultiEdit {0} · {1} правок": {
+   "en": "MultiEdit {0} · {1} edits",
+   "de": "MultiEdit {0} · {1} Änderungen"
+  },
+  "S2A Claude X-Ray — отчёт {0}.pdf": {
+   "en": "S2A Claude X-Ray — report {0}.pdf",
+   "de": "S2A Claude X-Ray – Bericht {0}.pdf"
+  },
+  "S2A Claude X-Ray — отчёт об использовании Claude Code": {
+   "en": "S2A Claude X-Ray — Claude Code usage report",
+   "de": "S2A Claude X-Ray – Nutzungsbericht für Claude Code"
+  },
+  "TTL 5 мин": {
+   "en": "TTL 5 min",
+   "de": "TTL 5 Min."
+  },
+  "TTL кэша {0}": {
+   "en": "cache TTL {0}",
+   "de": "Cache-TTL {0}"
+  },
+  "TodoWrite · {0} задач": {
+   "en": "TodoWrite · {0} tasks",
+   "de": "TodoWrite · {0} Aufgaben"
+  },
+  "USD за 1 млн токенов. {0}. Цены меняются — сверяйте с platform.claude.com/docs/en/about-claude/pricing. На подписке это API-эквивалент, а не списание.": {
+   "en": "USD per 1M tokens. {0}. Prices change — check platform.claude.com/docs/en/about-claude/pricing. On a subscription this is an API equivalent, not a charge.",
+   "de": "USD pro 1 Mio. Tokens. {0}. Preise ändern sich – vergleichen Sie mit platform.claude.com/docs/en/about-claude/pricing. Im Abo ist das ein API-Äquivalent, keine Abbuchung."
+  },
+  "Write {0} · {1} строк": {
+   "en": "Write {0} · {1} lines",
+   "de": "Write {0} · {1} Zeilen"
+  },
+  "X-Ray меняет только `statusLine` в {0}, а прежний файл сохраняет рядом как settings.json.xray-backup. Строку статуса выполняет Claude Code в Терминале, в том числе с Remote Control. Если там уже была своя строка статуса, X-Ray оставляет её на экране и только запоминает цифры лимитов.": {
+   "en": "X-Ray only changes `statusLine` in {0} and keeps the previous file next to it as settings.json.xray-backup. Claude Code runs the status line in Terminal, including with Remote Control. If you already had a status line of your own, X-Ray keeps it on screen and only records the limit figures.",
+   "de": "X-Ray ändert nur `statusLine` in {0} und legt die bisherige Datei daneben als settings.json.xray-backup ab. Die Statuszeile führt Claude Code im Terminal aus, auch mit Remote Control. Gab es dort schon eine eigene Statuszeile, bleibt sie sichtbar, und X-Ray merkt sich nur die Limitwerte."
+  },
+  "X-Ray меняет только `statusLine` в {0}, а прежний файл сохраняет рядом как settings.json.xray-backup. Строку статуса выполняет Claude Code в терминале, в том числе с Remote Control. Если там уже была своя строка статуса, X-Ray оставляет её на экране (через Git Bash, как сам Claude Code) и только запоминает цифры лимитов.": {
+   "en": "X-Ray only changes `statusLine` in {0} and keeps the previous file next to it as settings.json.xray-backup. Claude Code runs the status line in the terminal, including with Remote Control. If you already had a status line of your own, X-Ray keeps it on screen (through Git Bash, like Claude Code itself) and only records the limit figures.",
+   "de": "X-Ray ändert nur `statusLine` in {0} und legt die bisherige Datei daneben als settings.json.xray-backup ab. Die Statuszeile führt Claude Code im Terminal aus, auch mit Remote Control. Gab es dort schon eine eigene Statuszeile, bleibt sie sichtbar (über Git Bash, wie bei Claude Code selbst), und X-Ray merkt sich nur die Limitwerte."
+  },
+  "id модели, например claude-sonnet-4-5": {
+   "en": "model id, e.g. claude-sonnet-4-5",
+   "de": "Modell-ID, z. B. claude-sonnet-4-5"
+  },
+  "settings.json не похож на настройки Claude Code (ожидался JSON-объект). X-Ray его не меняет.": {
+   "en": "settings.json doesn't look like Claude Code settings (a JSON object was expected). X-Ray leaves it unchanged.",
+   "de": "settings.json sieht nicht wie Einstellungen von Claude Code aus (erwartet wurde ein JSON-Objekt). X-Ray ändert die Datei nicht."
+  },
+  "{0}\n{1} байт": {
+   "en": "{0}\n{1} bytes",
+   "de": "{0}\n{1} Byte"
+  },
+  "{0} + {1} у субагентов": {
+   "en": "{0} + {1} from subagents",
+   "de": "{0} + {1} von Subagents"
+  },
+  "{0} {1} ч": {
+   "en": "{0} {1} h",
+   "de": "{0} {1} Std."
+  },
+  "{0} · {1} · {2} отв. · {3} инстр. · {4} ток. · {5}": {
+   "en": "{0} · {1} · {2} repl. · {3} tools · {4} tok. · {5}",
+   "de": "{0} · {1} · {2} Antw. · {3} Tools · {4} Tok. · {5}"
+  },
+  "{0} · {1} окна · из кэша {2}": {
+   "en": "{0} · {1} of the window · from cache {2}",
+   "de": "{0} · {1} des Fensters · aus dem Cache {2}"
+  },
+  "{0} · {1} окна · из кэша {2}{3}": {
+   "en": "{0} · {1} of the window · from cache {2}{3}",
+   "de": "{0} · {1} des Fensters · aus dem Cache {2}{3}"
+  },
+  "{0} · {1} символов": {
+   "en": "{0} · {1} characters",
+   "de": "{0} · {1} Zeichen"
+  },
+  "{0} · {1} токенов{2}": {
+   "en": "{0} · {1} tokens{2}",
+   "de": "{0} · {1} Tokens{2}"
+  },
+  "{0} · кэш {1}": {
+   "en": "{0} · cache {1}",
+   "de": "{0} · Cache {1}"
+  },
+  "{0} · пик контекста {1} · {2}": {
+   "en": "{0} · peak context {1} · {2}",
+   "de": "{0} · Kontextspitze {1} · {2}"
+  },
+  "{0} · размышления {1}": {
+   "en": "{0} · thinking {1}",
+   "de": "{0} · Denken {1}"
+  },
+  "{0} · ср. {1}": {
+   "en": "{0} · avg. {1}",
+   "de": "{0} · Ø {1}"
+  },
+  "{0} Б": {
+   "en": "{0} B",
+   "de": "{0} B"
+  },
+  "{0} КБ": {
+   "en": "{0} KB",
+   "de": "{0} KB"
+  },
+  "{0} МБ": {
+   "en": "{0} MB",
+   "de": "{0} MB"
+  },
+  "{0} вызовов": {
+   "en": "{0} calls",
+   "de": "{0} Aufrufe"
+  },
+  "{0} дала резервная модель после отказа основной.": {
+   "en": "The fallback model gave {0} after the main model refused.",
+   "de": "{0} lieferte das Ersatzmodell, nachdem das Hauptmodell abgelehnt hatte."
+  },
+  "{0} за запрос": {
+   "en": "{0} per request",
+   "de": "{0} pro Anfrage"
+  },
+  "{0} запр.": {
+   "en": "{0} req.",
+   "de": "{0} Anfr."
+  },
+  "{0} запросов": {
+   "en": "{0} requests",
+   "de": "{0} Anfragen"
+  },
+  "{0} запросов идут с effort xhigh/max; размышления — {1} выходных токенов.": {
+   "en": "{0} of requests run with xhigh/max effort; thinking is {1} of output tokens.",
+   "de": "{0} der Anfragen laufen mit Effort xhigh/max; Denken macht {1} der Ausgabe-Tokens aus."
+  },
+  "{0} запросов шли в fast mode: {1}, из них наценка за скорость — {2}.": {
+   "en": "{0} requests ran in fast mode: {1}, of which {2} was the speed premium.",
+   "de": "{0} Anfragen liefen im Fast Mode: {1}, davon {2} Aufpreis für Geschwindigkeit."
+  },
+  "{0} запуск. · {1}": {
+   "en": "{0} runs · {1}",
+   "de": "{0} Läufe · {1}"
+  },
+  "{0} запусков": {
+   "en": "{0} runs",
+   "de": "{0} Läufe"
+  },
+  "{0} из {1}": {
+   "en": "{0} of {1}",
+   "de": "{0} von {1}"
+  },
+  "{0} из {1} · {2}": {
+   "en": "{0} of {1} · {2}",
+   "de": "{0} von {1} · {2}"
+  },
+  "{0} контекста читается из кэша — это самый дешёвый вид входных токенов.": {
+   "en": "{0} of the context is read from the cache — the cheapest kind of input tokens.",
+   "de": "{0} des Kontexts kommen aus dem Cache – die günstigste Art von Eingabe-Tokens."
+  },
+  "{0} мин": {
+   "en": "{0} min",
+   "de": "{0} Min."
+  },
+  "{0} мин {1} с": {
+   "en": "{0} min {1} s",
+   "de": "{0} Min. {1} s"
+  },
+  "{0} мин назад": {
+   "en": "{0} min ago",
+   "de": "vor {0} Min."
+  },
+  "{0} мс": {
+   "en": "{0} ms",
+   "de": "{0} ms"
+  },
+  "{0} окна {1}": {
+   "en": "{0} of the {1} window",
+   "de": "{0} des {1}-Fensters"
+  },
+  "{0} остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос.": {
+   "en": "{0} stopped at max_tokens: the model didn't get to finish, and Claude Code continued or retried the request.",
+   "de": "{0} endeten bei max_tokens: Das Modell kam nicht zum Ende, und Claude Code setzte die Anfrage fort oder wiederholte sie."
+  },
+  "{0} от вашего самого загруженного окна ({1}, {2})": {
+   "en": "{0} of your busiest window ({1}, {2})",
+   "de": "{0} Ihres stärksten Fensters ({1}, {2})"
+  },
+  "{0} по дням недели и часам": {
+   "en": "{0} by weekday and hour",
+   "de": "{0} nach Wochentag und Stunde"
+  },
+  "{0} по категориям защитных классификаторов ({1}).{2}": {
+   "en": "{0} by safety classifier category ({1}).{2}",
+   "de": "{0} nach Kategorien der Sicherheitsklassifikatoren ({1}).{2}"
+  },
+  "{0} раз после паузы длиннее срока жизни кэша весь контекст сессии записывался заново: {1} за запись.": {
+   "en": "{0} times, after a pause longer than the cache lifetime, the whole session context was written again: {1} for writes.",
+   "de": "{0}-mal wurde nach einer Pause, länger als die Cache-Lebensdauer, der ganze Sitzungskontext neu geschrieben: {1} für das Schreiben."
+  },
+  "{0} с": {
+   "en": "{0} s",
+   "de": "{0} s"
+  },
+  "{0} сессий · {1} за запрос": {
+   "en": "{0} sessions · {1} per request",
+   "de": "{0} Sitzungen · {1} pro Anfrage"
+  },
+  "{0} скрыто": {
+   "en": "{0} hidden",
+   "de": "{0} ausgeblendet"
+  },
+  "{0} событий": {
+   "en": "{0} events",
+   "de": "{0} Ereignisse"
+  },
+  "{0} стоимости": {
+   "en": "{0} of cost",
+   "de": "{0} der Kosten"
+  },
+  "{0} стоимости ({1}) приходится на запросы с контекстом больше {2} токенов. Средний контекст запроса — {3}.": {
+   "en": "{0} of the cost ({1}) comes from requests with more than {2} tokens of context. The average request context is {3}.",
+   "de": "{0} der Kosten ({1}) entfallen auf Anfragen mit mehr als {2} Tokens Kontext. Der durchschnittliche Kontext einer Anfrage beträgt {3}."
+  },
+  "{0} стоимости ({1}) тратят субагенты. Каждый начинает со своего контекста и не делит кэш с основной сессией.": {
+   "en": "Subagents spend {0} of the cost ({1}). Each starts with its own context and doesn't share the cache with the main session.",
+   "de": "Subagents verursachen {0} der Kosten ({1}). Jeder beginnt mit eigenem Kontext und teilt den Cache nicht mit der Hauptsitzung."
+  },
+  "{0} стоимости — Opus/Fable. Те же запросы на {1} стоили бы {2} вместо {3}.": {
+   "en": "{0} of the cost is Opus/Fable. The same requests on {1} would cost {2} instead of {3}.",
+   "de": "{0} der Kosten entfallen auf Opus/Fable. Dieselben Anfragen mit {1} kosteten {2} statt {3}."
+  },
+  "{0} строк": {
+   "en": "{0} lines",
+   "de": "{0} Zeilen"
+  },
+  "{0} ток.": {
+   "en": "{0} tok.",
+   "de": "{0} Tok."
+  },
+  "{0} токенов": {
+   "en": "{0} tokens",
+   "de": "{0} Tokens"
+  },
+  "{0} токенов · {1} запросов": {
+   "en": "{0} tokens · {1} requests",
+   "de": "{0} Tokens · {1} Anfragen"
+  },
+  "{0} токенов/мин": {
+   "en": "{0} tokens/min",
+   "de": "{0} Tokens/Min."
+  },
+  "{0} требуют внимания": {
+   "en": "{0} need attention",
+   "de": "{0} brauchen Aufmerksamkeit"
+  },
+  "{0} ч {1} мин": {
+   "en": "{0} h {1} min",
+   "de": "{0} Std. {1} Min."
+  },
+  "{0} ч назад": {
+   "en": "{0} h ago",
+   "de": "vor {0} Std."
+  },
+  "{0} — {1}, {2} токенов": {
+   "en": "{0} — {1}, {2} tokens",
+   "de": "{0} – {1}, {2} Tokens"
+  },
+  "{0}, {1} модели. Новые строки логов подхватываются автоматически. Облачные сессии попадают сюда, если включён приём («Настройки → Облако») или их лог импортирован.": {
+   "en": "{0}, {1} from the model. New log lines are picked up automatically. Cloud sessions show up here when receiving is on (Settings → Cloud) or their log has been imported.",
+   "de": "{0}, {1} des Modells. Neue Logzeilen werden automatisch übernommen. Cloud-Sitzungen erscheinen hier, wenn der Empfang an ist („Einstellungen → Cloud“) oder ihr Log importiert wurde."
+  },
+  "{0}, {1} модели. Новые строки логов подхватываются автоматически. Облачные сессии сюда не попадают: их логи остаются на серверах Anthropic.": {
+   "en": "{0}, {1} from the model. New log lines are picked up automatically. Cloud sessions don't show up here: their logs stay on Anthropic's servers.",
+   "de": "{0}, {1} des Modells. Neue Logzeilen werden automatisch übernommen. Cloud-Sitzungen erscheinen hier nicht: Ihre Logs bleiben auf den Servern von Anthropic."
+  },
+  "{0}, {1}:00 — {2}, запросов: {3}": {
+   "en": "{0}, {1}:00 — {2}, requests: {3}",
+   "de": "{0}, {1}:00 – {2}, Anfragen: {3}"
+  },
+  "{0}, интервалы по 5 минут": {
+   "en": "{0}, 5-minute intervals",
+   "de": "{0}, Intervalle zu 5 Minuten"
+  },
+  "{0}, ошибок {1}": {
+   "en": "{0}, errors {1}",
+   "de": "{0}, Fehler {1}"
+  },
+  "{0}, по моделям": {
+   "en": "{0}, by model",
+   "de": "{0}, nach Modell"
+  },
+  "{0}/ч": {
+   "en": "{0}/h",
+   "de": "{0}/Std."
+  },
+  "{0}{1} к прошлому периоду": {
+   "en": "{0}{1} vs. previous period",
+   "de": "{0}{1} zum Vorzeitraum"
+  },
+  "{0}{1} п.п. к прошлому периоду": {
+   "en": "{0}{1} pp vs. previous period",
+   "de": "{0}{1} Pp. zum Vorzeitraum"
+  },
+  "{0}{1}: вывод {2}": {
+   "en": "{0}{1}: output {2}",
+   "de": "{0}{1}: Ausgabe {2}"
+  },
+  "| API-эквивалент | {0} |": {
+   "en": "| API equivalent | {0} |",
+   "de": "| API-Äquivalent | {0} |"
+  },
+  "| Ввод / вывод | {0} / {1} |": {
+   "en": "| Input / output | {0} / {1} |",
+   "de": "| Eingabe / Ausgabe | {0} / {1} |"
+  },
+  "| Доля попаданий в кэш | {0} |": {
+   "en": "| Cache hit rate | {0} |",
+   "de": "| Cache-Trefferquote | {0} |"
+  },
+  "| Запросов | {0} |": {
+   "en": "| Requests | {0} |",
+   "de": "| Anfragen | {0} |"
+  },
+  "| Название | Запросы | Токены | Кэш | USD | Доля |": {
+   "en": "| Name | Requests | Tokens | Cache | USD | Share |",
+   "de": "| Name | Anfragen | Tokens | Cache | USD | Anteil |"
+  },
+  "| Начало | Проект | Модели | Запросы | Пик контекста | USD |": {
+   "en": "| Start | Project | Models | Requests | Peak context | USD |",
+   "de": "| Beginn | Projekt | Modelle | Anfragen | Kontextspitze | USD |"
+  },
+  "| Показатель | Значение |": {
+   "en": "| Metric | Value |",
+   "de": "| Kennzahl | Wert |"
+  },
+  "| Размышления (в выводе) | {0} |": {
+   "en": "| Thinking (in output) | {0} |",
+   "de": "| Denken (in der Ausgabe) | {0} |"
+  },
+  "| Сессий | {0} |": {
+   "en": "| Sessions | {0} |",
+   "de": "| Sitzungen | {0} |"
+  },
+  "| Статья | USD | Доля |": {
+   "en": "| Item | USD | Share |",
+   "de": "| Posten | USD | Anteil |"
+  },
+  "| Токенов всего | {0} |": {
+   "en": "| Total tokens | {0} |",
+   "de": "| Tokens gesamt | {0} |"
+  },
+  "| Чтение кэша / запись | {0} / {1} |": {
+   "en": "| Cache read / write | {0} / {1} |",
+   "de": "| Cache-Lesen / -Schreiben | {0} / {1} |"
+  },
+  "· режим API: {0}": {
+   "en": "· API mode: {0}",
+   "de": "· API-Modus: {0}"
+  },
+  "Активность за 3 часа": {
+   "en": "Activity in the last 3 hours",
+   "de": "Aktivität der letzten 3 Stunden"
+  },
+  "Аргументы, которые сгенерировала модель": {
+   "en": "Arguments the model generated",
+   "de": "Vom Modell erzeugte Argumente"
+  },
+  "Без блока размышлений": {
+   "en": "No thinking block",
+   "de": "Ohne Denkblock"
+  },
+  "Без потери качества": {
+   "en": "No quality loss",
+   "de": "Ohne Qualitätsverlust"
+  },
+  "Больше всего расходуется по {0} ({1}), пиковый час — {2}.": {
+   "en": "Most is spent on {0} ({1}); the peak hour is {2}.",
+   "de": "Am meisten wird {0} verbraucht ({1}), die Spitzenstunde ist {2}."
+  },
+  "Больше всего расходуется по {0} ({1}), пиковый час — {2}:00–{3}:00.": {
+   "en": "Most is spent on {0} ({1}); the peak hour is {2}:00–{3}:00.",
+   "de": "Am meisten wird {0} verbraucht ({1}), die Spitzenstunde ist {2}:00–{3}:00."
+  },
+  "Большие выводы (чтение целых файлов, длинные логи) остаются в контексте до /compact или конца сессии. Читайте файлы частями и фильтруйте вывод команд.": {
+   "en": "Large outputs (whole files read, long logs) stay in the context until /compact or the end of the session. Read files in parts and filter command output.",
+   "de": "Große Ausgaben (ganze gelesene Dateien, lange Logs) bleiben bis /compact oder zum Sitzungsende im Kontext. Lesen Sie Dateien in Teilen und filtern Sie Befehlsausgaben."
+  },
+  "В {0} API убрало из истории размышления модели: {1}. Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.": {
+   "en": "In {0}, the API removed the model's thinking from the history: {1}. The model couldn't see how it had reasoned before and worked it out again — extra output and time.",
+   "de": "In {0} entfernte die API das Denken des Modells aus dem Verlauf: {1}. Das Modell sah nicht, wie es zuvor überlegt hatte, und erarbeitete es neu – zusätzliche Ausgabe und Zeit."
+  },
+  "В {0} ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие.": {
+   "en": "In {0}, a different model answered than the one Claude Code asked for (a fallback model or a switch). Different models don't share cache or thinking.",
+   "de": "In {0} antwortete ein anderes Modell als das von Claude Code angefragte (Ersatzmodell oder Wechsel). Verschiedene Modelle teilen weder Cache noch Denken."
+  },
+  "В очереди": {
+   "en": "Queued",
+   "de": "In der Warteschlange"
+  },
+  "В очереди: ": {
+   "en": "Queued: ",
+   "de": "In der Warteschlange: "
+  },
+  "В транскрипте пока нет сведений о составе контекста": {
+   "en": "The transcript has no details about the context's makeup yet",
+   "de": "Das Transkript enthält noch keine Angaben zur Zusammensetzung des Kontexts"
+  },
+  "В этом окне ничего не происходило": {
+   "en": "Nothing happened in this window",
+   "de": "In diesem Fenster ist nichts passiert"
+  },
+  "Ваша строка статуса по-прежнему показывается: {0}": {
+   "en": "Your status line is still shown: {0}",
+   "de": "Ihre Statuszeile wird weiterhin angezeigt: {0}"
+  },
+  "Ввод": {
+   "en": "Input",
+   "de": "Eingabe"
+  },
+  "Веб": {
+   "en": "Web",
+   "de": "Web"
+  },
+  "Веб-поиск": {
+   "en": "Web search",
+   "de": "Websuche"
+  },
+  "Ветка": {
+   "en": "Branch",
+   "de": "Branch"
+  },
+  "Ветка git": {
+   "en": "Git branch",
+   "de": "Git-Branch"
+  },
+  "Вид": {
+   "en": "View",
+   "de": "Ansicht"
+  },
+  "Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач.": {
+   "en": "Turn on fast mode when response speed matters, and turn it off for background tasks.",
+   "de": "Schalten Sie den Fast Mode ein, wenn die Antwortgeschwindigkeit zählt, und für Hintergrundaufgaben aus."
+  },
+  "Внимание": {
+   "en": "Warning",
+   "de": "Achtung"
+  },
+  "Возвращаясь после перерыва к новой задаче, начинайте её с /clear. Если нужен прежний контекст, сделайте /compact перед перерывом, чтобы перезаписывать меньше.": {
+   "en": "When you come back from a break to a new task, start it with /clear. If you need the previous context, run /compact before the break so less has to be rewritten.",
+   "de": "Wenn Sie nach einer Pause eine neue Aufgabe beginnen, starten Sie mit /clear. Brauchen Sie den bisherigen Kontext, führen Sie vor der Pause /compact aus, damit weniger neu geschrieben werden muss."
+  },
+  "Вопрос пользователю": {
+   "en": "Question for the user",
+   "de": "Frage an den Nutzer"
+  },
+  "Время": {
+   "en": "Time",
+   "de": "Zeit"
+  },
+  "Время окна: {0} – {1}": {
+   "en": "Window: {0} – {1}",
+   "de": "Fenster: {0} – {1}"
+  },
+  "Время размышлений": {
+   "en": "Thinking time",
+   "de": "Denkzeit"
+  },
+  "Вс": {
+   "en": "Sun",
+   "de": "So"
+  },
+  "Всего": {
+   "en": "Total",
+   "de": "Gesamt"
+  },
+  "Вся сессия": {
+   "en": "Whole session",
+   "de": "Ganze Sitzung"
+  },
+  "Всё": {
+   "en": "All",
+   "de": "Alle"
+  },
+  "Всё время": {
+   "en": "All time",
+   "de": "Gesamte Zeit"
+  },
+  "Вт": {
+   "en": "Tue",
+   "de": "Di"
+  },
+  "Вы": {
+   "en": "You",
+   "de": "Sie"
+  },
+  "Выберите период, в котором были сессии Claude Code.": {
+   "en": "Pick a period that has Claude Code sessions.",
+   "de": "Wählen Sie einen Zeitraum mit Sitzungen von Claude Code."
+  },
+  "Выберите сессию": {
+   "en": "Select a session",
+   "de": "Sitzung auswählen"
+  },
+  "Вывод": {
+   "en": "Output",
+   "de": "Ausgabe"
+  },
+  "Вывод команды: ": {
+   "en": "Command output: ",
+   "de": "Befehlsausgabe: "
+  },
+  "Вывод оболочки: ": {
+   "en": "Shell output: ",
+   "de": "Shell-Ausgabe: "
+  },
+  "Вызовов инструментов": {
+   "en": "Tool calls",
+   "de": "Tool-Aufrufe"
+  },
+  "Вызовы": {
+   "en": "Calls",
+   "de": "Aufrufe"
+  },
+  "Вызывался": {
+   "en": "Called",
+   "de": "Aufgerufen"
+  },
+  "Выйти": {
+   "en": "Quit",
+   "de": "Beenden"
+  },
+  "Выключено": {
+   "en": "Off",
+   "de": "Aus"
+  },
+  "Выполняет {0}": {
+   "en": "Running {0}",
+   "de": "Führt {0} aus"
+  },
+  "Выполняется": {
+   "en": "Running",
+   "de": "Läuft"
+  },
+  "Высокий effort окупается на сложных задачах. Для простых правок и вопросов понизьте effort в настройках модели Claude Code — это сокращает размышления и число вызовов инструментов.": {
+   "en": "High effort pays off on hard tasks. For simple edits and questions, lower the effort in Claude Code's model settings: that cuts thinking and the number of tool calls.",
+   "de": "Hoher Effort lohnt sich bei schweren Aufgaben. Senken Sie ihn für einfache Änderungen und Fragen in den Modelleinstellungen von Claude Code: Das verringert das Denken und die Zahl der Tool-Aufrufe."
+  },
+  "Высокий effort по умолчанию": {
+   "en": "High effort by default",
+   "de": "Hoher Effort als Standard"
+  },
+  "Где X-Ray ищет логи": {
+   "en": "Where X-Ray looks for logs",
+   "de": "Wo X-Ray nach Logs sucht"
+  },
+  "Генерация ввода": {
+   "en": "Input generation",
+   "de": "Eingabeerzeugung"
+  },
+  "Генерация ввода инструментов": {
+   "en": "Generating tool input",
+   "de": "Erzeugen der Tool-Eingaben"
+  },
+  "Данные": {
+   "en": "Data",
+   "de": "Daten"
+  },
+  "Данные ": {
+   "en": "Data ",
+   "de": "Daten "
+  },
+  "Дата": {
+   "en": "Date",
+   "de": "Datum"
+  },
+  "Действие": {
+   "en": "Action",
+   "de": "Aktion"
+  },
+  "Действия ({0})": {
+   "en": "Actions ({0})",
+   "de": "Aktionen ({0})"
+  },
+  "День": {
+   "en": "Day",
+   "de": "Tag"
+  },
+  "Держите системный промпт, инструменты и модель неизменными в течение сессии.": {
+   "en": "Keep the system prompt, tools and model unchanged during a session.",
+   "de": "Lassen Sie System-Prompt, Tools und Modell während einer Sitzung unverändert."
+  },
+  "Детали, рост контекста и стоимость каждого запроса.": {
+   "en": "Details, context growth and the cost of each request.",
+   "de": "Details, Kontextwachstum und Kosten jeder Anfrage."
+  },
+  "Диалог, результаты инструментов, схемы": {
+   "en": "Conversation, tool results, schemas",
+   "de": "Dialog, Tool-Ergebnisse, Schemas"
+  },
+  "Длинные сессии дорожают с каждым ходом: весь накопленный контекст отправляется снова. Дробите большие задачи на сессии поменьше.": {
+   "en": "Long sessions get more expensive with every turn: the whole accumulated context is sent again. Split big tasks into smaller sessions.",
+   "de": "Lange Sitzungen werden mit jedem Zug teurer: Der gesamte angesammelte Kontext wird erneut gesendet. Teilen Sie große Aufgaben in kleinere Sitzungen auf."
+  },
+  "Длительность": {
+   "en": "Duration",
+   "de": "Dauer"
+  },
+  "Для {0} нет точной строки в таблице цен; стоимость взята по семейству модели.": {
+   "en": "{0}: no exact row in the price table; the cost uses the model family's prices.",
+   "de": "Für {0} gibt es keine genaue Zeile in der Preistabelle; die Kosten folgen der Modellfamilie."
+  },
+  "Для рутинных задач (правки, тесты, поиск по коду) переключайтесь на {0} командой /model. На подписке это обычно медленнее расходует лимит окна. Качество на сложных задачах может отличаться — проверьте на своих.": {
+   "en": "For routine tasks (edits, tests, code search) switch to {0} with /model. On a subscription this usually uses the window limit more slowly. Quality on hard tasks can differ — check with your own.",
+   "de": "Wechseln Sie für Routineaufgaben (Änderungen, Tests, Codesuche) mit /model zu {0}. Im Abo verbraucht das das Fensterlimit meist langsamer. Bei schweren Aufgaben kann die Qualität abweichen – prüfen Sie es an Ihren eigenen."
+  },
+  "Добавить": {
+   "en": "Add",
+   "de": "Hinzufügen"
+  },
+  "Добавить папку…": {
+   "en": "Add folder…",
+   "de": "Ordner hinzufügen…"
+  },
+  "Добавлено вручную — проверьте цены.": {
+   "en": "Added by hand — check the prices.",
+   "de": "Manuell hinzugefügt – Preise prüfen."
+  },
+  "Добавьте эти модели в «Настройки → Цены».": {
+   "en": "Add these models in Settings → Pricing.",
+   "de": "Fügen Sie diese Modelle unter „Einstellungen → Preise“ hinzu."
+  },
+  "Доля": {
+   "en": "Share",
+   "de": "Anteil"
+  },
+  "Доля контекста из кэша": {
+   "en": "Share of context from the cache",
+   "de": "Anteil des Kontexts aus dem Cache"
+  },
+  "Доля кэша": {
+   "en": "Cache share",
+   "de": "Cache-Anteil"
+  },
+  "Доля моделей": {
+   "en": "Model share",
+   "de": "Anteil der Modelle"
+  },
+  "Доля моделей в стоимости": {
+   "en": "Models' share of cost",
+   "de": "Anteil der Modelle an den Kosten"
+  },
+  "Доп. папки": {
+   "en": "Extra folders",
+   "de": "Weitere Ordner"
+  },
+  "Дорогой длинный контекст": {
+   "en": "Expensive long context",
+   "de": "Teurer langer Kontext"
+  },
+  "Дорожка": {
+   "en": "Lane",
+   "de": "Spur"
+  },
+  "Другие": {
+   "en": "Other",
+   "de": "Andere"
+  },
+  "Другие ({0})": {
+   "en": "Other ({0})",
+   "de": "Andere ({0})"
+  },
+  "Другое": {
+   "en": "Other",
+   "de": "Sonstiges"
+  },
+  "Думает": {
+   "en": "Thinking",
+   "de": "Denkt nach"
+  },
+  "Если Tailscale установлен из App Store, команда `tailscale` лежит здесь: `/Applications/Tailscale.app/Contents/MacOS/Tailscale`.": {
+   "en": "If you installed Tailscale from the App Store, the `tailscale` command is here: `/Applications/Tailscale.app/Contents/MacOS/Tailscale`.",
+   "de": "Wenn Tailscale aus dem App Store stammt, liegt der Befehl `tailscale` hier: `/Applications/Tailscale.app/Contents/MacOS/Tailscale`."
+  },
+  "Если команда `tailscale` не найдена, она лежит здесь: `C:\\Program Files\\Tailscale\\tailscale.exe`.": {
+   "en": "If the `tailscale` command isn't found, it's here: `C:\\Program Files\\Tailscale\\tailscale.exe`.",
+   "de": "Wird der Befehl `tailscale` nicht gefunden, liegt er hier: `C:\\Program Files\\Tailscale\\tailscale.exe`."
+  },
+  "Ждёт вас": {
+   "en": "Waiting for you",
+   "de": "Wartet auf Sie"
+  },
+  "За выбранный период запросов не было. Выберите другой период вверху окна.": {
+   "en": "There were no requests in the selected period. Pick another period at the top of the window.",
+   "de": "Im gewählten Zeitraum gab es keine Anfragen. Wählen Sie oben im Fenster einen anderen Zeitraum."
+  },
+  "За последние 3 часа запросов не было": {
+   "en": "No requests in the last 3 hours",
+   "de": "Keine Anfragen in den letzten 3 Stunden"
+  },
+  "Завершено / прервано": {
+   "en": "Completed / interrupted",
+   "de": "Abgeschlossen / unterbrochen"
+  },
+  "Задач в списке": {
+   "en": "Tasks in the list",
+   "de": "Aufgaben in der Liste"
+  },
+  "Заметка": {
+   "en": "Note",
+   "de": "Notiz"
+  },
+  "Замечаний": {
+   "en": "Findings",
+   "de": "Hinweise"
+  },
+  "Замечаний нет.": {
+   "en": "No findings.",
+   "de": "Keine Hinweise."
+  },
+  "Замечаний нет: расход выглядит сбалансированным.": {
+   "en": "No findings: spending looks balanced.",
+   "de": "Keine Hinweise: Der Verbrauch wirkt ausgewogen."
+  },
+  "Запись": {
+   "en": "Write",
+   "de": "Schreiben"
+  },
+  "Запись 1 ч": {
+   "en": "Write 1 h",
+   "de": "Schreiben 1 Std."
+  },
+  "Запись 5 мин": {
+   "en": "Write 5 min",
+   "de": "Schreiben 5 Min."
+  },
+  "Запись в кэш": {
+   "en": "Cache write",
+   "de": "Cache-Schreiben"
+  },
+  "Запись в кэш — {0} стоимости ({1}).": {
+   "en": "Cache writes are {0} of the cost ({1}).",
+   "de": "Cache-Schreiben macht {0} der Kosten aus ({1})."
+  },
+  "Заполнение окна контекста": {
+   "en": "Context window usage",
+   "de": "Belegung des Kontextfensters"
+  },
+  "Запрос": {
+   "en": "Request",
+   "de": "Anfrage"
+  },
+  "Запрос {0} · {1}": {
+   "en": "Request {0} · {1}",
+   "de": "Anfrage {0} · {1}"
+  },
+  "Запросов к модели": {
+   "en": "Model requests",
+   "de": "Anfragen an das Modell"
+  },
+  "Запросов к модели в этой сессии пока нет": {
+   "en": "No model requests in this session yet",
+   "de": "In dieser Sitzung noch keine Anfragen an das Modell"
+  },
+  "Запросов с проблемами нет": {
+   "en": "No requests with issues",
+   "de": "Keine Anfragen mit Problemen"
+  },
+  "Запросы": {
+   "en": "Requests",
+   "de": "Anfragen"
+  },
+  "Запросы к модели": {
+   "en": "Model requests",
+   "de": "Anfragen an das Modell"
+  },
+  "Запросы обслуживала другая модель": {
+   "en": "A different model served requests",
+   "de": "Ein anderes Modell hat Anfragen bearbeitet"
+  },
+  "Запрошена {0}, ответила {1}": {
+   "en": "Requested {0}, answered by {1}",
+   "de": "Angefragt {0}, geantwortet hat {1}"
+  },
+  "Запускается…": {
+   "en": "Starting…",
+   "de": "Startet…"
+  },
+  "Значение": {
+   "en": "Value",
+   "de": "Wert"
+  },
+  "Из кэша читается только {0} контекста. Остальное оплачивается как свежий ввод или как запись в кэш, которая дороже ввода.": {
+   "en": "Only {0} of the context is read from the cache. The rest is paid as fresh input or as cache writes, which cost more than input.",
+   "de": "Nur {0} des Kontexts kommen aus dem Cache. Der Rest wird als neue Eingabe bezahlt oder als Cache-Schreiben, das teurer ist als Eingabe."
+  },
+  "Из чего складывается стоимость": {
+   "en": "What the cost is made of",
+   "de": "Woraus sich die Kosten zusammensetzen"
+  },
+  "Из чего состоит контекст": {
+   "en": "What the context consists of",
+   "de": "Woraus der Kontext besteht"
+  },
+  "Изменение запроса API: {0}": {
+   "en": "API request change: {0}",
+   "de": "Änderung der API-Anfrage: {0}"
+  },
+  "Изменение запроса API: {0}{1}": {
+   "en": "API request change: {0}{1}",
+   "de": "Änderung der API-Anfrage: {0}{1}"
+  },
+  "Изменение файлов": {
+   "en": "File edits",
+   "de": "Dateiänderungen"
+  },
+  "Изменения сессии: ": {
+   "en": "Session changes: ",
+   "de": "Änderungen der Sitzung: "
+  },
+  "Изменить папки…": {
+   "en": "Change folders…",
+   "de": "Ordner ändern…"
+  },
+  "Изображение": {
+   "en": "Image",
+   "de": "Bild"
+  },
+  "Импортировать": {
+   "en": "Import",
+   "de": "Importieren"
+  },
+  "Импортировать лог сессии": {
+   "en": "Import session log",
+   "de": "Sitzungslog importieren"
+  },
+  "Импортировать лог сессии…": {
+   "en": "Import session log…",
+   "de": "Sitzungslog importieren…"
+  },
+  "Импортировать лог…": {
+   "en": "Import log…",
+   "de": "Log importieren…"
+  },
+  "Инструкции MCP": {
+   "en": "MCP instructions",
+   "de": "MCP-Anweisungen"
+  },
+  "Инструкции MCP: {0}": {
+   "en": "MCP instructions: {0}",
+   "de": "MCP-Anweisungen: {0}"
+  },
+  "Инструмент": {
+   "en": "Tool",
+   "de": "Tool"
+  },
+  "Инструменты": {
+   "en": "Tools",
+   "de": "Tools"
+  },
+  "Инструменты · MCP · скиллы": {
+   "en": "Tools · MCP · skills",
+   "de": "Tools · MCP · Skills"
+  },
+  "Инструменты ещё не вызывались": {
+   "en": "No tools called yet",
+   "de": "Noch keine Tools aufgerufen"
+  },
+  "Инструменты не вызывались": {
+   "en": "No tools were called",
+   "de": "Keine Tools aufgerufen"
+  },
+  "Инструменты работали": {
+   "en": "Tools running",
+   "de": "Tools liefen"
+  },
+  "Инструменты: +{0}": {
+   "en": "Tools: +{0}",
+   "de": "Tools: +{0}"
+  },
+  "История сообщений менялась: откат (/rewind), правка или удаление сообщений, хуки, переписывающие ввод.": {
+   "en": "The message history changed: a rewind (/rewind), edited or deleted messages, hooks that rewrite input.",
+   "de": "Der Nachrichtenverlauf änderte sich: Zurücksetzen (/rewind), bearbeitete oder gelöschte Nachrichten, Hooks, die Eingaben umschreiben."
+  },
+  "Источники": {
+   "en": "Sources",
+   "de": "Quellen"
+  },
+  "Источники: логи Claude Code на этом Mac, импортированные логи и логи, присланные облачными сессиями": {
+   "en": "Sources: Claude Code logs on this Mac, imported logs and logs sent by cloud sessions",
+   "de": "Quellen: Logs von Claude Code auf diesem Mac, importierte Logs und Logs, die Cloud-Sitzungen gesendet haben"
+  },
+  "Источники: логи Claude Code на этом компьютере, импортированные логи и логи, присланные облачными сессиями": {
+   "en": "Sources: Claude Code logs on this computer, imported logs and logs sent by cloud sessions",
+   "de": "Quellen: Logs von Claude Code auf diesem Computer, importierte Logs und Logs, die Cloud-Sitzungen gesendet haben"
+  },
+  "Итого": {
+   "en": "Total",
+   "de": "Gesamt"
+  },
+  "Каждый раз, когда начало контекста меняется, весь контекст после изменения записывается в кэш заново. Сокращайте контекст (/compact), не переключайте модель внутри длинной сессии и начинайте новую задачу с /clear.": {
+   "en": "Whenever the start of the context changes, everything after the change is written to the cache again. Shorten the context (/compact), don't switch models within a long session, and start a new task with /clear.",
+   "de": "Jedes Mal, wenn sich der Anfang des Kontexts ändert, wird alles danach neu in den Cache geschrieben. Kürzen Sie den Kontext (/compact), wechseln Sie das Modell nicht innerhalb einer langen Sitzung und beginnen Sie eine neue Aufgabe mit /clear."
+  },
+  "Каждый ход заново отправляет весь контекст сессии. Делайте /compact на длинных задачах, /clear между независимыми задачами, не читайте большие файлы и логи целиком и держите CLAUDE.md коротким.": {
+   "en": "Every turn sends the whole session context again. Use /compact on long tasks and /clear between unrelated tasks, don't read large files and logs in full, and keep CLAUDE.md short.",
+   "de": "Jeder Zug sendet den ganzen Sitzungskontext erneut. Nutzen Sie /compact bei langen Aufgaben und /clear zwischen unabhängigen Aufgaben, lesen Sie große Dateien und Logs nicht vollständig und halten Sie CLAUDE.md kurz."
+  },
+  "Каждый ход заново отправляет весь контекст; чем он меньше, тем дешевле и быстрее ответы.": {
+   "en": "Every turn sends the whole context again; the smaller it is, the cheaper and faster the replies.",
+   "de": "Jeder Zug sendet den ganzen Kontext erneut; je kleiner er ist, desto günstiger und schneller die Antworten."
+  },
+  "Как в системе": {
+   "en": "System",
+   "de": "System"
+  },
+  "Как подключить": {
+   "en": "How to connect",
+   "de": "So verbinden Sie"
+  },
+  "Как разрешались вызовы инструментов": {
+   "en": "How tool calls were permitted",
+   "de": "Wie Tool-Aufrufe erlaubt wurden"
+  },
+  "Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.": {
+   "en": "As soon as Claude Code starts working on this Mac, prompts, thinking, tool calls, MCP, skills, subagents and context appear here in real time.",
+   "de": "Sobald Claude Code auf diesem Mac arbeitet, erscheinen hier in Echtzeit Prompts, Denken, Tool-Aufrufe, MCP, Skills, Subagents und Kontext."
+  },
+  "Как только Claude Code начнёт работать на этом компьютере или облачная сессия пришлёт свой лог, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.": {
+   "en": "As soon as Claude Code starts working on this computer or a cloud session sends its log, prompts, thinking, tool calls, MCP, skills, subagents and context appear here in real time.",
+   "de": "Sobald Claude Code auf diesem Computer arbeitet oder eine Cloud-Sitzung ihr Log sendet, erscheinen hier in Echtzeit Prompts, Denken, Tool-Aufrufe, MCP, Skills, Subagents und Kontext."
+  },
+  "Как увидеть сессию": {
+   "en": "How to see a session",
+   "de": "So sehen Sie eine Sitzung"
+  },
+  "Карта переходов": {
+   "en": "Transition map",
+   "de": "Übergangskarte"
+  },
+  "Категория": {
+   "en": "Category",
+   "de": "Kategorie"
+  },
+  "Когда": {
+   "en": "When",
+   "de": "Wann"
+  },
+  "Когда вы работаете": {
+   "en": "When you work",
+   "de": "Wann Sie arbeiten"
+  },
+  "Команда {0} {1}": {
+   "en": "Command {0} {1}",
+   "de": "Befehl {0} {1}"
+  },
+  "Компромисс": {
+   "en": "Trade-off",
+   "de": "Kompromiss"
+  },
+  "Конец": {
+   "en": "End",
+   "de": "Ende"
+  },
+  "Контекст": {
+   "en": "Context",
+   "de": "Kontext"
+  },
+  "Контекст заполнен больше чем на {0}. Каждый следующий ход отправляет его целиком; подумайте о /compact или новой сессии.": {
+   "en": "The context is more than {0} full. Every next turn sends all of it; consider /compact or a new session.",
+   "de": "Der Kontext ist zu mehr als {0} gefüllt. Jeder weitere Zug sendet ihn komplett; erwägen Sie /compact oder eine neue Sitzung."
+  },
+  "Контекст и система": {
+   "en": "Context & system",
+   "de": "Kontext & System"
+  },
+  "Контекст на каждом запросе": {
+   "en": "Context at each request",
+   "de": "Kontext bei jeder Anfrage"
+  },
+  "Контекст по запросам": {
+   "en": "Context by request",
+   "de": "Kontext pro Anfrage"
+  },
+  "Контекст сейчас": {
+   "en": "Context now",
+   "de": "Kontext jetzt"
+  },
+  "Контекст сжат {0}{1}": {
+   "en": "Context compacted {0}{1}",
+   "de": "Kontext komprimiert {0}{1}"
+  },
+  "Копировать как Markdown": {
+   "en": "Copy as Markdown",
+   "de": "Als Markdown kopieren"
+  },
+  "Критично": {
+   "en": "Critical",
+   "de": "Kritisch"
+  },
+  "Куда ушло время сессии": {
+   "en": "Where the session's time went",
+   "de": "Wofür die Zeit der Sitzung verging"
+  },
+  "Кэш": {
+   "en": "Cache",
+   "de": "Cache"
+  },
+  "Кэш последнего запроса": {
+   "en": "Last request's cache",
+   "de": "Cache der letzten Anfrage"
+  },
+  "Кэш промптов работает хорошо": {
+   "en": "Prompt caching works well",
+   "de": "Prompt-Caching funktioniert gut"
+  },
+  "Кэш сбрасывался из-за изменений в запросе": {
+   "en": "The cache was reset by changes in the request",
+   "de": "Der Cache wurde durch Änderungen an der Anfrage verworfen"
+  },
+  "Кэш сегодня": {
+   "en": "Cache today",
+   "de": "Cache heute"
+  },
+  "Кэш, последний запрос": {
+   "en": "Cache, last request",
+   "de": "Cache, letzte Anfrage"
+  },
+  "Кэш: {0}": {
+   "en": "Cache: {0}",
+   "de": "Cache: {0}"
+  },
+  "Лента": {
+   "en": "Feed",
+   "de": "Verlauf"
+  },
+  "Лимит 5 ч": {
+   "en": "5h limit",
+   "de": "5-Std.-Limit"
+  },
+  "Лимит расходов": {
+   "en": "Spending limit",
+   "de": "Ausgabenlimit"
+  },
+  "Лимиты аккаунта": {
+   "en": "Account limits",
+   "de": "Kontolimits"
+  },
+  "Лог передаётся только на ваш Mac через ваш туннель. Пока Mac спит или X-Ray закрыт, облачная сессия копит новые строки и досылает их со следующим шагом. X-Ray на нескольких компьютерах (Mac и Windows) подключается так же, по адресу каждого: облачные сессии присылают лог на все сразу, и выключенный компьютер не задерживает остальные.": {
+   "en": "The log goes only to your Mac, through your tunnel. While the Mac is asleep or X-Ray is closed, the cloud session keeps the new lines and sends them with its next step. X-Ray on several computers (Mac and Windows) is connected the same way, with each computer's address: cloud sessions send their log to all of them at once, and a computer that is off doesn't hold up the others.",
+   "de": "Das Log geht nur an Ihren Mac, über Ihren Tunnel. Solange der Mac schläft oder X-Ray geschlossen ist, sammelt die Cloud-Sitzung neue Zeilen und sendet sie mit dem nächsten Schritt nach. X-Ray auf mehreren Computern (Mac und Windows) wird genauso verbunden, mit der Adresse jedes Computers: Cloud-Sitzungen senden ihr Log an alle gleichzeitig, und ein ausgeschalteter Computer hält die anderen nicht auf."
+  },
+  "Лог передаётся только на ваш компьютер через ваш туннель. Пока компьютер спит или X-Ray закрыт, облачная сессия копит новые строки и досылает их со следующим шагом. X-Ray на нескольких компьютерах (Windows и Mac) подключается так же, по адресу каждого: облачные сессии присылают лог на все сразу, и выключенный компьютер не задерживает остальные.": {
+   "en": "The log goes only to your computer, through your tunnel. While the computer is asleep or X-Ray is closed, the cloud session keeps the new lines and sends them with its next step. X-Ray on several computers (Windows and Mac) is connected the same way, with each computer's address: cloud sessions send their log to all of them at once, and a computer that is off doesn't hold up the others.",
+   "de": "Das Log geht nur an Ihren Computer, über Ihren Tunnel. Solange der Computer schläft oder X-Ray geschlossen ist, sammelt die Cloud-Sitzung neue Zeilen und sendet sie mit dem nächsten Schritt nach. X-Ray auf mehreren Computern (Windows und Mac) wird genauso verbunden, mit der Adresse jedes Computers: Cloud-Sitzungen senden ihr Log an alle gleichzeitig, und ein ausgeschalteter Computer hält die anderen nicht auf."
+  },
+  "Логи Claude Code": {
+   "en": "Claude Code logs",
+   "de": "Logs von Claude Code"
+  },
+  "Логи Claude Code не найдены": {
+   "en": "No Claude Code logs found",
+   "de": "Keine Logs von Claude Code gefunden"
+  },
+  "Логи сессий Claude Code (.jsonl) или архивы .zip с ними": {
+   "en": "Claude Code session logs (.jsonl) or .zip archives of them",
+   "de": "Sitzungslogs von Claude Code (.jsonl) oder .zip-Archive damit"
+  },
+  "Логов Claude Code на этом Mac пока нет.": {
+   "en": "There are no Claude Code logs on this Mac yet.",
+   "de": "Auf diesem Mac gibt es noch keine Logs von Claude Code."
+  },
+  "Логов Claude Code на этом компьютере пока нет.": {
+   "en": "There are no Claude Code logs on this computer yet.",
+   "de": "Auf diesem Computer gibt es noch keine Logs von Claude Code."
+  },
+  "Логов на этом Mac нет": {
+   "en": "No logs on this Mac",
+   "de": "Keine Logs auf diesem Mac"
+  },
+  "Логов на этом компьютере нет": {
+   "en": "No logs on this computer",
+   "de": "Keine Logs auf diesem Computer"
+  },
+  "Максимум": {
+   "en": "Maximum",
+   "de": "Maximum"
+  },
+  "Меню, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык Windows: русский, английский или немецкий, для других языков — английский.": {
+   "en": "Menus, tips, session analysis and reports. “System” uses the Windows language: Russian, English or German, and English for other languages.",
+   "de": "Menüs, Hinweise, Sitzungsanalyse und Berichte. „System“ nimmt die Sprache von Windows: Russisch, Englisch oder Deutsch, für andere Sprachen Englisch."
+  },
+  "Меню, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык macOS: русский, английский или немецкий, для других языков — английский. Системные пункты меню (Скрыть, Завершить) меняют язык после перезапуска.": {
+   "en": "Menus, tips, session analysis and reports. “System” uses the macOS language: Russian, English or German, and English for other languages. macOS's own menu items (Hide, Quit) switch language after a restart.",
+   "de": "Menüs, Hinweise, Sitzungsanalyse und Berichte. „System“ nimmt die Sprache von macOS: Russisch, Englisch oder Deutsch, für andere Sprachen Englisch. Die Menüpunkte von macOS selbst (Ausblenden, Beenden) wechseln die Sprache nach einem Neustart."
+  },
+  "Много платите за запись в кэш": {
+   "en": "You pay a lot for cache writes",
+   "de": "Sie zahlen viel für Cache-Schreiben"
+  },
+  "Модели": {
+   "en": "Models",
+   "de": "Modelle"
+  },
+  "Модель": {
+   "en": "Model",
+   "de": "Modell"
+  },
+  "Модель · субагент": {
+   "en": "Model · subagent",
+   "de": "Modell · Subagent"
+  },
+  "Модель менялась посреди сессии (/model или резервная модель): у каждой модели свой кэш.": {
+   "en": "The model changed mid-session (/model or a fallback model): each model has its own cache.",
+   "de": "Das Modell wechselte mitten in der Sitzung (/model oder Ersatzmodell): Jedes Modell hat seinen eigenen Cache."
+  },
+  "Модель отвечала": {
+   "en": "Model replying",
+   "de": "Modell antwortete"
+  },
+  "Модель отказывала в ответе": {
+   "en": "The model refused to answer",
+   "de": "Das Modell verweigerte Antworten"
+  },
+  "Модель теряла свои прежние размышления": {
+   "en": "The model lost its earlier thinking",
+   "de": "Das Modell verlor sein früheres Denken"
+  },
+  "Модель: {0}": {
+   "en": "Model: {0}",
+   "de": "Modell: {0}"
+  },
+  "Мысль": {
+   "en": "Thought",
+   "de": "Gedanke"
+  },
+  "На Pro и Max лимиты считаются в 5-часовых окнах, которые начинаются с первого запроса, и дополнительно за неделю. Точный размер лимита Anthropic не публикует, и в логах его нет. Поэтому X-Ray показывает API-эквивалент окна и сравнивает его с вашим самым загруженным окном в истории.": {
+   "en": "On Pro and Max, limits are counted in 5-hour windows that start with the first request, and also per week. Anthropic doesn't publish the exact limit, and it isn't in the logs. So X-Ray shows the window's API equivalent and compares it with your busiest window in the history.",
+   "de": "Bei Pro und Max werden Limits in 5-Stunden-Fenstern gezählt, die mit der ersten Anfrage beginnen, und zusätzlich pro Woche. Die genaue Höhe veröffentlicht Anthropic nicht, und in den Logs steht sie nicht. Darum zeigt X-Ray das API-Äquivalent des Fensters und vergleicht es mit Ihrem stärksten Fenster im Verlauf."
+  },
+  "На подписке Pro/Max суммы — API-эквивалент по прайс-листу: деньги не списываются, но по ним видно, как быстро расходуется лимит. Границы окна восстанавливаются по активности; точный остаток лимита в логах не хранится.": {
+   "en": "On a Pro/Max subscription, amounts are the API equivalent at list prices: no money is charged, but they show how fast the limit is used. Window boundaries are reconstructed from activity; the logs don't store the exact remaining limit.",
+   "de": "Im Pro/Max-Abo sind Beträge das API-Äquivalent zum Listenpreis: Es wird kein Geld berechnet, aber sie zeigen, wie schnell das Limit verbraucht wird. Fenstergrenzen werden aus der Aktivität rekonstruiert; das genaue Restlimit steht nicht in den Logs."
+  },
+  "На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита.": {
+   "en": "On a subscription, savings don't mean money but a slower use of the 5-hour window and the weekly limit.",
+   "de": "Im Abo bedeuten Einsparungen kein Geld, sondern einen langsameren Verbrauch des 5-Stunden-Fensters und des Wochenlimits."
+  },
+  "На этом Mac Claude Code не работал последние 3 дня": {
+   "en": "Claude Code hasn't run on this Mac in the last 3 days",
+   "de": "Claude Code lief in den letzten 3 Tagen nicht auf diesem Mac"
+  },
+  "На этом Mac пока нет ни одного лога Claude Code.": {
+   "en": "There isn't a single Claude Code log on this Mac yet.",
+   "de": "Auf diesem Mac gibt es noch kein einziges Log von Claude Code."
+  },
+  "На этом компьютере Claude Code не работал последние 3 дня": {
+   "en": "Claude Code hasn't run on this computer in the last 3 days",
+   "de": "Claude Code lief in den letzten 3 Tagen nicht auf diesem Computer"
+  },
+  "На этом компьютере пока нет ни одного лога Claude Code.": {
+   "en": "There isn't a single Claude Code log on this computer yet.",
+   "de": "Auf diesem Computer gibt es noch kein einziges Log von Claude Code."
+  },
+  "Наблюдение": {
+   "en": "Observation",
+   "de": "Beobachtung"
+  },
+  "Набор инструментов менялся по ходу: MCP-серверы подключались или отключались, менялись разрешения или описания инструментов. Подключайте нужные MCP до начала работы.": {
+   "en": "The tool set changed along the way: MCP servers connected or disconnected, permissions or tool descriptions changed. Connect the MCP servers you need before you start.",
+   "de": "Die Tool-Auswahl änderte sich unterwegs: MCP-Server wurden verbunden oder getrennt, Berechtigungen oder Tool-Beschreibungen geändert. Verbinden Sie benötigte MCP-Server vor Arbeitsbeginn."
+  },
+  "Наведите курсор на ячейку, чтобы увидеть значение.": {
+   "en": "Hover over a cell to see its value.",
+   "de": "Zeigen Sie auf eine Zelle, um den Wert zu sehen."
+  },
+  "Напишите в облачной сессии Claude: «Подключи X-Ray: <адрес из шага 1>». Claude настроит облачную среду (вы подтвердите изменение) и попросит токен доступа через защищённую форму: вставьте туда токен отсюда. В чат токен не пишите.": {
+   "en": "In a Claude cloud session, write: “Connect X-Ray: <address from step 1>”. Claude sets up the cloud environment (you confirm the change) and asks for the access token in a secure form: paste the token from here into it. Don't type the token into the chat.",
+   "de": "Schreiben Sie in einer Cloud-Sitzung von Claude: „Verbinde X-Ray: <Adresse aus Schritt 1>“. Claude richtet die Cloud-Umgebung ein (Sie bestätigen die Änderung) und fragt das Zugriffstoken über ein sicheres Formular ab: Fügen Sie dort das Token von hier ein. Schreiben Sie das Token nicht in den Chat."
+  },
+  "Настройки": {
+   "en": "Settings",
+   "de": "Einstellungen"
+  },
+  "Начало": {
+   "en": "Start",
+   "de": "Beginn"
+  },
+  "Начало окна": {
+   "en": "Window start",
+   "de": "Fensterbeginn"
+  },
+  "Начало сессии": {
+   "en": "Session start",
+   "de": "Sitzungsbeginn"
+  },
+  "Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными.": {
+   "en": "Don't change the model or the history mid-task: a rewind, edited messages, a model switch or changed tool settings make the earlier thinking invalid.",
+   "de": "Ändern Sie Modell und Verlauf nicht mitten in einer Aufgabe: Ein Zurücksetzen, bearbeitete Nachrichten, ein Modellwechsel oder geänderte Tool-Einstellungen machen das frühere Denken ungültig."
+  },
+  "Не меняйте модель и настройки посреди сессии, держите CLAUDE.md и системные инструкции стабильными, между задачами начинайте новую сессию (/clear), а не продолжайте старую с другим контекстом.": {
+   "en": "Don't change the model or settings mid-session, keep CLAUDE.md and system instructions stable, and start a new session between tasks (/clear) rather than continuing the old one with a different context.",
+   "de": "Wechseln Sie Modell und Einstellungen nicht mitten in der Sitzung, halten Sie CLAUDE.md und Systemanweisungen stabil und beginnen Sie zwischen Aufgaben eine neue Sitzung (/clear), statt die alte mit anderem Kontext fortzusetzen."
+  },
+  "Не подключено": {
+   "en": "Not connected",
+   "de": "Nicht verbunden"
+  },
+  "Не подключено. Сейчас в Claude Code своя строка статуса, X-Ray её сохранит:": {
+   "en": "Not connected. Claude Code has its own status line now; X-Ray will keep it:",
+   "de": "Nicht verbunden. Claude Code hat gerade eine eigene Statuszeile; X-Ray behält sie bei:"
+  },
+  "Не подключились: {0}": {
+   "en": "Failed to connect: {0}",
+   "de": "Nicht verbunden: {0}"
+  },
+  "Не удалось открыть порт {0}: {1}": {
+   "en": "Couldn't open port {0}: {1}",
+   "de": "Port {0} konnte nicht geöffnet werden: {1}"
+  },
+  "Не удалось построить PDF": {
+   "en": "Couldn't create the PDF",
+   "de": "PDF konnte nicht erstellt werden"
+  },
+  "Не удалось построить PDF: {0}": {
+   "en": "Couldn't create the PDF: {0}",
+   "de": "PDF konnte nicht erstellt werden: {0}"
+  },
+  "Не удалось прочитать настройки Claude Code: {0}": {
+   "en": "Couldn't read Claude Code's settings: {0}",
+   "de": "Einstellungen von Claude Code konnten nicht gelesen werden: {0}"
+  },
+  "Не удалось сохранить: {0}": {
+   "en": "Couldn't save: {0}",
+   "de": "Speichern fehlgeschlagen: {0}"
+  },
+  "Неделя": {
+   "en": "Week",
+   "de": "Woche"
+  },
+  "Недопустимый порт {0}": {
+   "en": "Invalid port {0}",
+   "de": "Ungültiger Port {0}"
+  },
+  "Нейтральная палитра и системный акцент Windows": {
+   "en": "Neutral palette and the Windows accent color",
+   "de": "Neutrale Palette und die Akzentfarbe von Windows"
+  },
+  "Нейтральная палитра и системный акцент macOS": {
+   "en": "Neutral palette and the macOS accent color",
+   "de": "Neutrale Palette und die Akzentfarbe von macOS"
+  },
+  "Нет активности": {
+   "en": "No activity",
+   "de": "Keine Aktivität"
+  },
+  "Нет активности за последние 3 дня": {
+   "en": "No activity in the last 3 days",
+   "de": "Keine Aktivität in den letzten 3 Tagen"
+  },
+  "Нет данных": {
+   "en": "No data",
+   "de": "Keine Daten"
+  },
+  "Нет данных для анализа": {
+   "en": "No data to analyze",
+   "de": "Keine Daten zur Analyse"
+  },
+  "Нет данных за период": {
+   "en": "No data for the period",
+   "de": "Keine Daten im Zeitraum"
+  },
+  "Нет доступа к {0}": {
+   "en": "No access to {0}",
+   "de": "Kein Zugriff auf {0}"
+  },
+  "Нет запросов": {
+   "en": "No requests",
+   "de": "Keine Anfragen"
+  },
+  "Нет запросов в этом окне": {
+   "en": "No requests in this window",
+   "de": "Keine Anfragen in diesem Fenster"
+  },
+  "Низкая доля попаданий в кэш": {
+   "en": "Low cache hit rate",
+   "de": "Niedrige Cache-Trefferquote"
+  },
+  "Новые облачные сессии начнут присылать лог сами. Они появятся в «Сессиях», «Обзоре» и Live-трассе, а их логи лежат в `{0}\\cloud`.": {
+   "en": "New cloud sessions then send their log on their own. They appear in Sessions, Overview and the Live trace, and their logs are kept in `{0}\\cloud`.",
+   "de": "Neue Cloud-Sitzungen senden ihr Log dann von selbst. Sie erscheinen unter „Sitzungen“, „Übersicht“ und im Live-Trace; ihre Logs liegen in `{0}\\cloud`."
+  },
+  "Новые облачные сессии начнут присылать лог сами. Они появятся в «Сессиях», «Обзоре» и Live-трассе, а их логи лежат в `~/Library/Application Support/S2AClaudeXRay/cloud`.": {
+   "en": "New cloud sessions then send their log on their own. They appear in Sessions, Overview and the Live trace, and their logs are kept in `~/Library/Application Support/S2AClaudeXRay/cloud`.",
+   "de": "Neue Cloud-Sitzungen senden ihr Log dann von selbst. Sie erscheinen unter „Sitzungen“, „Übersicht“ und im Live-Trace; ihre Logs liegen in `~/Library/Application Support/S2AClaudeXRay/cloud`."
+  },
+  "Новый": {
+   "en": "New",
+   "de": "Neu"
+  },
+  "Ноль": {
+   "en": "Zero",
+   "de": "Null"
+  },
+  "Нужна авторизация": {
+   "en": "Needs authorization",
+   "de": "Autorisierung nötig"
+  },
+  "Нужна авторизация: {0}": {
+   "en": "Needs authorization: {0}",
+   "de": "Autorisierung nötig: {0}"
+  },
+  "Обзор": {
+   "en": "Overview",
+   "de": "Übersicht"
+  },
+  "Облако": {
+   "en": "Cloud",
+   "de": "Cloud"
+  },
+  "Облачные сессии": {
+   "en": "Cloud sessions",
+   "de": "Cloud-Sitzungen"
+  },
+  "Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray видит, только если включён приём на вкладке «Настройки → Облако»: их логи остаются на серверах Anthropic.": {
+   "en": "X-Ray sees cloud sessions (claude.ai/code, the Claude mobile app, the cloud environment in Claude Desktop) only when receiving is on in Settings → Cloud: their logs stay on Anthropic's servers.",
+   "de": "Cloud-Sitzungen (claude.ai/code, die Claude-App fürs Handy, die Cloud-Umgebung in Claude Desktop) sieht X-Ray nur, wenn der Empfang unter „Einstellungen → Cloud“ an ist: Ihre Logs bleiben auf den Servern von Anthropic."
+  },
+  "Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray не видит: их логи остаются на серверах Anthropic.": {
+   "en": "X-Ray can't see cloud sessions (claude.ai/code, the Claude mobile app, the cloud environment in Claude Desktop): their logs stay on Anthropic's servers.",
+   "de": "Cloud-Sitzungen (claude.ai/code, die Claude-App fürs Handy, die Cloud-Umgebung in Claude Desktop) sieht X-Ray nicht: Ihre Logs bleiben auf den Servern von Anthropic."
+  },
+  "Облачные сессии Claude Code могут сами отправлять сюда свой лог после каждого шага: промпты, ответы, размышления, вызовы инструментов, контекст и токены каждого запроса. X-Ray покажет их так же подробно, как сессии на этом Mac, почти вживую.": {
+   "en": "Claude Code cloud sessions can send their log here themselves after every step: prompts, replies, thinking, tool calls, and the context and tokens of each request. X-Ray shows them in as much detail as sessions on this Mac, almost live.",
+   "de": "Cloud-Sitzungen von Claude Code können ihr Log nach jedem Schritt selbst hierher senden: Prompts, Antworten, Denken, Tool-Aufrufe sowie Kontext und Tokens jeder Anfrage. X-Ray zeigt sie so ausführlich wie Sitzungen auf diesem Mac, fast live."
+  },
+  "Облачные сессии Claude Code могут сами отправлять сюда свой лог после каждого шага: промпты, ответы, размышления, вызовы инструментов, контекст и токены каждого запроса. X-Ray покажет их так же подробно, как сессии на этом компьютере, почти вживую.": {
+   "en": "Claude Code cloud sessions can send their log here themselves after every step: prompts, replies, thinking, tool calls, and the context and tokens of each request. X-Ray shows them in as much detail as sessions on this computer, almost live.",
+   "de": "Cloud-Sitzungen von Claude Code können ihr Log nach jedem Schritt selbst hierher senden: Prompts, Antworten, Denken, Tool-Aufrufe sowie Kontext und Tokens jeder Anfrage. X-Ray zeigt sie so ausführlich wie Sitzungen auf diesem Computer, fast live."
+  },
+  "Облачные сессии ещё ничего не присылали.": {
+   "en": "Cloud sessions haven't sent anything yet.",
+   "de": "Cloud-Sitzungen haben noch nichts gesendet."
+  },
+  "Облачные сессии сюда не попадают": {
+   "en": "Cloud sessions don't show up here",
+   "de": "Cloud-Sitzungen erscheinen hier nicht"
+  },
+  "Облачные сессии сюда сами не попадают": {
+   "en": "Cloud sessions don't show up here on their own",
+   "de": "Cloud-Sitzungen erscheinen hier nicht von selbst"
+  },
+  "Обновить": {
+   "en": "Refresh",
+   "de": "Aktualisieren"
+  },
+  "Обновить данные": {
+   "en": "Refresh data",
+   "de": "Daten aktualisieren"
+  },
+  "Обновлено {0}": {
+   "en": "Updated {0}",
+   "de": "Aktualisiert {0}"
+  },
+  "Оболочка": {
+   "en": "Shell",
+   "de": "Shell"
+  },
+  "Обрезано лимитом вывода: {0}": {
+   "en": "Cut off by the output limit: {0}",
+   "de": "Vom Ausgabelimit abgeschnitten: {0}"
+  },
+  "Одна сессия съела большую часть": {
+   "en": "One session took the biggest share",
+   "de": "Eine Sitzung hat den Großteil verbraucht"
+  },
+  "Ожидание": {
+   "en": "Waiting",
+   "de": "Warten"
+  },
+  "Ожидание вас": {
+   "en": "Waiting for you",
+   "de": "Warten auf Sie"
+  },
+  "Ожидание…": {
+   "en": "Waiting…",
+   "de": "Warten…"
+  },
+  "Окно": {
+   "en": "Window",
+   "de": "Fenster"
+  },
+  "Окно 5 часов по логам этого Mac": {
+   "en": "5-hour window from this Mac's logs",
+   "de": "5-Stunden-Fenster laut den Logs dieses Macs"
+  },
+  "Окно 5 часов по логам этого компьютера": {
+   "en": "5-hour window from this computer's logs",
+   "de": "5-Stunden-Fenster laut den Logs dieses Computers"
+  },
+  "Окружение": {
+   "en": "Environment",
+   "de": "Umgebung"
+  },
+  "Окружение: {0}": {
+   "en": "Environment: {0}",
+   "de": "Umgebung: {0}"
+  },
+  "Оптимизация": {
+   "en": "Optimization",
+   "de": "Optimierung"
+  },
+  "Основная сессия": {
+   "en": "Main session",
+   "de": "Hauptsitzung"
+  },
+  "Остальное": {
+   "en": "Rest",
+   "de": "Rest"
+  },
+  "Ответ": {
+   "en": "Reply",
+   "de": "Antwort"
+  },
+  "Ответ · {0} символов": {
+   "en": "Reply · {0} characters",
+   "de": "Antwort · {0} Zeichen"
+  },
+  "Ответила не та модель, что запрошена: {0}": {
+   "en": "A different model than requested answered: {0}",
+   "de": "Ein anderes als das angefragte Modell antwortete: {0}"
+  },
+  "Ответов модели": {
+   "en": "Model replies",
+   "de": "Modellantworten"
+  },
+  "Ответов резервной модели: {0}": {
+   "en": "Fallback model replies: {0}",
+   "de": "Antworten des Ersatzmodells: {0}"
+  },
+  "Ответы обрывались на лимите вывода": {
+   "en": "Replies were cut off at the output limit",
+   "de": "Antworten brachen am Ausgabelimit ab"
+  },
+  "Отвечала резервная модель": {
+   "en": "The fallback model answered",
+   "de": "Das Ersatzmodell hat geantwortet"
+  },
+  "Отказы: {0}": {
+   "en": "Refusals: {0}",
+   "de": "Ablehnungen: {0}"
+  },
+  "Отклонено запросов с неверным токеном: {0}": {
+   "en": "Requests rejected for a wrong token: {0}",
+   "de": "Anfragen mit falschem Token abgelehnt: {0}"
+  },
+  "Отключить": {
+   "en": "Disconnect",
+   "de": "Trennen"
+  },
+  "Открыть Live-трассу": {
+   "en": "Open the Live trace",
+   "de": "Live-Trace öffnen"
+  },
+  "Открыть X-Ray": {
+   "en": "Open X-Ray",
+   "de": "X-Ray öffnen"
+  },
+  "Отпустите, чтобы импортировать логи сессий (.jsonl, .zip)": {
+   "en": "Drop to import session logs (.jsonl, .zip)",
+   "de": "Loslassen, um Sitzungslogs zu importieren (.jsonl, .zip)"
+  },
+  "Отчёт об использовании Claude Code": {
+   "en": "Claude Code usage report",
+   "de": "Nutzungsbericht für Claude Code"
+  },
+  "Отчёт скопирован в буфер обмена": {
+   "en": "Report copied to the clipboard",
+   "de": "Bericht in die Zwischenablage kopiert"
+  },
+  "Отчёты": {
+   "en": "Reports",
+   "de": "Berichte"
+  },
+  "Ошибка": {
+   "en": "Error",
+   "de": "Fehler"
+  },
+  "Ошибка API": {
+   "en": "API error",
+   "de": "API-Fehler"
+  },
+  "Ошибка инструмента": {
+   "en": "Tool error",
+   "de": "Tool-Fehler"
+  },
+  "Ошибка подключения": {
+   "en": "Connection error",
+   "de": "Verbindungsfehler"
+  },
+  "Ошибки": {
+   "en": "Errors",
+   "de": "Fehler"
+  },
+  "Палитра": {
+   "en": "Palette",
+   "de": "Palette"
+  },
+  "Папка с транскриптами Claude Code": {
+   "en": "Claude Code transcript folder",
+   "de": "Ordner mit Transkripten von Claude Code"
+  },
+  "Папки с транскриптами Claude Code (*.jsonl). Обычно это %USERPROFILE%\\.claude\\projects; если задан CLAUDE_CONFIG_DIR — его подпапка projects. Для Claude Code в WSL добавьте \\\\wsl$\\<дистрибутив>\\home\\<пользователь>\\.claude\\projects.": {
+   "en": "Folders with Claude Code transcripts (*.jsonl). Usually %USERPROFILE%\\.claude\\projects; if CLAUDE_CONFIG_DIR is set, its projects subfolder. For Claude Code in WSL, add \\\\wsl$\\<distribution>\\home\\<user>\\.claude\\projects.",
+   "de": "Ordner mit Transkripten von Claude Code (*.jsonl). Meist %USERPROFILE%\\.claude\\projects; ist CLAUDE_CONFIG_DIR gesetzt, dessen Unterordner projects. Für Claude Code in WSL fügen Sie \\\\wsl$\\<Distribution>\\home\\<Benutzer>\\.claude\\projects hinzu."
+  },
+  "Папки с транскриптами Claude Code (*.jsonl). Обычно это ~/.claude/projects; если задан CLAUDE_CONFIG_DIR — его подпапка projects.": {
+   "en": "Folders with Claude Code transcripts (*.jsonl). Usually ~/.claude/projects; if CLAUDE_CONFIG_DIR is set, its projects subfolder.",
+   "de": "Ordner mit Transkripten von Claude Code (*.jsonl). Meist ~/.claude/projects; ist CLAUDE_CONFIG_DIR gesetzt, dessen Unterordner projects."
+  },
+  "Папок нет": {
+   "en": "No folders",
+   "de": "Keine Ordner"
+  },
+  "Паузы обнуляют кэш": {
+   "en": "Pauses reset the cache",
+   "de": "Pausen leeren den Cache"
+  },
+  "Передано модели: ": {
+   "en": "Passed to the model: ",
+   "de": "An das Modell übergeben: "
+  },
+  "Пересканировать": {
+   "en": "Rescan",
+   "de": "Neu einlesen"
+  },
+  "Пересканировать всё": {
+   "en": "Rescan everything",
+   "de": "Alles neu einlesen"
+  },
+  "Переходов пока нет": {
+   "en": "No transitions yet",
+   "de": "Noch keine Übergänge"
+  },
+  "Перечитать новые записи (Ctrl+R)": {
+   "en": "Read new entries (Ctrl+R)",
+   "de": "Neue Einträge lesen (Strg+R)"
+  },
+  "Перечитать новые записи (⌘R)": {
+   "en": "Read new entries (⌘R)",
+   "de": "Neue Einträge lesen (⌘R)"
+  },
+  "Период": {
+   "en": "Period",
+   "de": "Zeitraum"
+  },
+  "Период: **{0}** · сформирован {1}": {
+   "en": "Period: **{0}** · generated {1}",
+   "de": "Zeitraum: **{0}** · erstellt {1}"
+  },
+  "Пик контекста": {
+   "en": "Peak context",
+   "de": "Kontextspitze"
+  },
+  "Пишет ответ": {
+   "en": "Writing a reply",
+   "de": "Schreibt eine Antwort"
+  },
+  "План готов": {
+   "en": "Plan ready",
+   "de": "Plan fertig"
+  },
+  "Планирование": {
+   "en": "Planning",
+   "de": "Planung"
+  },
+  "Платформа": {
+   "en": "Platform",
+   "de": "Plattform"
+  },
+  "Пн": {
+   "en": "Mon",
+   "de": "Mo"
+  },
+  "По умолчанию": {
+   "en": "Default",
+   "de": "Standard"
+  },
+  "Подключается": {
+   "en": "Connecting",
+   "de": "Verbindet"
+  },
+  "Подключаются: {0}": {
+   "en": "Connecting: {0}",
+   "de": "Verbinden: {0}"
+  },
+  "Подключено": {
+   "en": "Connected",
+   "de": "Verbunden"
+  },
+  "Подключено. Цифры появятся после первого ответа Claude Code в Терминале на этом Mac: `claude` или `claude --remote-control`.": {
+   "en": "Connected. Figures appear after Claude Code's first reply in Terminal on this Mac: `claude` or `claude --remote-control`.",
+   "de": "Verbunden. Die Zahlen erscheinen nach der ersten Antwort von Claude Code im Terminal auf diesem Mac: `claude` oder `claude --remote-control`."
+  },
+  "Подключено. Цифры появятся после первого ответа Claude Code в терминале на этом компьютере: claude или claude --remote-control.": {
+   "en": "Connected. Figures appear after Claude Code's first reply in the terminal on this computer: claude or claude --remote-control.",
+   "de": "Verbunden. Die Zahlen erscheinen nach der ersten Antwort von Claude Code im Terminal auf diesem Computer: claude oder claude --remote-control."
+  },
+  "Подключить": {
+   "en": "Connect",
+   "de": "Verbinden"
+  },
+  "Подключён": {
+   "en": "Connected",
+   "de": "Verbunden"
+  },
+  "Подписка": {
+   "en": "Subscription",
+   "de": "Abo"
+  },
+  "Подробнее": {
+   "en": "Details",
+   "de": "Details"
+  },
+  "Подробнее…": {
+   "en": "More…",
+   "de": "Mehr…"
+  },
+  "Поиск": {
+   "en": "Search",
+   "de": "Suche"
+  },
+  "Поиск по командам, файлам, текстам": {
+   "en": "Search commands, files, text",
+   "de": "Befehle, Dateien, Texte durchsuchen"
+  },
+  "Показать в Finder": {
+   "en": "Show in Finder",
+   "de": "Im Finder zeigen"
+  },
+  "Показать в проводнике": {
+   "en": "Show in Explorer",
+   "de": "Im Explorer zeigen"
+  },
+  "Показать ещё {0}": {
+   "en": "Show {0} more",
+   "de": "{0} weitere zeigen"
+  },
+  "Порт": {
+   "en": "Port",
+   "de": "Port"
+  },
+  "Последнее": {
+   "en": "Latest",
+   "de": "Zuletzt"
+  },
+  "Последнее изменение": {
+   "en": "Last change",
+   "de": "Letzte Änderung"
+  },
+  "Последнее чтение: файлов {0}, новых строк {1}, за {2} с. Всего запросов в базе: {3}.": {
+   "en": "Last read: {0} files, {1} new lines, in {2} s. Requests in the database: {3}.",
+   "de": "Letztes Lesen: {0} Dateien, {1} neue Zeilen, in {2} s. Anfragen in der Datenbank: {3}."
+  },
+  "Последние цифры: {0}": {
+   "en": "Latest figures: {0}",
+   "de": "Letzte Zahlen: {0}"
+  },
+  "Последний запрос: {0}. Новое окно начнётся с первого запроса.": {
+   "en": "Last request: {0}. A new window starts with the first request.",
+   "de": "Letzte Anfrage: {0}. Ein neues Fenster beginnt mit der ersten Anfrage."
+  },
+  "Последний лог: {0}": {
+   "en": "Latest log: {0}",
+   "de": "Letztes Log: {0}"
+  },
+  "Последняя запись в логах на этом Mac: {0}, {1}.": {
+   "en": "Latest log entry on this Mac: {0}, {1}.",
+   "de": "Letzter Logeintrag auf diesem Mac: {0}, {1}."
+  },
+  "Последняя запись в логах на этом компьютере: {0}, {1}.": {
+   "en": "Latest log entry on this computer: {0}, {1}.",
+   "de": "Letzter Logeintrag auf diesem Computer: {0}, {1}."
+  },
+  "Последняя запись в логах: {0}, {1}.": {
+   "en": "Latest log entry: {0}, {1}.",
+   "de": "Letzter Logeintrag: {0}, {1}."
+  },
+  "Последняя передача {0} · {1} · всего строк {2}": {
+   "en": "Last upload {0} · {1} · {2} lines in total",
+   "de": "Letzte Übertragung {0} · {1} · {2} Zeilen insgesamt"
+  },
+  "Потенциальная экономия: до {0} за период": {
+   "en": "Potential savings: up to {0} for the period",
+   "de": "Mögliche Einsparung: bis zu {0} im Zeitraum"
+  },
+  "Потеряно размышлений": {
+   "en": "Thinking lost",
+   "de": "Verlorenes Denken"
+  },
+  "Поток": {
+   "en": "Flow",
+   "de": "Ablauf"
+  },
+  "Почему не срабатывал кэш": {
+   "en": "Why the cache missed",
+   "de": "Warum der Cache nicht griff"
+  },
+  "Почти всё уходит на старшие модели": {
+   "en": "Almost everything goes to the largest models",
+   "de": "Fast alles geht an die größten Modelle"
+  },
+  "Правки": {
+   "en": "Edits",
+   "de": "Änderungen"
+  },
+  "Прайс-лист API на 2026-11-03": {
+   "en": "API price list as of 2026-11-03",
+   "de": "API-Preisliste vom 2026-11-03"
+  },
+  "Прервано": {
+   "en": "Interrupted",
+   "de": "Unterbrochen"
+  },
+  "Прервано пользователем": {
+   "en": "Interrupted by the user",
+   "de": "Vom Nutzer unterbrochen"
+  },
+  "Прервано: ": {
+   "en": "Interrupted: ",
+   "de": "Unterbrochen: "
+  },
+  "Прерывание": {
+   "en": "Interruption",
+   "de": "Unterbrechung"
+  },
+  "Приложение только читает эти файлы и никуда не отправляет данные.": {
+   "en": "The app only reads these files and doesn't send data anywhere.",
+   "de": "Die App liest diese Dateien nur und sendet keine Daten."
+  },
+  "Приложение только читает эти файлы и никуда не отправляет данные. Данные X-Ray: {0}": {
+   "en": "The app only reads these files and doesn't send data anywhere. X-Ray data: {0}",
+   "de": "Die App liest diese Dateien nur und sendet keine Daten. X-Ray-Daten: {0}"
+  },
+  "Принимает на 127.0.0.1:{0}": {
+   "en": "Receiving on 127.0.0.1:{0}",
+   "de": "Empfängt auf 127.0.0.1:{0}"
+  },
+  "Принимать логи облачных сессий": {
+   "en": "Receive cloud session logs",
+   "de": "Logs von Cloud-Sitzungen empfangen"
+  },
+  "Причины промахов кэша и потерянные размышления сообщает сам API (диагностика кэша, input_transformations); «не с чем сравнить» — первый запрос, пауза дольше TTL кэша или другой поток. Подробности по каждому запросу — в Live-трассе, вкладка «LLM-запросы».": {
+   "en": "The API itself reports why the cache missed and which thinking was dropped (cache diagnostics, input_transformations); “nothing to compare with” means the first request, a pause longer than the cache TTL, or another thread. Details for each request are in the Live trace, LLM requests tab.",
+   "de": "Ursachen für Cache-Fehltreffer und verlorenes Denken meldet die API selbst (Cache-Diagnose, input_transformations); „nichts zum Vergleichen“ heißt: erste Anfrage, Pause länger als die Cache-TTL oder ein anderer Strang. Details zu jeder Anfrage stehen im Live-Trace, Reiter „LLM-Anfragen“."
+  },
+  "Проект": {
+   "en": "Project",
+   "de": "Projekt"
+  },
+  "Проект, ветка или модель": {
+   "en": "Project, branch or model",
+   "de": "Projekt, Branch oder Modell"
+  },
+  "Проекты": {
+   "en": "Projects",
+   "de": "Projekte"
+  },
+  "Промах кэша: {0} — {1} токенов записаны заново{2}": {
+   "en": "Cache miss: {0} — {1} tokens written again{2}",
+   "de": "Cache-Fehltreffer: {0} – {1} Tokens neu geschrieben{2}"
+  },
+  "Промахи кэша": {
+   "en": "Cache misses",
+   "de": "Cache-Fehltreffer"
+  },
+  "Промахов кэша API не сообщало.": {
+   "en": "The API reported no cache misses.",
+   "de": "Die API meldete keine Cache-Fehltreffer."
+  },
+  "Промпт": {
+   "en": "Prompt",
+   "de": "Prompt"
+  },
+  "Пт": {
+   "en": "Fri",
+   "de": "Fr"
+  },
+  "Пустой результат": {
+   "en": "Empty result",
+   "de": "Leeres Ergebnis"
+  },
+  "Работает субагент": {
+   "en": "Subagent working",
+   "de": "Subagent arbeitet"
+  },
+  "Рабочая папка": {
+   "en": "Working folder",
+   "de": "Arbeitsordner"
+  },
+  "Раздел": {
+   "en": "Section",
+   "de": "Bereich"
+  },
+  "Размер": {
+   "en": "Size",
+   "de": "Größe"
+  },
+  "Размышление": {
+   "en": "Thinking",
+   "de": "Denken"
+  },
+  "Размышления": {
+   "en": "Thinking",
+   "de": "Denken"
+  },
+  "Размышления — {0} выходных токенов; они оплачиваются как вывод.": {
+   "en": "Thinking is {0} of output tokens; it is billed as output.",
+   "de": "Denken macht {0} der Ausgabe-Tokens aus; es wird als Ausgabe berechnet."
+  },
+  "Разрешения": {
+   "en": "Permissions",
+   "de": "Berechtigungen"
+  },
+  "Разрешённые правила": {
+   "en": "Allow rules",
+   "de": "Erlaubnisregeln"
+  },
+  "Разрешённые правила: {0}": {
+   "en": "Allow rules: {0}",
+   "de": "Erlaubnisregeln: {0}"
+  },
+  "Расход {0}": {
+   "en": "Spending {0}",
+   "de": "Verbrauch {0}"
+  },
+  "Реальный процент 5‑часового и недельного лимита всего аккаунта, включая чаты, облачные сессии и Cowork. Claude Code сообщает его своей строке статуса; X-Ray подключается к ней и запоминает цифры.": {
+   "en": "The real percentage of the whole account's 5‑hour and weekly limits, including chats, cloud sessions and Cowork. Claude Code reports it to its status line; X-Ray hooks into it and keeps the figures.",
+   "de": "Der echte Verbrauch des 5‑Stunden- und des Wochenlimits des ganzen Kontos, einschließlich Chats, Cloud-Sitzungen und Cowork. Claude Code meldet ihn seiner Statuszeile; X-Ray klinkt sich dort ein und merkt sich die Zahlen."
+  },
+  "Режим": {
+   "en": "Mode",
+   "de": "Modus"
+  },
+  "Результат": {
+   "en": "Result",
+   "de": "Ergebnis"
+  },
+  "Результат (ошибка)": {
+   "en": "Result (error)",
+   "de": "Ergebnis (Fehler)"
+  },
+  "Результат · {0}": {
+   "en": "Result · {0}",
+   "de": "Ergebnis · {0}"
+  },
+  "Результатов инструментов пока нет": {
+   "en": "No tool results yet",
+   "de": "Noch keine Tool-Ergebnisse"
+  },
+  "Рекомендации": {
+   "en": "Recommendations",
+   "de": "Empfehlungen"
+  },
+  "Решений о разрешениях в логе нет": {
+   "en": "No permission decisions in the log",
+   "de": "Keine Berechtigungsentscheidungen im Log"
+  },
+  "Рост контекста": {
+   "en": "Context growth",
+   "de": "Kontextwachstum"
+  },
+  "Самые дорогие проекты": {
+   "en": "Most expensive projects",
+   "de": "Teuerste Projekte"
+  },
+  "Самые дорогие сессии": {
+   "en": "Most expensive sessions",
+   "de": "Teuerste Sitzungen"
+  },
+  "Сб": {
+   "en": "Sat",
+   "de": "Sa"
+  },
+  "Сбросить к стандартным": {
+   "en": "Reset to defaults",
+   "de": "Auf Standard zurücksetzen"
+  },
+  "Свежий ввод": {
+   "en": "Fresh input",
+   "de": "Neue Eingabe"
+  },
+  "Свернуть": {
+   "en": "Collapse",
+   "de": "Einklappen"
+  },
+  "Светлая": {
+   "en": "Light",
+   "de": "Hell"
+  },
+  "Сводка после сжатия контекста": {
+   "en": "Summary after context compaction",
+   "de": "Zusammenfassung nach dem Komprimieren des Kontexts"
+  },
+  "Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте.": {
+   "en": "Above 100K prompt tokens: $0.50 / $2.50. The cache read price is assumed to be 0.1× — please check.",
+   "de": "Über 100K Prompt-Tokens: $0.50 / $2.50. Der Preis für Cache-Lesen ist mit 0,1× angenommen – bitte prüfen."
+  },
+  "Сделайте X-Ray доступным из облака. Проще всего через Tailscale Funnel: установите Tailscale (бесплатно), войдите и выполните в Терминале команду ниже. Она напечатает адрес вида `https://ваш-mac.имя-сети.ts.net`.": {
+   "en": "Make X-Ray reachable from the cloud. The easiest way is Tailscale Funnel: install Tailscale (free), sign in and run the command below in Terminal. It prints an address like `https://your-mac.your-tailnet.ts.net`.",
+   "de": "Machen Sie X-Ray aus der Cloud erreichbar. Am einfachsten mit Tailscale Funnel: Installieren Sie Tailscale (kostenlos), melden Sie sich an und führen Sie den Befehl unten im Terminal aus. Er gibt eine Adresse wie `https://ihr-mac.ihr-netz.ts.net` aus."
+  },
+  "Сделайте X-Ray доступным из облака. Проще всего через Tailscale Funnel: установите Tailscale для Windows (бесплатно), войдите и выполните в PowerShell команду ниже. Она напечатает адрес вида `https://ваш-компьютер.имя-сети.ts.net`.": {
+   "en": "Make X-Ray reachable from the cloud. The easiest way is Tailscale Funnel: install Tailscale for Windows (free), sign in and run the command below in PowerShell. It prints an address like `https://your-computer.your-tailnet.ts.net`.",
+   "de": "Machen Sie X-Ray aus der Cloud erreichbar. Am einfachsten mit Tailscale Funnel: Installieren Sie Tailscale für Windows (kostenlos), melden Sie sich an und führen Sie den Befehl unten in PowerShell aus. Er gibt eine Adresse wie `https://ihr-computer.ihr-netz.ts.net` aus."
+  },
+  "Сегодня": {
+   "en": "Today",
+   "de": "Heute"
+  },
+  "Сейчас": {
+   "en": "Now",
+   "de": "Jetzt"
+  },
+  "Сейчас активного окна нет": {
+   "en": "No active window right now",
+   "de": "Gerade kein aktives Fenster"
+  },
+  "Сервер очистил контекст ({0}){1}": {
+   "en": "The server cleared context ({0}){1}",
+   "de": "Der Server leerte den Kontext ({0}){1}"
+  },
+  "Сервер очищал контекст в {0}": {
+   "en": "The server cleared context in {0}",
+   "de": "Der Server leerte den Kontext in {0}"
+  },
+  "Сессии": {
+   "en": "Sessions",
+   "de": "Sitzungen"
+  },
+  "Сессии Claude Code в облаке (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) выполняются на серверах Anthropic, и их логи остаются там. X-Ray видит только сессии, которые идут на этом Mac:": {
+   "en": "Claude Code sessions in the cloud (claude.ai/code, the Claude mobile app, the cloud environment in Claude Desktop) run on Anthropic's servers, and their logs stay there. X-Ray sees only sessions that run on this Mac:",
+   "de": "Sitzungen von Claude Code in der Cloud (claude.ai/code, die Claude-App fürs Handy, die Cloud-Umgebung in Claude Desktop) laufen auf den Servern von Anthropic, und ihre Logs bleiben dort. X-Ray sieht nur Sitzungen, die auf diesem Mac laufen:"
+  },
+  "Сессии Claude Code в облаке (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) выполняются на серверах Anthropic, и их логи остаются там. Без настройки X-Ray видит только сессии, которые идут на этом компьютере:": {
+   "en": "Claude Code sessions in the cloud (claude.ai/code, the Claude mobile app, the cloud environment in Claude Desktop) run on Anthropic's servers, and their logs stay there. Without setup, X-Ray sees only sessions that run on this computer:",
+   "de": "Sitzungen von Claude Code in der Cloud (claude.ai/code, die Claude-App fürs Handy, die Cloud-Umgebung in Claude Desktop) laufen auf den Servern von Anthropic, und ihre Logs bleiben dort. Ohne Einrichtung sieht X-Ray nur Sitzungen, die auf diesem Computer laufen:"
+  },
+  "Сессий за период нет": {
+   "en": "No sessions in the period",
+   "de": "Keine Sitzungen im Zeitraum"
+  },
+  "Сессия": {
+   "en": "Session",
+   "de": "Sitzung"
+  },
+  "Сессия в «{0}» от {1} — {2} стоимости периода ({3}, {4} запросов, пик контекста {5}).": {
+   "en": "The session in “{0}” from {1} is {2} of the period's cost ({3}, {4} requests, peak context {5}).",
+   "de": "Die Sitzung in „{0}“ vom {1} macht {2} der Kosten des Zeitraums aus ({3}, {4} Anfragen, Kontextspitze {5})."
+  },
+  "Сжатие": {
+   "en": "Compaction",
+   "de": "Komprimierung"
+  },
+  "Сжатие контекста": {
+   "en": "Context compaction",
+   "de": "Kontextkomprimierung"
+  },
+  "Сжатий контекста": {
+   "en": "Context compactions",
+   "de": "Kontextkomprimierungen"
+  },
+  "Системная": {
+   "en": "System",
+   "de": "System"
+  },
+  "Системный промпт": {
+   "en": "System prompt",
+   "de": "System-Prompt"
+  },
+  "Системный промпт менялся посреди сессии: правки CLAUDE.md или памяти, смена режима, настроек или версии Claude Code. Вносите такие изменения между сессиями.": {
+   "en": "The system prompt changed mid-session: edits to CLAUDE.md or memory, a change of mode, settings or Claude Code version. Make such changes between sessions.",
+   "de": "Der System-Prompt änderte sich mitten in der Sitzung: Änderungen an CLAUDE.md oder am Gedächtnis, ein Wechsel von Modus, Einstellungen oder Version von Claude Code. Nehmen Sie solche Änderungen zwischen Sitzungen vor."
+  },
+  "Системный промпт: {0} символов (≈{1} токенов)": {
+   "en": "System prompt: {0} characters (≈{1} tokens)",
+   "de": "System-Prompt: {0} Zeichen (≈{1} Tokens)"
+  },
+  "Скилл": {
+   "en": "Skill",
+   "de": "Skill"
+  },
+  "Скиллов в контексте: {0} · отложенных инструментов: {1} · типов субагентов: {2} · MCP с инструкциями: {3}": {
+   "en": "Skills in context: {0} · deferred tools: {1} · subagent types: {2} · MCP with instructions: {3}",
+   "de": "Skills im Kontext: {0} · verzögerte Tools: {1} · Subagent-Typen: {2} · MCP mit Anweisungen: {3}"
+  },
+  "Скиллы": {
+   "en": "Skills",
+   "de": "Skills"
+  },
+  "Скиллы в контексте: {0}": {
+   "en": "Skills in context: {0}",
+   "de": "Skills im Kontext: {0}"
+  },
+  "Скопировано": {
+   "en": "Copied",
+   "de": "Kopiert"
+  },
+  "Скопировать": {
+   "en": "Copy",
+   "de": "Kopieren"
+  },
+  "Скопировать лог сессии (.jsonl или .zip), например облачной, в папку импорта X-Ray": {
+   "en": "Copy a session log (.jsonl or .zip), for example a cloud one, into X-Ray's import folder",
+   "de": "Ein Sitzungslog (.jsonl oder .zip), etwa aus der Cloud, in den Importordner von X-Ray kopieren"
+  },
+  "Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана": {
+   "en": "Hides the text of prompts, replies, commands and outputs — handy for screen sharing",
+   "de": "Blendet die Texte von Prompts, Antworten, Befehlen und Ausgaben aus – praktisch beim Bildschirmteilen"
+  },
+  "Скрыто переключателем «Скрыть содержимое».": {
+   "en": "Hidden by the “Hide content” switch.",
+   "de": "Durch den Schalter „Inhalte ausblenden“ verborgen."
+  },
+  "Скрыть содержимое": {
+   "en": "Hide content",
+   "de": "Inhalte ausblenden"
+  },
+  "Следовать за активной сессией": {
+   "en": "Follow the active session",
+   "de": "Der aktiven Sitzung folgen"
+  },
+  "Совет": {
+   "en": "Tip",
+   "de": "Tipp"
+  },
+  "Содержимое скрыто переключателем «Скрыть содержимое».": {
+   "en": "Content hidden by the “Hide content” switch.",
+   "de": "Inhalt durch den Schalter „Inhalte ausblenden“ verborgen."
+  },
+  "Создать новый токен. Старый перестанет приниматься.": {
+   "en": "Create a new token. The old one stops being accepted.",
+   "de": "Neues Token erstellen. Das alte wird dann nicht mehr angenommen."
+  },
+  "Сообщение": {
+   "en": "Message",
+   "de": "Nachricht"
+  },
+  "Сообщение во время работы": {
+   "en": "Message while working",
+   "de": "Nachricht während der Arbeit"
+  },
+  "Сообщений во время работы": {
+   "en": "Messages while working",
+   "de": "Nachrichten während der Arbeit"
+  },
+  "Состав контекста": {
+   "en": "Context makeup",
+   "de": "Zusammensetzung des Kontexts"
+  },
+  "Сохранено: {0}": {
+   "en": "Saved: {0}",
+   "de": "Gespeichert: {0}"
+  },
+  "Сохранить PDF…": {
+   "en": "Save PDF…",
+   "de": "PDF sichern…"
+  },
+  "Список задач: {0}": {
+   "en": "Task list: {0}",
+   "de": "Aufgabenliste: {0}"
+  },
+  "Список отложенных инструментов": {
+   "en": "Deferred tool list",
+   "de": "Liste verzögerter Tools"
+  },
+  "Список скиллов": {
+   "en": "Skill list",
+   "de": "Skill-Liste"
+  },
+  "Список скиллов в логе не найден": {
+   "en": "No skill list found in the log",
+   "de": "Keine Skill-Liste im Log gefunden"
+  },
+  "Ср": {
+   "en": "Wed",
+   "de": "Mi"
+  },
+  "Среднее": {
+   "en": "Average",
+   "de": "Durchschnitt"
+  },
+  "Средний размер контекста": {
+   "en": "Average context size",
+   "de": "Durchschnittliche Kontextgröße"
+  },
+  "Средняя сессия": {
+   "en": "Average session",
+   "de": "Durchschnittliche Sitzung"
+  },
+  "Статус": {
+   "en": "Status",
+   "de": "Status"
+  },
+  "Статья": {
+   "en": "Item",
+   "de": "Posten"
+  },
+  "Стоимость": {
+   "en": "Cost",
+   "de": "Kosten"
+  },
+  "Стоимость запросов": {
+   "en": "Request cost",
+   "de": "Kosten der Anfragen"
+  },
+  "Стоимость по 5-минутным интервалам за 3 часа": {
+   "en": "Cost in 5-minute intervals over 3 hours",
+   "de": "Kosten in 5-Minuten-Intervallen über 3 Stunden"
+  },
+  "Стоимость по времени": {
+   "en": "Cost over time",
+   "de": "Kosten im Zeitverlauf"
+  },
+  "Стоимость по времени, по моделям": {
+   "en": "Cost over time, by model",
+   "de": "Kosten im Zeitverlauf, nach Modell"
+  },
+  "Стоимость по моделям": {
+   "en": "Cost by model",
+   "de": "Kosten nach Modell"
+  },
+  "Строки": {
+   "en": "Lines",
+   "de": "Zeilen"
+  },
+  "Структура стоимости": {
+   "en": "Cost structure",
+   "de": "Kostenstruktur"
+  },
+  "Субагент": {
+   "en": "Subagent",
+   "de": "Subagent"
+  },
+  "Субагент{0}: {1}": {
+   "en": "Subagent{0}: {1}",
+   "de": "Subagent{0}: {1}"
+  },
+  "Субагенты": {
+   "en": "Subagents",
+   "de": "Subagents"
+  },
+  "Субагенты выгодны для объёмного чтения и поиска. Для мелких шагов, которым нужен контекст основной сессии, они обходятся дороже.": {
+   "en": "Subagents pay off for large-scale reading and searching. For small steps that need the main session's context, they cost more.",
+   "de": "Subagents lohnen sich für umfangreiches Lesen und Suchen. Für kleine Schritte, die den Kontext der Hauptsitzung brauchen, sind sie teurer."
+  },
+  "Субагенты не встречались": {
+   "en": "No subagents",
+   "de": "Keine Subagents"
+  },
+  "Субагенты — заметная часть расходов": {
+   "en": "Subagents are a noticeable part of the cost",
+   "de": "Subagents machen einen spürbaren Teil der Kosten aus"
+  },
+  "Суммы — API-эквивалент по прайс-листу Anthropic": {
+   "en": "Amounts are the API equivalent at Anthropic's list prices",
+   "de": "Beträge sind das API-Äquivalent zu den Listenpreisen von Anthropic"
+  },
+  "Сформировано {0} в S2A Claude X-Ray": {
+   "en": "Generated {0} in S2A Claude X-Ray",
+   "de": "Erstellt {0} in S2A Claude X-Ray"
+  },
+  "Таймлайн": {
+   "en": "Timeline",
+   "de": "Zeitachse"
+  },
+  "Тариф": {
+   "en": "Plan",
+   "de": "Tarif"
+  },
+  "Текст размышлений API не возвращает — известны только длительность и {0} токенов размышлений.": {
+   "en": "The API doesn't return the thinking text — only its duration and {0} thinking tokens are known.",
+   "de": "Den Denktext gibt die API nicht zurück – bekannt sind nur die Dauer und {0} Denk-Tokens."
+  },
+  "Текущая сессия": {
+   "en": "Current session",
+   "de": "Aktuelle Sitzung"
+  },
+  "Тема": {
+   "en": "Theme",
+   "de": "Design"
+  },
+  "Темп за последний час": {
+   "en": "Pace over the last hour",
+   "de": "Tempo der letzten Stunde"
+  },
+  "Темп за час": {
+   "en": "Hourly pace",
+   "de": "Tempo pro Stunde"
+  },
+  "Тип": {
+   "en": "Type",
+   "de": "Typ"
+  },
+  "Типы субагентов": {
+   "en": "Subagent types",
+   "de": "Subagent-Typen"
+  },
+  "Типы субагентов: {0}": {
+   "en": "Subagent types: {0}",
+   "de": "Subagent-Typen: {0}"
+  },
+  "Токен доступа": {
+   "en": "Access token",
+   "de": "Zugriffstoken"
+  },
+  "Токены": {
+   "en": "Tokens",
+   "de": "Tokens"
+  },
+  "Токены этого ответа в логе не найдены": {
+   "en": "This reply's tokens aren't in the log",
+   "de": "Die Tokens dieser Antwort stehen nicht im Log"
+  },
+  "Только с проблемами": {
+   "en": "Only with issues",
+   "de": "Nur mit Problemen"
+  },
+  "Тёмная": {
+   "en": "Dark",
+   "de": "Dunkel"
+  },
+  "Убрано из очереди": {
+   "en": "Removed from the queue",
+   "de": "Aus der Warteschlange entfernt"
+  },
+  "Убрать папку": {
+   "en": "Remove folder",
+   "de": "Ordner entfernen"
+  },
+  "Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями.": {
+   "en": "Raise the output limit (the CLAUDE_CODE_MAX_OUTPUT_TOKENS variable) or ask the model to make changes in smaller pieces.",
+   "de": "Erhöhen Sie das Ausgabelimit (Variable CLAUDE_CODE_MAX_OUTPUT_TOKENS) oder bitten Sie das Modell, Änderungen in kleineren Teilen zu machen."
+  },
+  "Удалить строку": {
+   "en": "Delete row",
+   "de": "Zeile löschen"
+  },
+  "Успех": {
+   "en": "Success",
+   "de": "Erfolg"
+  },
+  "Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на этом Mac. Claude Code обновляет эти цифры после каждого своего ответа в Терминале на этом Mac.": {
+   "en": "Counts everything that uses the subscription: chats, cloud sessions, Cowork and sessions on this Mac. Claude Code updates these figures after each of its replies in Terminal on this Mac.",
+   "de": "Zählt alles, was das Abo verbraucht: Chats, Cloud-Sitzungen, Cowork und Sitzungen auf diesem Mac. Claude Code aktualisiert diese Zahlen nach jeder Antwort im Terminal auf diesem Mac."
+  },
+  "Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на этом компьютере. Claude Code обновляет эти цифры после каждого своего ответа в терминале на этом компьютере.": {
+   "en": "Counts everything that uses the subscription: chats, cloud sessions, Cowork and sessions on this computer. Claude Code updates these figures after each of its replies in the terminal on this computer.",
+   "de": "Zählt alles, was das Abo verbraucht: Chats, Cloud-Sitzungen, Cowork und Sitzungen auf diesem Computer. Claude Code aktualisiert diese Zahlen nach jeder Antwort im Terminal auf diesem Computer."
+  },
+  "Файл": {
+   "en": "File",
+   "de": "Datei"
+  },
+  "Файл изменён вне Claude: {0}": {
+   "en": "File changed outside Claude: {0}",
+   "de": "Datei außerhalb von Claude geändert: {0}"
+  },
+  "Файлы": {
+   "en": "Files",
+   "de": "Dateien"
+  },
+  "Файлы не читались и не менялись": {
+   "en": "No files read or changed",
+   "de": "Keine Dateien gelesen oder geändert"
+  },
+  "Файлы, изменённые вне Claude": {
+   "en": "Files changed outside Claude",
+   "de": "Außerhalb von Claude geänderte Dateien"
+  },
+  "Фильтр": {
+   "en": "Filter",
+   "de": "Filter"
+  },
+  "Фирменные цвета S2A: фиолетовый, циан и глубокий ночной фон": {
+   "en": "S2A brand colors: violet, cyan and a deep night background",
+   "de": "S2A-Markenfarben: Violett, Cyan und ein tiefer Nachthintergrund"
+  },
+  "Ход": {
+   "en": "Turn",
+   "de": "Zug"
+  },
+  "Ход {0}": {
+   "en": "Turn {0}",
+   "de": "Zug {0}"
+  },
+  "Ходов": {
+   "en": "Turns",
+   "de": "Züge"
+  },
+  "Ходы сессии": {
+   "en": "Session turns",
+   "de": "Züge der Sitzung"
+  },
+  "Хорошо": {
+   "en": "Good",
+   "de": "Gut"
+  },
+  "Хук": {
+   "en": "Hook",
+   "de": "Hook"
+  },
+  "Хук: {0}": {
+   "en": "Hook: {0}",
+   "de": "Hook: {0}"
+  },
+  "Хуки Stop: {0}": {
+   "en": "Stop hooks: {0}",
+   "de": "Stop-Hooks: {0}"
+  },
+  "Цвета серий подобраны так, чтобы соседние оставались различимы при протанопии и дейтеранопии в светлом и тёмном режиме. Статусные цвета одинаковы во всех темах и всегда идут со значком и подписью.": {
+   "en": "Series colors are chosen so that neighbors stay distinguishable with protanopia and deuteranopia in light and dark mode. Status colors are the same in every theme and always come with an icon and a label.",
+   "de": "Die Serienfarben sind so gewählt, dass benachbarte bei Protanopie und Deuteranopie im hellen und dunklen Modus unterscheidbar bleiben. Statusfarben sind in allen Designs gleich und kommen immer mit Symbol und Beschriftung."
+  },
+  "Цены": {
+   "en": "Pricing",
+   "de": "Preise"
+  },
+  "Цены для части моделей оценены": {
+   "en": "Prices for some models are estimated",
+   "de": "Preise für einige Modelle sind geschätzt"
+  },
+  "Цикл агента": {
+   "en": "Agent loop",
+   "de": "Agentenschleife"
+  },
+  "Цифры на {0}. Обновятся после следующего ответа Claude Code на этом Mac.": {
+   "en": "Figures as of {0}. They update after Claude Code's next reply on this Mac.",
+   "de": "Stand: {0}. Aktualisiert nach der nächsten Antwort von Claude Code auf diesem Mac."
+  },
+  "Цифры на {0}. Обновятся после следующего ответа Claude Code на этом компьютере.": {
+   "en": "Figures as of {0}. They update after Claude Code's next reply on this computer.",
+   "de": "Stand: {0}. Aktualisiert nach der nächsten Antwort von Claude Code auf diesem Computer."
+  },
+  "Час": {
+   "en": "Hour",
+   "de": "Stunde"
+  },
+  "Часть": {
+   "en": "Part",
+   "de": "Teil"
+  },
+  "Чем заканчивались ответы": {
+   "en": "How replies ended",
+   "de": "Wie Antworten endeten"
+  },
+  "Чем меньше API-эквивалент на задачу (кэш, короткий контекст, подходящая модель), тем медленнее расходуется лимит.": {
+   "en": "The smaller the API equivalent per task (cache, short context, the right model), the slower the limit is used.",
+   "de": "Je kleiner das API-Äquivalent pro Aufgabe (Cache, kurzer Kontext, passendes Modell), desto langsamer wird das Limit verbraucht."
+  },
+  "Чт": {
+   "en": "Thu",
+   "de": "Do"
+  },
+  "Чтение": {
+   "en": "Reading",
+   "de": "Lesen"
+  },
+  "Чтение из кэша": {
+   "en": "Read from cache",
+   "de": "Aus dem Cache gelesen"
+  },
+  "Чтение кэша": {
+   "en": "Cache read",
+   "de": "Cache-Lesen"
+  },
+  "Чтение логов": {
+   "en": "Reading logs",
+   "de": "Logs werden gelesen"
+  },
+  "Чтение логов…": {
+   "en": "Reading logs…",
+   "de": "Logs werden gelesen…"
+  },
+  "Что": {
+   "en": "What",
+   "de": "Was"
+  },
+  "Что происходило": {
+   "en": "What happened",
+   "de": "Was passiert ist"
+  },
+  "Что сильнее всего раздувает контекст": {
+   "en": "What inflates the context most",
+   "de": "Was den Kontext am meisten aufbläht"
+  },
+  "Чтобы облачные сессии (claude.ai/code, мобильное приложение, облачная среда Claude Desktop) появлялись здесь вживую, включите приём на вкладке «Облако». Разово можно попросить сессию прислать свой лог («пришли лог сессии для X-Ray») и импортировать файл.": {
+   "en": "To see cloud sessions (claude.ai/code, the mobile app, the Claude Desktop cloud environment) here live, turn on receiving on the Cloud tab. For a one-off, ask the session to send its log (“send the session log for X-Ray”) and import the file.",
+   "de": "Damit Cloud-Sitzungen (claude.ai/code, die Handy-App, die Cloud-Umgebung von Claude Desktop) hier live erscheinen, schalten Sie den Empfang im Reiter „Cloud“ ein. Einmalig können Sie die Sitzung bitten, ihr Log zu schicken („schick das Sitzungslog für X-Ray“), und die Datei importieren."
+  },
+  "Шаги запроса: ": {
+   "en": "Request steps: ",
+   "de": "Schritte der Anfrage: "
+  },
+  "Шаги запроса: {0}": {
+   "en": "Request steps: {0}",
+   "de": "Schritte der Anfrage: {0}"
+  },
+  "Язык и оформление": {
+   "en": "Language & appearance",
+   "de": "Sprache & Darstellung"
+  },
+  "Язык интерфейса": {
+   "en": "Interface language",
+   "de": "Sprache der Oberfläche"
+  },
+  "автоматически": {
+   "en": "automatically",
+   "de": "automatisch"
+  },
+  "акцент, поверхности и восемь цветов серий": {
+   "en": "accent, surfaces and eight series colors",
+   "de": "Akzent, Flächen und acht Serienfarben"
+  },
+  "аргументы генерировались {0}": {
+   "en": "arguments generated in {0}",
+   "de": "Argumente erzeugt in {0}"
+  },
+  "без изменений": {
+   "en": "no change",
+   "de": "unverändert"
+  },
+  "без потери качества можно сэкономить до {0}": {
+   "en": "up to {0} can be saved without quality loss",
+   "de": "ohne Qualitätsverlust lassen sich bis zu {0} sparen"
+  },
+  "без промпта": {
+   "en": "no prompt",
+   "de": "ohne Prompt"
+  },
+  "без размышлений": {
+   "en": "no thinking",
+   "de": "ohne Denken"
+  },
+  "блоков в {0}": {
+   "en": "blocks in {0}",
+   "de": "Blöcke in {0}"
+  },
+  "больше · до {0} за час": {
+   "en": "more · up to {0} per hour",
+   "de": "mehr · bis zu {0} pro Stunde"
+  },
+  "в песочнице": {
+   "en": "in the sandbox",
+   "de": "in der Sandbox"
+  },
+  "ввод {0}": {
+   "en": "input {0}",
+   "de": "Eingabe {0}"
+  },
+  "ввод генерировался {0}": {
+   "en": "input generated in {0}",
+   "de": "Eingabe erzeugt in {0}"
+  },
+  "веб-поиск {0}": {
+   "en": "web search {0}",
+   "de": "Websuche {0}"
+  },
+  "внимание": {
+   "en": "warning",
+   "de": "Achtung"
+  },
+  "воскресеньям": {
+   "en": "Sundays",
+   "de": "sonntags"
+  },
+  "вручную": {
+   "en": "manually",
+   "de": "manuell"
+  },
+  "вторникам": {
+   "en": "Tuesdays",
+   "de": "dienstags"
+  },
+  "вход": {
+   "en": "input",
+   "de": "Eingabe"
+  },
+  "вы": {
+   "en": "you",
+   "de": "Sie"
+  },
+  "вывод": {
+   "en": "output",
+   "de": "Ausgabe"
+  },
+  "вывод {0}": {
+   "en": "output {0}",
+   "de": "Ausgabe {0}"
+  },
+  "вывод {0} ≈{1} ток.": {
+   "en": "output {0} ≈{1} tok.",
+   "de": "Ausgabe {0} ≈{1} Tok."
+  },
+  "вывод {0}, из них размышления {1}": {
+   "en": "output {0}, of which thinking {1}",
+   "de": "Ausgabe {0}, davon Denken {1}"
+  },
+  "вызван, но не в списке": {
+   "en": "called but not listed",
+   "de": "aufgerufen, aber nicht gelistet"
+  },
+  "вызваны / доступны": {
+   "en": "called / available",
+   "de": "aufgerufen / verfügbar"
+  },
+  "вызов инструментов": {
+   "en": "tool calls",
+   "de": "Tool-Aufrufe"
+  },
+  "вызовов инструментов: {0}": {
+   "en": "tool calls: {0}",
+   "de": "Tool-Aufrufe: {0}"
+  },
+  "выполняется": {
+   "en": "running",
+   "de": "läuft"
+  },
+  "выполняется {0}": {
+   "en": "running {0}",
+   "de": "läuft {0}"
+  },
+  "выход": {
+   "en": "output",
+   "de": "Ausgabe"
+  },
+  "глубина размышлений": {
+   "en": "thinking depth",
+   "de": "Denktiefe"
+  },
+  "да": {
+   "en": "yes",
+   "de": "ja"
+  },
+  "диагностика недоступна": {
+   "en": "diagnostics unavailable",
+   "de": "Diagnose nicht verfügbar"
+  },
+  "до {0}": {
+   "en": "up to {0}",
+   "de": "bis zu {0}"
+  },
+  "до сброса": {
+   "en": "until reset",
+   "de": "bis zum Zurücksetzen"
+  },
+  "доля контекста всех запросов": {
+   "en": "share of all requests' context",
+   "de": "Anteil am Kontext aller Anfragen"
+  },
+  "доля контекста из кэша": {
+   "en": "share of context from the cache",
+   "de": "Anteil des Kontexts aus dem Cache"
+  },
+  "доля расхода": {
+   "en": "share of spending",
+   "de": "Anteil am Verbrauch"
+  },
+  "доступен": {
+   "en": "available",
+   "de": "verfügbar"
+  },
+  "доступен, не вызывался": {
+   "en": "available, not called",
+   "de": "verfügbar, nicht aufgerufen"
+  },
+  "думал {0}": {
+   "en": "thought {0}",
+   "de": "dachte {0}"
+  },
+  "есть инструкции": {
+   "en": "has instructions",
+   "de": "mit Anweisungen"
+  },
+  "ещё до {0} через компромиссы; оценки пересекаются": {
+   "en": "up to {0} more through trade-offs; the estimates overlap",
+   "de": "bis zu {0} mehr durch Kompromisse; die Schätzungen überschneiden sich"
+  },
+  "ждёт результата": {
+   "en": "waiting for the result",
+   "de": "wartet auf das Ergebnis"
+  },
+  "завершён": {
+   "en": "completed",
+   "de": "abgeschlossen"
+  },
+  "задача": {
+   "en": "task",
+   "de": "Aufgabe"
+  },
+  "заметки по ходу работы": {
+   "en": "progress notes",
+   "de": "Notizen unterwegs"
+  },
+  "запись": {
+   "en": "write",
+   "de": "Schreiben"
+  },
+  "запись {0}": {
+   "en": "write {0}",
+   "de": "Schreiben {0}"
+  },
+  "запись в кэш": {
+   "en": "cache write",
+   "de": "Cache-Schreiben"
+  },
+  "запись в кэш {0}{1}": {
+   "en": "cache write {0}{1}",
+   "de": "Cache-Schreiben {0}{1}"
+  },
+  "запись в кэш выделена отдельно": {
+   "en": "cache writes shown separately",
+   "de": "Cache-Schreiben separat dargestellt"
+  },
+  "запись с TTL 1 ч": {
+   "en": "write with a 1 h TTL",
+   "de": "Schreiben mit TTL 1 Std."
+  },
+  "запрещено": {
+   "en": "denied",
+   "de": "verweigert"
+  },
+  "запрос из другого разговора": {
+   "en": "request from another conversation",
+   "de": "Anfrage aus einem anderen Gespräch"
+  },
+  "запрошена {0}": {
+   "en": "requested {0}",
+   "de": "angefragt {0}"
+  },
+  "запусков, типов {0}": {
+   "en": "runs, {0} types",
+   "de": "Läufe, {0} Typen"
+  },
+  "зашифровано": {
+   "en": "encrypted",
+   "de": "verschlüsselt"
+  },
+  "знания до {0}": {
+   "en": "knowledge up to {0}",
+   "de": "Wissen bis {0}"
+  },
+  "идёт": {
+   "en": "in progress",
+   "de": "läuft"
+  },
+  "из Claude Code": {
+   "en": "from Claude Code",
+   "de": "von Claude Code"
+  },
+  "из Claude Code · {0}": {
+   "en": "from Claude Code · {0}",
+   "de": "von Claude Code · {0}"
+  },
+  "из кэша {0}": {
+   "en": "from cache {0}",
+   "de": "aus dem Cache {0}"
+  },
+  "из них размышления {0}": {
+   "en": "of which thinking {0}",
+   "de": "davon Denken {0}"
+  },
+  "из сессии {0}": {
+   "en": "from session {0}",
+   "de": "aus Sitzung {0}"
+  },
+  "из списка инструментов сессии и фактических вызовов": {
+   "en": "from the session's tool list and actual calls",
+   "de": "aus der Tool-Liste der Sitzung und tatsächlichen Aufrufen"
+  },
+  "изменилась история сообщений": {
+   "en": "message history changed",
+   "de": "Nachrichtenverlauf geändert"
+  },
+  "изменились инструменты (набор или описания)": {
+   "en": "tools changed (set or descriptions)",
+   "de": "Tools geändert (Auswahl oder Beschreibungen)"
+  },
+  "изменилось несколько частей запроса": {
+   "en": "several parts of the request changed",
+   "de": "mehrere Teile der Anfrage geändert"
+  },
+  "изменился системный промпт": {
+   "en": "system prompt changed",
+   "de": "System-Prompt geändert"
+  },
+  "инструментов {0} · вызовов {1} · ошибок {2} · {3}": {
+   "en": "tools {0} · calls {1} · errors {2} · {3}",
+   "de": "Tools {0} · Aufrufe {1} · Fehler {2} · {3}"
+  },
+  "инструменты": {
+   "en": "tools",
+   "de": "Tools"
+  },
+  "использовано": {
+   "en": "used",
+   "de": "verbraucht"
+  },
+  "история изменилась после размышления": {
+   "en": "the history changed after the thinking",
+   "de": "Verlauf nach dem Denken geändert"
+  },
+  "каждый вызов модели: токены, кэш, причина остановки, размышления и действия": {
+   "en": "each model call: tokens, cache, stop reason, thinking and actions",
+   "de": "jeder Modellaufruf: Tokens, Cache, Stoppgrund, Denken und Aktionen"
+  },
+  "классификатор auto mode": {
+   "en": "auto mode classifier",
+   "de": "Auto-Modus-Klassifikator"
+  },
+  "коммит": {
+   "en": "commit",
+   "de": "Commit"
+  },
+  "контекст": {
+   "en": "context",
+   "de": "Kontext"
+  },
+  "контекст {0} ({1} окна)": {
+   "en": "context {0} ({1} of the window)",
+   "de": "Kontext {0} ({1} des Fensters)"
+  },
+  "контекст {0}%": {
+   "en": "context {0}%",
+   "de": "Kontext {0}%"
+  },
+  "краткое изложение": {
+   "en": "summary",
+   "de": "Zusammenfassung"
+  },
+  "критично": {
+   "en": "critical",
+   "de": "kritisch"
+  },
+  "кэш и гигиена контекста": {
+   "en": "cache and context hygiene",
+   "de": "Cache und Kontexthygiene"
+  },
+  "лимит 5 ч {0}": {
+   "en": "5h limit {0}",
+   "de": "5-Std.-Limit {0}"
+  },
+  "логов нет": {
+   "en": "no logs",
+   "de": "keine Logs"
+  },
+  "между ответом и следующим промптом": {
+   "en": "between a reply and the next prompt",
+   "de": "zwischen Antwort und nächstem Prompt"
+  },
+  "меньше": {
+   "en": "less",
+   "de": "weniger"
+  },
+  "модель": {
+   "en": "model",
+   "de": "Modell"
+  },
+  "модель не читает размышления прежней модели": {
+   "en": "the model can't read the previous model's thinking",
+   "de": "Modell kann das Denken des vorherigen Modells nicht lesen"
+  },
+  "мониторинг Claude Code": {
+   "en": "Claude Code monitor",
+   "de": "Monitoring für Claude Code"
+  },
+  "мысль → действие → результат для каждого запроса хода": {
+   "en": "thought → action → result for each request of a turn",
+   "de": "Gedanke → Aktion → Ergebnis für jede Anfrage eines Zugs"
+  },
+  "настройки": {
+   "en": "settings",
+   "de": "Einstellungen"
+  },
+  "начало окна": {
+   "en": "window start",
+   "de": "Fensterbeginn"
+  },
+  "не с чем сравнить: первый запрос, пауза дольше TTL или другой поток": {
+   "en": "nothing to compare with: the first request, a pause longer than the TTL, or another thread",
+   "de": "nichts zum Vergleichen: erste Anfrage, Pause länger als die TTL oder ein anderer Strang"
+  },
+  "неделя {0}": {
+   "en": "week {0}",
+   "de": "Woche {0}"
+  },
+  "неделя {0}%": {
+   "en": "week {0}%",
+   "de": "Woche {0}%"
+  },
+  "нет": {
+   "en": "no",
+   "de": "nein"
+  },
+  "нет данных для сравнения": {
+   "en": "no data to compare",
+   "de": "keine Vergleichsdaten"
+  },
+  "обновляется в реальном времени": {
+   "en": "updates in real time",
+   "de": "aktualisiert in Echtzeit"
+  },
+  "обрезан лимитом вывода": {
+   "en": "cut off by the output limit",
+   "de": "vom Ausgabelimit abgeschnitten"
+  },
+  "окно {0}": {
+   "en": "window {0}",
+   "de": "Fenster {0}"
+  },
+  "окно контекста переполнено": {
+   "en": "context window exceeded",
+   "de": "Kontextfenster überschritten"
+  },
+  "окно сброшено {0}": {
+   "en": "window reset {0}",
+   "de": "Fenster zurückgesetzt {0}"
+  },
+  "основной поток {0} · субагенты {1}": {
+   "en": "main thread {0} · subagents {1}",
+   "de": "Hauptstrang {0} · Subagents {1}"
+  },
+  "ответ готов": {
+   "en": "reply done",
+   "de": "Antwort fertig"
+  },
+  "ответ модели": {
+   "en": "model reply",
+   "de": "Antwort des Modells"
+  },
+  "ответ резервной модели": {
+   "en": "fallback model reply",
+   "de": "Antwort des Ersatzmodells"
+  },
+  "ответов модели {0} · инструментов {1}": {
+   "en": "model replies {0} · tools {1}",
+   "de": "Modellantworten {0} · Tools {1}"
+  },
+  "ответов модели: {0}": {
+   "en": "model replies: {0}",
+   "de": "Modellantworten: {0}"
+  },
+  "ответы модели и инструменты; пунктир — ваши промпты": {
+   "en": "model replies and tools; dashed lines are your prompts",
+   "de": "Modellantworten und Tools; gestrichelt: Ihre Prompts"
+  },
+  "отказ": {
+   "en": "refusal",
+   "de": "Ablehnung"
+  },
+  "отказ: {0}": {
+   "en": "refusal: {0}",
+   "de": "Ablehnung: {0}"
+  },
+  "оценка ≈ 4 символа на токен": {
+   "en": "estimate ≈ 4 characters per token",
+   "de": "Schätzung ≈ 4 Zeichen pro Token"
+  },
+  "ошибка": {
+   "en": "error",
+   "de": "Fehler"
+  },
+  "ошибка · {0}": {
+   "en": "error · {0}",
+   "de": "Fehler · {0}"
+  },
+  "ошибок {0}": {
+   "en": "errors {0}",
+   "de": "Fehler {0}"
+  },
+  "ошибок {0}, сейчас {1}": {
+   "en": "errors {0}, now {1}",
+   "de": "Fehler {0}, gerade {1}"
+  },
+  "папки нет": {
+   "en": "folder missing",
+   "de": "Ordner fehlt"
+  },
+  "параллельно: {0}": {
+   "en": "in parallel: {0}",
+   "de": "parallel: {0}"
+  },
+  "пауза серверного инструмента": {
+   "en": "server tool pause",
+   "de": "Pause eines Server-Tools"
+  },
+  "пик {0}": {
+   "en": "peak {0}",
+   "de": "Spitze {0}"
+  },
+  "по данным API в логах Claude Code": {
+   "en": "from API data in Claude Code's logs",
+   "de": "laut API-Daten in den Logs von Claude Code"
+  },
+  "по дням": {
+   "en": "by day",
+   "de": "pro Tag"
+  },
+  "по моделям · {0}": {
+   "en": "by model · {0}",
+   "de": "nach Modell · {0}"
+  },
+  "по неделям": {
+   "en": "by week",
+   "de": "pro Woche"
+  },
+  "по расходу": {
+   "en": "by spending",
+   "de": "nach Verbrauch"
+  },
+  "по часам": {
+   "en": "by hour",
+   "de": "pro Stunde"
+  },
+  "подключено {0}, вызывались {1}": {
+   "en": "connected {0}, called {1}",
+   "de": "verbunden {0}, aufgerufen {1}"
+  },
+  "подписка {0}": {
+   "en": "subscription {0}",
+   "de": "Abo {0}"
+  },
+  "подсвечены вызванные": {
+   "en": "called ones are highlighted",
+   "de": "aufgerufene sind hervorgehoben"
+  },
+  "пользователь": {
+   "en": "user",
+   "de": "Nutzer"
+  },
+  "понедельникам": {
+   "en": "Mondays",
+   "de": "montags"
+  },
+  "порт {0} занят": {
+   "en": "port {0} is in use",
+   "de": "Port {0} ist belegt"
+  },
+  "последнее событие {0} назад": {
+   "en": "last event {0} ago",
+   "de": "letztes Ereignis vor {0}"
+  },
+  "последние 60 по времени обращения": {
+   "en": "last 60 by access time",
+   "de": "letzte 60 nach Zugriffszeit"
+  },
+  "последние 80 запросов: чтение кэша, запись в кэш, свежий ввод": {
+   "en": "last 80 requests: cache read, cache write, fresh input",
+   "de": "letzte 80 Anfragen: Cache-Lesen, Cache-Schreiben, neue Eingabe"
+  },
+  "последний вызов {0}": {
+   "en": "last called {0}",
+   "de": "zuletzt aufgerufen {0}"
+  },
+  "правило": {
+   "en": "rule",
+   "de": "Regel"
+  },
+  "правка": {
+   "en": "edit",
+   "de": "Änderung"
+  },
+  "прерван": {
+   "en": "interrupted",
+   "de": "unterbrochen"
+  },
+  "причина не указана": {
+   "en": "no reason given",
+   "de": "kein Grund angegeben"
+  },
+  "приём только с этого Mac (127.0.0.1); снаружи — через туннель": {
+   "en": "accepts only from this Mac (127.0.0.1); from outside, through a tunnel",
+   "de": "nimmt nur von diesem Mac an (127.0.0.1); von außen über einen Tunnel"
+  },
+  "приём только с этого компьютера (127.0.0.1); снаружи — через туннель": {
+   "en": "accepts only from this computer (127.0.0.1); from outside, through a tunnel",
+   "de": "nimmt nur von diesem Computer an (127.0.0.1); von außen über einen Tunnel"
+  },
+  "прогноз {0}": {
+   "en": "forecast {0}",
+   "de": "Prognose {0}"
+  },
+  "промах кэша": {
+   "en": "cache miss",
+   "de": "Cache-Fehltreffer"
+  },
+  "промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов": {
+   "en": "cache misses, lost thinking, refusals, cut-off replies, tool errors",
+   "de": "Cache-Fehltreffer, verlorenes Denken, Ablehnungen, abgeschnittene Antworten, Tool-Fehler"
+  },
+  "промахов кэша с причиной: {0} · лишняя запись ≈{1}": {
+   "en": "cache misses with a cause: {0} · extra writes ≈{1}",
+   "de": "Cache-Fehltreffer mit Ursache: {0} · zusätzliches Schreiben ≈{1}"
+  },
+  "промпты, размышления, инструменты, MCP, скиллы, контекст и поток — подробно и в реальном времени": {
+   "en": "prompts, thinking, tools, MCP, skills, context and flow — in detail and in real time",
+   "de": "Prompts, Denken, Tools, MCP, Skills, Kontext und Ablauf – ausführlich und in Echtzeit"
+  },
+  "прочитано, записано, изменено": {
+   "en": "read, written, edited",
+   "de": "gelesen, geschrieben, geändert"
+  },
+  "пятницам": {
+   "en": "Fridays",
+   "de": "freitags"
+  },
+  "работает": {
+   "en": "running",
+   "de": "läuft"
+  },
+  "размышление": {
+   "en": "thinking",
+   "de": "Denken"
+  },
+  "размышление из другого аккаунта": {
+   "en": "thinking from another account",
+   "de": "Denken aus einem anderen Konto"
+  },
+  "размышление потеряно": {
+   "en": "thinking lost",
+   "de": "Denken verloren"
+  },
+  "размышления": {
+   "en": "thinking",
+   "de": "Denken"
+  },
+  "размышления {0} · вывод {1}": {
+   "en": "thinking {0} · output {1}",
+   "de": "Denken {0} · Ausgabe {1}"
+  },
+  "разрешено": {
+   "en": "allowed",
+   "de": "erlaubt"
+  },
+  "регион {0}": {
+   "en": "region {0}",
+   "de": "Region {0}"
+  },
+  "режим": {
+   "en": "mode",
+   "de": "Modus"
+  },
+  "результат {0} за {1}": {
+   "en": "result {0} in {1}",
+   "de": "Ergebnis {0} in {1}"
+  },
+  "решение": {
+   "en": "decision",
+   "de": "Entscheidung"
+  },
+  "с понятной причиной — нет": {
+   "en": "none with a clear cause",
+   "de": "keine mit klarer Ursache"
+  },
+  "с строки {0}": {
+   "en": "from line {0}",
+   "de": "ab Zeile {0}"
+  },
+  "самые большие результаты инструментов": {
+   "en": "the largest tool results",
+   "de": "die größten Tool-Ergebnisse"
+  },
+  "сброс {0} · через {1}": {
+   "en": "resets {0} · in {1}",
+   "de": "Zurücksetzen {0} · in {1}"
+  },
+  "сброс через {0}": {
+   "en": "resets in {0}",
+   "de": "Zurücksetzen in {0}"
+  },
+  "сброшен": {
+   "en": "reset",
+   "de": "zurückgesetzt"
+  },
+  "свежий ввод": {
+   "en": "fresh input",
+   "de": "Neue Eingabe"
+  },
+  "серьёзно": {
+   "en": "serious",
+   "de": "ernst"
+  },
+  "сессия {0} · {1} · ошибок: {2}": {
+   "en": "session {0} · {1} · errors: {2}",
+   "de": "Sitzung {0} · {1} · Fehler: {2}"
+  },
+  "сессия неактивна, показан её конец": {
+   "en": "session inactive, showing its end",
+   "de": "Sitzung inaktiv, ihr Ende wird gezeigt"
+  },
+  "сжатие контекста на сервере": {
+   "en": "server-side context compaction",
+   "de": "Kontextkomprimierung auf dem Server"
+  },
+  "скилл {0}": {
+   "en": "skill {0}",
+   "de": "Skill {0}"
+  },
+  "скиллы": {
+   "en": "skills",
+   "de": "Skills"
+  },
+  "скорость {0}": {
+   "en": "speed {0}",
+   "de": "Geschwindigkeit {0}"
+  },
+  "сменилась модель": {
+   "en": "model changed",
+   "de": "Modell gewechselt"
+  },
+  "совет модели-советника": {
+   "en": "advice from the advisor model",
+   "de": "Rat des Beratermodells"
+  },
+  "советник {0}": {
+   "en": "advisor {0}",
+   "de": "Berater {0}"
+  },
+  "средам": {
+   "en": "Wednesdays",
+   "de": "mittwochs"
+  },
+  "средний {0}": {
+   "en": "average {0}",
+   "de": "Durchschnitt {0}"
+  },
+  "средний контекст {0}": {
+   "en": "average context {0}",
+   "de": "durchschnittlicher Kontext {0}"
+  },
+  "ссылка": {
+   "en": "link",
+   "de": "Link"
+  },
+  "стоп-последовательность": {
+   "en": "stop sequence",
+   "de": "Stoppsequenz"
+  },
+  "страницы {0}": {
+   "en": "pages {0}",
+   "de": "Seiten {0}"
+  },
+  "субагент": {
+   "en": "subagent",
+   "de": "Subagent"
+  },
+  "субагенты": {
+   "en": "subagents",
+   "de": "Subagents"
+  },
+  "субботам": {
+   "en": "Saturdays",
+   "de": "samstags"
+  },
+  "текст не возвращается": {
+   "en": "text not returned",
+   "de": "Text wird nicht zurückgegeben"
+  },
+  "токенов в промпте": {
+   "en": "prompt tokens",
+   "de": "Tokens im Prompt"
+  },
+  "токенов в промпте на каждый запрос": {
+   "en": "prompt tokens per request",
+   "de": "Prompt-Tokens pro Anfrage"
+  },
+  "токенов на запрос, по дням": {
+   "en": "tokens per request, by day",
+   "de": "Tokens pro Anfrage, nach Tagen"
+  },
+  "только что": {
+   "en": "just now",
+   "de": "gerade eben"
+  },
+  "транскрипты сессий, *.jsonl": {
+   "en": "session transcripts, *.jsonl",
+   "de": "Sitzungstranskripte, *.jsonl"
+  },
+  "успех": {
+   "en": "success",
+   "de": "Erfolg"
+  },
+  "успешно {0}, ошибок {1}, выполняется {2}": {
+   "en": "succeeded {0}, errors {1}, running {2}",
+   "de": "erfolgreich {0}, Fehler {1}, laufend {2}"
+  },
+  "ход завершён": {
+   "en": "turn complete",
+   "de": "Zug abgeschlossen"
+  },
+  "ход идёт {0}": {
+   "en": "turn running for {0}",
+   "de": "Zug läuft seit {0}"
+  },
+  "хорошо": {
+   "en": "good",
+   "de": "gut"
+  },
+  "хук": {
+   "en": "hook",
+   "de": "Hook"
+  },
+  "чем выше, тем дешевле каждый ход": {
+   "en": "the higher, the cheaper each turn",
+   "de": "je höher, desto günstiger jeder Zug"
+  },
+  "четвергам": {
+   "en": "Thursdays",
+   "de": "donnerstags"
+  },
+  "число вызовов, ошибки, время работы и объём вывода": {
+   "en": "calls, errors, run time and output size",
+   "de": "Aufrufe, Fehler, Laufzeit und Ausgabemenge"
+  },
+  "чтение": {
+   "en": "read",
+   "de": "Lesen"
+  },
+  "чтение кэша": {
+   "en": "cache read",
+   "de": "Cache-Lesen"
+  },
+  "чтение кэша {0} · запись {1} · свежий ввод {2}": {
+   "en": "cache read {0} · write {1} · fresh input {2}",
+   "de": "Cache-Lesen {0} · Schreiben {1} · neue Eingabe {2}"
+  },
+  "что за чем следует в основном потоке": {
+   "en": "what follows what in the main thread",
+   "de": "was im Hauptstrang worauf folgt"
+  },
+  "шаг {0}": {
+   "en": "step {0}",
+   "de": "Schritt {0}"
+  },
+  "≈ токенов": {
+   "en": "≈ tokens",
+   "de": "≈ Tokens"
+  },
+  "≈{0} лишней записи": {
+   "en": "≈{0} of extra writes",
+   "de": "≈{0} zusätzliches Schreiben"
+  }
+ },
+ "plurals": {
+  "блок|блока|блоков": {
+   "en": "block|blocks",
+   "de": "Block|Blöcke"
+  },
+  "действие|действия|действий": {
+   "en": "action|actions",
+   "de": "Aktion|Aktionen"
+  },
+  "день назад|дня назад|дней назад": {
+   "en": "day ago|days ago",
+   "de": "vor {n} Tag|vor {n} Tagen"
+  },
+  "день|дня|дней": {
+   "en": "day|days",
+   "de": "Tag|Tage"
+  },
+  "запрос|запроса|запросов": {
+   "en": "request|requests",
+   "de": "Anfrage|Anfragen"
+  },
+  "запросе|запросах|запросах": {
+   "en": "request|requests",
+   "de": "Anfrage|Anfragen"
+  },
+  "лог|лога|логов": {
+   "en": "log|logs",
+   "de": "Log|Logs"
+  },
+  "ответ|ответа|ответов": {
+   "en": "reply|replies",
+   "de": "Antwort|Antworten"
+  },
+  "отказ|отказа|отказов": {
+   "en": "refusal|refusals",
+   "de": "Ablehnung|Ablehnungen"
+  },
+  "промахе|промахах|промахах": {
+   "en": "cache miss|cache misses",
+   "de": "Cache-Fehltreffer|Cache-Fehltreffer"
+  },
+  "раз|раза|раз": {
+   "en": "time|times",
+   "de": "Mal|Mal"
+  },
+  "сессия|сессии|сессий": {
+   "en": "session|sessions",
+   "de": "Sitzung|Sitzungen"
+  },
+  "событие|события|событий": {
+   "en": "event|events",
+   "de": "Ereignis|Ereignisse"
+  }
+ }
+}

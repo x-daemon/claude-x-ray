@@ -11,14 +11,14 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
 
     var title: String {
         switch self {
-        case .live: return "Сейчас"
-        case .trace: return "Live-трасса"
-        case .overview: return "Обзор"
-        case .sessions: return "Сессии"
-        case .projects: return "Проекты"
-        case .models: return "Модели"
-        case .insights: return "Оптимизация"
-        case .reports: return "Отчёты"
+        case .live: return L("Сейчас")
+        case .trace: return L("Live-трасса")
+        case .overview: return L("Обзор")
+        case .sessions: return L("Сессии")
+        case .projects: return L("Проекты")
+        case .models: return L("Модели")
+        case .insights: return L("Оптимизация")
+        case .reports: return L("Отчёты")
         }
     }
 
@@ -43,11 +43,11 @@ enum Period: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .today: return "Сегодня"
-        case .week: return "7 дней"
-        case .month: return "30 дней"
-        case .quarter: return "90 дней"
-        case .all: return "Всё время"
+        case .today: return L("Сегодня")
+        case .week: return L("7 дней")
+        case .month: return L("30 дней")
+        case .quarter: return L("90 дней")
+        case .all: return L("Всё время")
         }
     }
 
@@ -125,7 +125,7 @@ final class AppModel {
     @ObservationIgnored private var tickCount = 0
     private let settings = SettingsStore()
 
-    static let otherSeries = "Другие"
+    static var otherSeries: String { L("Другие") }
     static let maxColoredModels = 7
     /// How far back the live trace reads transcripts.
     static let activityRetention: TimeInterval = 3 * 86_400
@@ -417,7 +417,7 @@ final class AppModel {
             cacheRead: base?.cacheRead ?? 0,
             cacheWrite5m: base?.cacheWrite5m,
             cacheWrite1h: base?.cacheWrite1h,
-            note: "Добавлено вручную — проверьте цены."
+            note: L10n.key("Добавлено вручную — проверьте цены.")
         )
         updatePricing { $0.models.append(row) }
     }

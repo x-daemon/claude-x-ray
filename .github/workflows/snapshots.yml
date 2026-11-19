@@ -28,8 +28,10 @@ jobs:
           BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
           NOW=$(date +%s)
           printf '{"session_id":"demo","model":{"id":"claude-opus-5-5","display_name":"Opus 5.5"},"version":"2.1.325","context_window":{"used_percentage":42},"rate_limits":{"five_hour":{"used_percentage":37.5,"resets_at":%d},"seven_day":{"used_percentage":22,"resets_at":%d}}}' $((NOW + 7800)) $((NOW + 3 * 86400 + 5000)) > "$RUNNER_TEMP/statusline.json"
-          "$BIN" --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline.txt"
+          XRAY_SNAPSHOT_LANGUAGE=ru "$BIN" --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline.txt"
           grep -q "5 ч 38%" "$RUNNER_TEMP/statusline.txt"
+          XRAY_SNAPSHOT_LANGUAGE=de "$BIN" --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline-de.txt"
+          grep -q "5 Std. 38%" "$RUNNER_TEMP/statusline-de.txt"
           cat "$HOME/Library/Application Support/S2AClaudeXRay/plan-usage.json"
 
       - name: Capture screens
@@ -38,7 +40,7 @@ jobs:
           OUT="$RUNNER_TEMP/snapshots"
           mkdir -p "$OUT/screen"
           BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
-          CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" "$BIN" > "$OUT/app-output.txt" 2>&1 &
+          CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_LANGUAGE=ru "$BIN" > "$OUT/app-output.txt" 2>&1 &
           APP=$!
           for i in 1 2 3 4 5 6; do
             sleep 8
@@ -64,7 +66,7 @@ jobs:
           capture() {
             out="$RUNNER_TEMP/snapshots/$1"
             mkdir -p "$out"
-            CLAUDE_CONFIG_DIR="$2" XRAY_SNAPSHOT_DIR="$out" XRAY_SNAPSHOT_SCREENS=live,trace "$BIN" > "$out/app-output.txt" 2>&1 &
+            CLAUDE_CONFIG_DIR="$2" XRAY_SNAPSHOT_DIR="$out" XRAY_SNAPSHOT_LANGUAGE=ru XRAY_SNAPSHOT_SCREENS=live,trace "$BIN" > "$out/app-output.txt" 2>&1 &
             app=$!
             for i in $(seq 1 60); do
               kill -0 $app 2>/dev/null || break
@@ -81,6 +83,27 @@ jobs:
           capture empty "$RUNNER_TEMP/xray-none"
           exit 0
 
+      - name: Capture in English and German
+        run: |
+          set +e
+          BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
+          for CODE in en de; do
+            OUT="$RUNNER_TEMP/snapshots/$CODE"
+            mkdir -p "$OUT"
+            CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_LANGUAGE=$CODE \
+              XRAY_SNAPSHOT_SCREENS=live,trace,overview,sessions,insights,reports "$BIN" > "$OUT/app-output.txt" 2>&1 &
+            APP=$!
+            for i in $(seq 1 120); do
+              kill -0 $APP 2>/dev/null || break
+              sleep 2
+            done
+            kill $APP 2>/dev/null
+            wait $APP
+            ls -la "$OUT"
+            cat "$OUT/snapshots.log" 2>/dev/null
+          done
+          exit 0
+
       - name: Cloud receiver
         # Starts the app with the receiver on, pushes a demo transcript through the real hook
         # script, checks the token is enforced and captures the screens that show it.
@@ -90,7 +113,7 @@ jobs:
           OUT="$RUNNER_TEMP/snapshots/cloud"
           mkdir -p "$OUT" "$RUNNER_TEMP/xray-nolocal"
           CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-nolocal" XRAY_RECEIVER_PORT=47318 XRAY_RECEIVER_TOKEN=ci-token \
-            XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_SCREENS=live,trace,sessions XRAY_SNAPSHOT_DELAY=12 \
+            XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_LANGUAGE=ru XRAY_SNAPSHOT_SCREENS=live,trace,sessions XRAY_SNAPSHOT_DELAY=12 \
             "$BIN" > "$OUT/app-output.txt" 2>&1 &
           APP=$!
           for i in $(seq 1 30); do curl -s http://127.0.0.1:47318/health && break; sleep 1; done

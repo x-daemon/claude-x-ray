@@ -20,6 +20,7 @@ import { SessionsView } from "./views/sessions";
 import { SettingsView } from "./views/settings";
 import { SourcesHelp } from "./views/sources";
 import { TraceView } from "./views/trace";
+import { L } from "../core/i18n";
 
 const SCREEN_ICONS: Record<Screen, typeof I.Activity> = {
   live: I.Activity,
@@ -34,7 +35,7 @@ const SCREEN_ICONS: Record<Screen, typeof I.Activity> = {
 };
 
 function screenTitle(screen: Screen): string {
-  return screen === "settings" ? "Настройки" : SCREENS.find((s) => s.id === screen)?.title ?? "S2A Claude X-Ray";
+  return screen === "settings" ? L`Настройки` : SCREENS.find((s) => s.id === screen)?.title ?? "S2A Claude X-Ray";
 }
 
 function App() {
@@ -106,7 +107,7 @@ function MainWindow() {
           <div class="nav-sep" />
           <button type="button" class={s.screen === "settings" ? "nav-item on" : "nav-item"} onClick={() => store.set("screen", "settings")}>
             <Icon icon={I.Settings} size={17} />
-            <span>Настройки</span>
+            <span>{L`Настройки`}</span>
           </button>
         </nav>
         <ScanStatus />
@@ -116,23 +117,23 @@ function MainWindow() {
           <h1>{screenTitle(s.screen)}</h1>
           {showsPeriod ? (
             <div class="no-drag period-picker">
-              <Segmented value={s.period} options={PERIODS} onChange={(period) => store.set("period", period)} label="Период" />
+              <Segmented value={s.period} options={PERIODS} onChange={(period) => store.set("period", period)} label={L`Период`} />
             </div>
           ) : null}
           <span class="spacer" />
-          <button class="btn borderless no-drag" type="button" title="Перечитать новые записи (Ctrl+R)" disabled={s.scan?.scanning} onClick={() => void s.bridge.rescan()}>
+          <button class="btn borderless no-drag" type="button" title={L`Перечитать новые записи (Ctrl+R)`} disabled={s.scan?.scanning} onClick={() => void s.bridge.rescan()}>
             <Icon icon={I.RotateCw} size={16} class={s.scan?.scanning ? "spin" : undefined} />
-            <span>Обновить</span>
+            <span>{L`Обновить`}</span>
           </button>
         </header>
         <div class={fixedLayout && !empty ? "content fixed" : "content"} data-scroll>
-          {empty ? <SourcesHelp title="Логи Claude Code не найдены" icon={I.Inbox} /> : <Screen screen={s.screen} />}
+          {empty ? <SourcesHelp title={L`Логи Claude Code не найдены`} icon={I.Inbox} /> : <Screen screen={s.screen} />}
         </div>
       </main>
       {dragging ? (
         <div class="drop-overlay">
           <Icon icon={I.Download} size={40} />
-          <div class="title3">Отпустите, чтобы импортировать логи сессий (.jsonl, .zip)</div>
+          <div class="title3">{L`Отпустите, чтобы импортировать логи сессий (.jsonl, .zip)`}</div>
         </div>
       ) : null}
     </div>
@@ -158,15 +159,15 @@ function ScanStatus() {
   const s = useStore();
   const scan = s.scan;
   const newest = s.newestTranscript;
-  const help = `${Fmt.plural(scan?.filesSeen ?? 0, "лог", "лога", "логов")}, ${Fmt.plural(s.priced.length, "ответ", "ответа", "ответов")} модели. Новые строки логов подхватываются автоматически. Облачные сессии попадают сюда, если включён приём («Настройки → Облако») или их лог импортирован.`;
+  const help = L`${Fmt.plural(scan?.filesSeen ?? 0, "лог", "лога", "логов")}, ${Fmt.plural(s.priced.length, "ответ", "ответа", "ответов")} модели. Новые строки логов подхватываются автоматически. Облачные сессии попадают сюда, если включён приём («Настройки → Облако») или их лог импортирован.`;
   return (
     <div class="scan-status caption secondary" title={help}>
       <div class="row gap-6">
-        {scan?.scanning ? (<><span class="spinner small" /><span>Чтение логов…</span></>)
-          : scan?.lastScan ? (<><Icon icon={I.Radio} size={14} color={C.good} /><span>Обновлено {Fmt.time(scan.lastScan)}</span></>)
-            : <span>Ожидание…</span>}
+        {scan?.scanning ? (<><span class="spinner small" /><span>{L`Чтение логов…`}</span></>)
+          : scan?.lastScan ? (<><Icon icon={I.Radio} size={14} color={C.good} /><span>{L`Обновлено ${Fmt.time(scan.lastScan)}`}</span></>)
+            : <span>{L`Ожидание…`}</span>}
       </div>
-      {scan?.lastScan ? <div class="indent">{newest ? `Последний лог: ${Fmt.ago((s.now - newest) / 1000)}` : "Логов на этом компьютере нет"}</div> : null}
+      {scan?.lastScan ? <div class="indent">{newest ? L`Последний лог: ${Fmt.ago((s.now - newest) / 1000)}` : L`Логов на этом компьютере нет`}</div> : null}
     </div>
   );
 }

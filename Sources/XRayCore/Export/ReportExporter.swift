@@ -68,66 +68,66 @@ public enum ReportExporter {
         var md: [String] = []
         md.append("# \(title)")
         md.append("")
-        md.append("Период: **\(periodLabel)** · сформирован \(Fmt.dateTime(generatedAt))")
+        md.append(L("Период: **\(periodLabel)** · сформирован \(Fmt.dateTime(generatedAt))"))
         md.append("")
-        md.append("> Суммы — API-эквивалент по прайс-листу. На подписке Pro/Max они не списываются, но показывают, как быстро расходуются лимиты.")
+        md.append(L("> Суммы — API-эквивалент по прайс-листу. На подписке Pro/Max они не списываются, но показывают, как быстро расходуются лимиты."))
         md.append("")
-        md.append("## Итого")
+        md.append(L("## Итого"))
         md.append("")
-        md.append("| Показатель | Значение |")
+        md.append(L("| Показатель | Значение |"))
         md.append("|---|---|")
-        md.append("| API-эквивалент | \(Fmt.usd(summary.cost.total)) |")
-        md.append("| Запросов | \(summary.requests) |")
-        md.append("| Сессий | \(sessions.count) |")
-        md.append("| Токенов всего | \(Fmt.tokens(t.total)) |")
-        md.append("| Ввод / вывод | \(Fmt.tokens(t.input)) / \(Fmt.tokens(t.output)) |")
-        md.append("| Размышления (в выводе) | \(Fmt.tokens(t.thinking)) |")
-        md.append("| Чтение кэша / запись | \(Fmt.tokens(t.cacheRead)) / \(Fmt.tokens(t.cacheWrite)) |")
-        md.append("| Доля попаданий в кэш | \(Fmt.percent(t.cacheHitRate)) |")
+        md.append(L("| API-эквивалент | \(Fmt.usd(summary.cost.total)) |"))
+        md.append(L("| Запросов | \(summary.requests) |"))
+        md.append(L("| Сессий | \(sessions.count) |"))
+        md.append(L("| Токенов всего | \(Fmt.tokens(t.total)) |"))
+        md.append(L("| Ввод / вывод | \(Fmt.tokens(t.input)) / \(Fmt.tokens(t.output)) |"))
+        md.append(L("| Размышления (в выводе) | \(Fmt.tokens(t.thinking)) |"))
+        md.append(L("| Чтение кэша / запись | \(Fmt.tokens(t.cacheRead)) / \(Fmt.tokens(t.cacheWrite)) |"))
+        md.append(L("| Доля попаданий в кэш | \(Fmt.percent(t.cacheHitRate)) |"))
         md.append("")
-        md.append("### Из чего складывается стоимость")
+        md.append(L("### Из чего складывается стоимость"))
         md.append("")
-        md.append("| Статья | USD | Доля |")
+        md.append(L("| Статья | USD | Доля |"))
         md.append("|---|---|---|")
         let total = max(summary.cost.total, .leastNonzeroMagnitude)
         for (name, value) in [
-            ("Ввод", summary.cost.input), ("Вывод", summary.cost.output),
-            ("Чтение кэша", summary.cost.cacheRead), ("Запись в кэш", summary.cost.cacheWrite),
-            ("Веб-поиск", summary.cost.webSearch),
+            (L("Ввод"), summary.cost.input), (L("Вывод"), summary.cost.output),
+            (L("Чтение кэша"), summary.cost.cacheRead), (L("Запись в кэш"), summary.cost.cacheWrite),
+            (L("Веб-поиск"), summary.cost.webSearch),
         ] where value > 0 {
             md.append("| \(name) | \(Fmt.usd(value)) | \(Fmt.percent(value / total)) |")
         }
         md.append("")
-        md.append("## По моделям")
+        md.append(L("## По моделям"))
         md.append("")
         md.append(groupTable(byModel, total: total, name: { ModelCatalog.displayName(for: $0) }))
-        md.append("## По проектам")
+        md.append(L("## По проектам"))
         md.append("")
         md.append(groupTable(Array(byProject.prefix(15)), total: total, name: { $0 }))
-        md.append("## Самые дорогие сессии")
+        md.append(L("## Самые дорогие сессии"))
         md.append("")
-        md.append("| Начало | Проект | Модели | Запросы | Пик контекста | USD |")
+        md.append(L("| Начало | Проект | Модели | Запросы | Пик контекста | USD |"))
         md.append("|---|---|---|---|---|---|")
         for s in sessions.prefix(10) {
             md.append("| \(Fmt.dateTime(s.start)) | \(s.projectName) | \(s.modelsLabel) | \(s.requests) | \(Fmt.tokens(s.peakContextTokens)) | \(Fmt.usd(s.cost)) |")
         }
         md.append("")
-        md.append("## Оптимизация")
+        md.append(L("## Оптимизация"))
         md.append("")
         if insights.isEmpty {
-            md.append("Замечаний нет.")
+            md.append(L("Замечаний нет."))
         }
         for insight in insights {
             var heading = "### \(insight.severity.label): \(insight.title)"
             if let savings = insight.potentialSavings, savings > 0 {
-                heading += " (до \(Fmt.usd(savings)))"
+                heading += L(" (до \(Fmt.usd(savings)))")
             }
             md.append(heading)
             md.append("")
             md.append("_\(insight.kind.label)._ \(insight.detail)")
             if let recommendation = insight.recommendation {
                 md.append("")
-                md.append("**Что сделать:** \(recommendation)")
+                md.append(L("**Что сделать:** \(recommendation)"))
             }
             md.append("")
         }
@@ -137,7 +137,7 @@ public enum ReportExporter {
     }
 
     private static func groupTable(_ groups: [GroupSummary], total: Double, name: (String) -> String) -> String {
-        var lines = ["| Название | Запросы | Токены | Кэш | USD | Доля |", "|---|---|---|---|---|---|"]
+        var lines = [L("| Название | Запросы | Токены | Кэш | USD | Доля |"), "|---|---|---|---|---|---|"]
         for g in groups {
             lines.append("| \(name(g.key)) | \(g.requests) | \(Fmt.tokens(g.totalTokens)) | \(Fmt.percent(g.cacheHitRate)) | \(Fmt.usd(g.cost)) | \(Fmt.percent(g.cost / total)) |")
         }

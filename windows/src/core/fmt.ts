@@ -1,4 +1,5 @@
 // Formatting helpers shared by the app, reports and tests. Port of XRayCore/Util/Fmt.swift.
+import { L, language, plural } from "./i18n";
 
 /** Rounds half away from zero, like Swift's rounded(). */
 export const roundHalfAway = (x: number): number => Math.sign(x) * Math.round(Math.abs(x));
@@ -23,6 +24,17 @@ function grouped(value: number): string {
 }
 
 const pad2 = (n: number): string => String(n).padStart(2, "0");
+
+const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** 14.11 in Russian, 14.11. in German, 14 Nov in English: a numeric 11/14 would be misread. */
+function dayMonth(d: Date): string {
+  switch (language()) {
+    case "en": return `${d.getDate()} ${MONTHS_EN[d.getMonth()]}`;
+    case "de": return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.`;
+    default: return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}`;
+  }
+}
 
 export const Fmt = {
   /** $0.42, $12.30, $1,234. */
@@ -54,18 +66,18 @@ export const Fmt = {
     const s = roundHalfAway(Math.max(0, seconds));
     const hours = Math.floor(s / 3600);
     const minutes = Math.floor((s % 3600) / 60);
-    if (hours > 0) return `${hours} ч ${pad2(minutes)} мин`;
-    if (minutes > 0) return `${minutes} мин`;
-    return `${s} с`;
+    if (hours > 0) return L`${hours} ч ${pad2(minutes)} мин`;
+    if (minutes > 0) return L`${minutes} мин`;
+    return L`${s} с`;
   },
 
   /** Short durations for steps and tools: 850 мс, 4.2 с, 3 мин 05 с, 1 ч 02 мин. Seconds. */
   shortDuration(seconds: number): string {
     const value = Math.max(0, seconds);
-    if (value < 1) return `${roundHalfAway(value * 1000)} мс`;
-    if (value < 60) return trimmed(value, 1) + " с";
+    if (value < 1) return L`${roundHalfAway(value * 1000)} мс`;
+    if (value < 60) return L`${trimmed(value, 1)} с`;
     const s = roundHalfAway(value);
-    if (s < 3600) return `${Math.floor(s / 60)} мин ${pad2(s % 60)} с`;
+    if (s < 3600) return L`${Math.floor(s / 60)} мин ${pad2(s % 60)} с`;
     return Fmt.duration(value);
   },
 
@@ -76,20 +88,15 @@ export const Fmt = {
 
   /** 820 Б, 12.3 КБ, 4.5 МБ. */
   bytes(count: number): string {
-    if (count < 1024) return `${count} Б`;
-    if (count < 1024 * 1024) return trimmed(count / 1024, 1) + " КБ";
-    return trimmed(count / 1024 / 1024, 1) + " МБ";
+    if (count < 1024) return L`${count} Б`;
+    if (count < 1024 * 1024) return L`${trimmed(count / 1024, 1)} КБ`;
+    return L`${trimmed(count / 1024 / 1024, 1)} МБ`;
   },
 
-  /** Russian plural: plural(1, "раз", "раза", "раз") -> 1 раз, 2 -> 2 раза, 5 -> 5 раз. */
+  /** A count with its word, given in Russian one/few/many: plural(5, "раз", "раза", "раз") -> 5 раз;
+   * in English and German the catalog's one|other forms. */
   plural(count: number, one: string, few: string, many: string): string {
-    const n = Math.abs(count) % 100;
-    const last = n % 10;
-    let form = many;
-    if (n >= 11 && n <= 14) form = many;
-    else if (last === 1) form = one;
-    else if (last >= 2 && last <= 4) form = few;
-    return `${count} ${form}`;
+    return plural(count, one, few, many);
   },
 
   /** Time until an event: 45 мин, 2 ч 10 мин, 3 дня 4 ч. Seconds. */
@@ -99,22 +106,27 @@ export const Fmt = {
     const days = Math.floor(value / 86_400);
     const hours = Math.floor((value % 86_400) / 3600);
     const dayText = Fmt.plural(days, "день", "дня", "дней");
-    return hours > 0 ? `${dayText} ${hours} ч` : dayText;
+    return hours > 0 ? L`${dayText} ${hours} ч` : dayText;
   },
 
   /** How long ago: только что, 12 мин назад, 3 ч назад, 4 дня назад. Seconds. */
   ago(seconds: number): string {
     const value = Math.max(0, seconds);
-    if (value < 60) return "только что";
-    if (value < 3600) return `${Math.floor(value / 60)} мин назад`;
-    if (value < 86_400) return `${Math.floor(value / 3600)} ч назад`;
-    return Fmt.plural(Math.floor(value / 86_400), "день", "дня", "дней") + " назад";
+    if (value < 60) return L`только что`;
+    if (value < 3600) return L`${Math.floor(value / 60)} мин назад`;
+    if (value < 86_400) return L`${Math.floor(value / 3600)} ч назад`;
+    return Fmt.plural(Math.floor(value / 86_400), "день назад", "дня назад", "дней назад");
   },
 
-  /** 14.11 17:23 in local time. */
+  /** 14.11 17:23 in local time (14 Nov 17:23 in English, 14.11. 17:23 in German). */
   dateTime(ms: number): string {
     const d = new Date(ms);
-    return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    return `${dayMonth(d)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  },
+
+  /** 14.11 in local time (14 Nov in English, 14.11. in German). */
+  dayMonth(ms: number): string {
+    return dayMonth(new Date(ms));
   },
 
   /** 17:23:05 in local time. */
@@ -129,10 +141,10 @@ export const Fmt = {
     return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
   },
 
-  /** 14.11.2026 in local time. */
+  /** 14.11.2026 in local time (14 Nov 2026 in English). */
   day(ms: number): string {
     const d = new Date(ms);
-    return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`;
+    return language() === "en" ? `${d.getDate()} ${MONTHS_EN[d.getMonth()]} ${d.getFullYear()}` : `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`;
   },
 
   /** Plain decimal for CSV, independent of locale. */

@@ -13,14 +13,14 @@ enum AppTheme: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .s2a: return "S2A"
-        case .system: return "Системная"
+        case .system: return L("Системная")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .s2a: return "Фирменные цвета S2A: фиолетовый, циан и глубокий ночной фон"
-        case .system: return "Нейтральная палитра и системный акцент macOS"
+        case .s2a: return L("Фирменные цвета S2A: фиолетовый, циан и глубокий ночной фон")
+        case .system: return L("Нейтральная палитра и системный акцент macOS")
         }
     }
 
@@ -39,9 +39,9 @@ enum AppAppearance: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .auto: return "Как в системе"
-        case .light: return "Светлая"
-        case .dark: return "Тёмная"
+        case .auto: return L("Как в системе")
+        case .light: return L("Светлая")
+        case .dark: return L("Тёмная")
         }
     }
 
@@ -181,7 +181,7 @@ enum Palette {
     // MARK: Cost components
 
     /// Cost components, in the order they are stacked.
-    static let componentOrder = ["Ввод", "Вывод", "Чтение кэша", "Запись в кэш", "Веб-поиск"]
+    static var componentOrder: [String] { [L("Ввод"), L("Вывод"), L("Чтение кэша"), L("Запись в кэш"), L("Веб-поиск")] }
     static var componentColors: [Color] { Array(series.prefix(5)) }
 
     static func component(_ name: String) -> Color {
@@ -231,7 +231,7 @@ struct BrandHeader: View {
             BrandMark(size: 34)
             VStack(alignment: .leading, spacing: 1) {
                 Text("S2A Claude X-Ray").font(.headline)
-                Text("мониторинг Claude Code").font(.caption).foregroundStyle(.secondary)
+                Text(L("мониторинг Claude Code")).font(.caption).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
         }

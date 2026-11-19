@@ -2,6 +2,7 @@
 // Port of XRayCore/Plan/PlanUsage.swift and Receiver/TranscriptUpload.swift.
 import { displayModelName } from "./model";
 import { parseDate } from "./transcript";
+import { L } from "./i18n";
 
 /** A rolling limit window (5 hours or 7 days). */
 export interface PlanWindow {
@@ -122,9 +123,9 @@ export function statusLineSummary(text: string, usage: PlanUsage | undefined, no
   const model = modelName(root);
   if (model) parts.push(model);
   const context = number(obj(root.context_window)?.used_percentage);
-  if (context !== undefined) parts.push(`контекст ${Math.round(context)}%`);
-  if (usage?.fiveHour && !windowHasReset(usage.fiveHour, now)) parts.push(`5 ч ${Math.round(usage.fiveHour.usedPercentage)}%`);
-  if (usage?.sevenDay && !windowHasReset(usage.sevenDay, now)) parts.push(`неделя ${Math.round(usage.sevenDay.usedPercentage)}%`);
+  if (context !== undefined) parts.push(L`контекст ${Math.round(context)}%`);
+  if (usage?.fiveHour && !windowHasReset(usage.fiveHour, now)) parts.push(L`5 ч ${Math.round(usage.fiveHour.usedPercentage)}%`);
+  if (usage?.sevenDay && !windowHasReset(usage.sevenDay, now)) parts.push(L`неделя ${Math.round(usage.sevenDay.usedPercentage)}%`);
   return parts.length ? parts.join(" · ") : "S2A X-Ray";
 }
 

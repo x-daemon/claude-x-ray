@@ -121,7 +121,7 @@ enum StatusLineInstaller {
         case notAnObject
 
         var errorDescription: String? {
-            "settings.json не похож на настройки Claude Code (ожидался JSON-объект). X-Ray его не меняет."
+            L("settings.json не похож на настройки Claude Code (ожидался JSON-объект). X-Ray его не меняет.")
         }
     }
 

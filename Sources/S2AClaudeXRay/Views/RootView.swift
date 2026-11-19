@@ -24,7 +24,7 @@ struct RootView: View {
         } detail: {
             Group {
                 if !model.hasData && model.lastScan != nil {
-                    SourcesHelpView(title: "Логи Claude Code не найдены", systemImage: "tray")
+                    SourcesHelpView(title: L("Логи Claude Code не найдены"), systemImage: "tray")
                 } else {
                     detail(for: model.selection ?? .live)
                 }
@@ -43,7 +43,7 @@ struct RootView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     if model.selection != .live && model.selection != .trace {
-                        Picker("Период", selection: $model.period) {
+                        Picker(L("Период"), selection: $model.period) {
                             ForEach(Period.allCases) { period in
                                 Text(period.title).tag(period)
                             }
@@ -56,9 +56,9 @@ struct RootView: View {
                     Button {
                         Task { await model.rescan() }
                     } label: {
-                        Label("Обновить", systemImage: "arrow.clockwise")
+                        Label(L("Обновить"), systemImage: "arrow.clockwise")
                     }
-                    .help("Перечитать новые записи (⌘R)")
+                    .help(L("Перечитать новые записи (⌘R)"))
                     .disabled(model.isScanning)
                 }
             }
@@ -89,12 +89,12 @@ struct ScanStatusView: View {
             HStack(spacing: 6) {
                 if model.isScanning {
                     ProgressView().controlSize(.small)
-                    Text("Чтение логов…")
+                    Text(L("Чтение логов…"))
                 } else if let last = model.lastScan {
                     Image(systemName: "dot.radiowaves.left.and.right").foregroundStyle(Palette.good)
-                    Text("Обновлено \(last.formatted(date: .omitted, time: .standard))")
+                    Text(L("Обновлено \(last.localized(date: .omitted, time: .standard))"))
                 } else {
-                    Text("Ожидание…")
+                    Text(L("Ожидание…"))
                 }
                 Spacer()
             }
@@ -109,12 +109,12 @@ struct ScanStatusView: View {
     }
 
     private var lastLogLine: String {
-        guard let newest = model.newestTranscript else { return "Логов на этом Mac нет" }
-        return "Последний лог: \(Fmt.ago(model.now.timeIntervalSince(newest)))"
+        guard let newest = model.newestTranscript else { return L("Логов на этом Mac нет") }
+        return L("Последний лог: \(Fmt.ago(model.now.timeIntervalSince(newest)))")
     }
 
     private var helpText: String {
         let files = model.lastScanResult?.filesSeen ?? 0
-        return "\(Fmt.plural(files, "лог", "лога", "логов")), \(Fmt.plural(model.priced.count, "ответ", "ответа", "ответов")) модели. Новые строки логов подхватываются автоматически. Облачные сессии сюда не попадают: их логи остаются на серверах Anthropic."
+        return L("\(Fmt.plural(files, "лог", "лога", "логов")), \(Fmt.plural(model.priced.count, "ответ", "ответа", "ответов")) модели. Новые строки логов подхватываются автоматически. Облачные сессии сюда не попадают: их логи остаются на серверах Anthropic.")
     }
 }

@@ -19,6 +19,7 @@ import { TranscriptReceiver } from "./receiver";
 import { IngestService } from "./service";
 import { claudeSettingsPath, installStatusLine, statusLineState, uninstallStatusLine } from "./statusline";
 import { createToken, loadOrCreateToken, loadPlanUsage, loadPricing, loadSettings, Paths, saveSettings, savePricing } from "./store";
+import { L, language, resolveLanguage, setLanguage, type Language } from "../core/i18n";
 
 const isSnapshot = !!process.env.XRAY_SNAPSHOT_DIR;
 const appRoot = path.join(__dirname, "..");
@@ -32,6 +33,7 @@ let settings: Settings = loadSettings();
 if (process.env.XRAY_RECEIVER_PORT && process.env.XRAY_RECEIVER_TOKEN) {
   settings = { ...settings, receiverEnabled: true, receiverPort: Number(process.env.XRAY_RECEIVER_PORT) };
 }
+applyLanguage();
 let pricing = loadPricing();
 let planUsage: PlanUsage | undefined = loadPlanUsage();
 let receiverToken = "";
@@ -177,7 +179,7 @@ function trayTitle(): string {
   const parts: string[] = [];
   const now = Date.now();
   if (planUsage?.fiveHour && now - planUsage.capturedAt < 3 * 3_600_000 && !windowHasReset(planUsage.fiveHour, now)) {
-    parts.push(`лимит 5 ч ${Fmt.percent(windowFraction(planUsage.fiveHour, now))}`);
+    parts.push(L`лимит 5 ч ${Fmt.percent(windowFraction(planUsage.fiveHour, now))}`);
   }
   return ["S2A Claude X-Ray", ...parts].join(" · ");
 }
@@ -186,17 +188,41 @@ function updateTray(): void {
   tray?.setToolTip(trayTitle());
 }
 
+function trayMenu(): Menu {
+  return Menu.buildFromTemplate([
+    { label: L`Открыть X-Ray`, click: () => showMain() },
+    { label: L`Обновить данные`, click: () => void service.rescan() },
+    { label: L`Настройки`, click: () => showMain("settings") },
+    { type: "separator" },
+    { label: L`Выйти`, click: () => { quitting = true; app.quit(); } },
+  ]);
+}
+
+// MARK: Language
+
+function systemLanguages(): string[] {
+  try {
+    const preferred = app.getPreferredSystemLanguages();
+    if (preferred.length) return preferred;
+  } catch {
+    // Not available yet: fall back to the process locale.
+  }
+  return [Intl.DateTimeFormat().resolvedOptions().locale];
+}
+
+/** Applies the language setting; true when the interface language changed. */
+function applyLanguage(): boolean {
+  const next = (process.env.XRAY_SNAPSHOT_LANGUAGE as Language | undefined) ?? resolveLanguage(settings.language, systemLanguages());
+  if (next === language()) return false;
+  setLanguage(next);
+  return true;
+}
+
 function createTray(): void {
   tray = new Tray(nativeImage.createFromPath(trayIconPath));
   tray.setToolTip(trayTitle());
   tray.on("click", togglePopup);
-  tray.setContextMenu(Menu.buildFromTemplate([
-    { label: "Открыть X-Ray", click: () => showMain() },
-    { label: "Обновить данные", click: () => void service.rescan() },
-    { label: "Настройки", click: () => showMain("settings") },
-    { type: "separator" },
-    { label: "Выйти", click: () => { quitting = true; app.quit(); } },
-  ]));
+  tray.setContextMenu(trayMenu());
 }
 
 // MARK: IPC
@@ -220,11 +246,12 @@ function initialState(event: IpcMainInvokeEvent): InitialState {
     supportDir: Paths.support,
     homeDir: os.homedir(),
     isPopup: !!popup && event.sender === popup.webContents,
+    language: language(),
   };
 }
 
 function broadcastSettings(): void {
-  send(CHANNELS.settings, { settings, directories: service.directories });
+  send(CHANNELS.settings, { settings, directories: service.directories, language: language() });
 }
 
 function registerIPC(): void {
@@ -236,6 +263,13 @@ function registerIPC(): void {
     settings = { ...settings, ...patch };
     saveSettings(settings);
     if (patch.theme !== undefined || patch.appearance !== undefined) applyTheme();
+    if (patch.language !== undefined && applyLanguage()) {
+      // Activity titles are written in the language they were read in: read them again.
+      rendererTrayTitle = undefined;
+      tray?.setContextMenu(trayMenu());
+      updateTray();
+      void service.fullRescan();
+    }
     if (patch.receiverEnabled !== undefined || (patch.receiverPort !== undefined && patch.receiverPort !== previous.receiverPort)) startReceiver();
     broadcastSettings();
     return settings;
@@ -248,7 +282,7 @@ function registerIPC(): void {
     return service.directories;
   });
   ipcMain.handle(CHANNELS.pickFolder, async () => {
-    const result = await dialog.showOpenDialog(mainWindow!, { properties: ["openDirectory", "showHiddenFiles"], title: "Папка с транскриптами Claude Code" });
+    const result = await dialog.showOpenDialog(mainWindow!, { properties: ["openDirectory", "showHiddenFiles"], title: L`Папка с транскриптами Claude Code` });
     return result.canceled ? undefined : result.filePaths[0];
   });
   ipcMain.handle(CHANNELS.setPricing, (_e, table) => {
@@ -274,9 +308,9 @@ function registerIPC(): void {
   });
   ipcMain.handle(CHANNELS.importDialog, async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {
-      title: "Импортировать лог сессии",
+      title: L`Импортировать лог сессии`,
       properties: ["openFile", "multiSelections"],
-      filters: [{ name: "Логи Claude Code", extensions: ["jsonl", "zip"] }],
+      filters: [{ name: L`Логи Claude Code`, extensions: ["jsonl", "zip"] }],
     });
     return result.canceled ? 0 : service.importFiles(result.filePaths);
   });

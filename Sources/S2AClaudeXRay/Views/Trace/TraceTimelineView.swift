@@ -17,10 +17,10 @@ struct TraceTimelineView: View {
 
         var title: String {
             switch self {
-            case .tenMinutes: return "10 мин"
-            case .thirtyMinutes: return "30 мин"
-            case .twoHours: return "2 часа"
-            case .session: return "Вся сессия"
+            case .tenMinutes: return L("10 мин")
+            case .thirtyMinutes: return L("30 мин")
+            case .twoHours: return L("2 часа")
+            case .session: return L("Вся сессия")
             }
         }
 
@@ -43,7 +43,7 @@ struct TraceTimelineView: View {
         let label: String
     }
 
-    static let statusDomain = ["Модель", "Успех", "Ошибка", "Выполняется"]
+    static var statusDomain: [String] { [L("Модель"), L("Успех"), L("Ошибка"), L("Выполняется")] }
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 2)) { timeline in
@@ -65,31 +65,31 @@ struct TraceTimelineView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Picker("Окно", selection: $range) {
+                    Picker(L("Окно"), selection: $range) {
                         ForEach(TimelineRange.allCases) { range in Text(range.title).tag(range) }
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
                     .frame(maxWidth: 380)
                     Spacer()
-                    Text(isLive ? "обновляется в реальном времени" : "сессия неактивна, показан её конец")
+                    Text(isLive ? L("обновляется в реальном времени") : L("сессия неактивна, показан её конец"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
 
-                Card(title: "Что происходило", subtitle: "ответы модели и инструменты; пунктир — ваши промпты") {
+                Card(title: L("Что происходило"), subtitle: L("ответы модели и инструменты; пунктир — ваши промпты")) {
                     if bars.isEmpty {
-                        Text("В этом окне ничего не происходило").foregroundStyle(.secondary).frame(height: 80)
+                        Text(L("В этом окне ничего не происходило")).foregroundStyle(.secondary).frame(height: 80)
                     } else {
                         gantt(bars: bars, lanes: lanes, prompts: prompts, start: start, end: reference)
                     }
                 }
 
-                Card(title: "Контекст на каждом запросе", subtitle: "токенов в промпте") {
+                Card(title: L("Контекст на каждом запросе"), subtitle: L("токенов в промпте")) {
                     ContextLineChart(usage: usage, start: start, end: reference)
                 }
 
-                Card(title: "Куда ушло время сессии") {
+                Card(title: L("Куда ушло время сессии")) {
                     TimeSplitView(trace: trace, now: now)
                 }
             }
@@ -104,30 +104,30 @@ struct TraceTimelineView: View {
             tooltipRows.append((label: bar.lane, value: bar.label, color: color(for: bar.status)))
         }
         if tooltipRows.isEmpty {
-            tooltipRows.append((label: "Ожидание", value: "—", color: nil))
+            tooltipRows.append((label: L("Ожидание"), value: "—", color: nil))
         }
 
         return Chart {
             ForEach(bars) { bar in
                 BarMark(
-                    xStart: .value("Начало", bar.start),
-                    xEnd: .value("Конец", bar.end),
-                    y: .value("Дорожка", bar.lane),
+                    xStart: .value(L("Начало"), bar.start),
+                    xEnd: .value(L("Конец"), bar.end),
+                    y: .value(L("Дорожка"), bar.lane),
                     height: .fixed(13)
                 )
-                .foregroundStyle(by: .value("Статус", bar.status))
+                .foregroundStyle(by: .value(L("Статус"), bar.status))
                 .cornerRadius(3)
             }
             ForEach(prompts) { prompt in
-                RuleMark(x: .value("Промпт", prompt.timestamp))
+                RuleMark(x: .value(L("Промпт"), prompt.timestamp))
                     .foregroundStyle(Palette.user)
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
             }
             if let hovered {
-                RuleMark(x: .value("Время", hovered))
+                RuleMark(x: .value(L("Время"), hovered))
                     .foregroundStyle(Palette.other.opacity(0.6))
                     .annotation(position: .top, spacing: 4, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
-                        ChartTooltip(title: hovered.formatted(date: .omitted, time: .standard), rows: tooltipRows)
+                        ChartTooltip(title: hovered.localized(date: .omitted, time: .standard), rows: tooltipRows)
                     }
             }
         }
@@ -139,7 +139,7 @@ struct TraceTimelineView: View {
         .chartXAxis {
             AxisMarks { _ in
                 AxisGridLine().foregroundStyle(Palette.hairline)
-                AxisValueLabel(format: .dateTime.hour().minute().second())
+                AxisValueLabel(format: .dateTime.hour().minute().second().locale(L10n.locale))
             }
         }
         .frame(height: CGFloat(lanes.count) * 28 + 60)
@@ -147,10 +147,10 @@ struct TraceTimelineView: View {
 
     private func color(for status: String) -> Color? {
         switch status {
-        case "Модель": return Palette.model
-        case "Успех": return Palette.tool
-        case "Ошибка": return Palette.critical
-        case "Выполняется": return Palette.warning
+        case L("Модель"): return Palette.model
+        case L("Успех"): return Palette.tool
+        case L("Ошибка"): return Palette.critical
+        case L("Выполняется"): return Palette.warning
         default: return nil
         }
     }
@@ -165,18 +165,18 @@ struct TraceTimelineView: View {
         }
         for step in trace.steps {
             guard let (s, e) = clamp(step.start, step.end) else { continue }
-            let model = step.model.map(ModelCatalog.displayName(for:)) ?? "модель"
-            let thinking = step.thinkingMs > 0 ? ", думал \(Fmt.ms(step.thinkingMs))" : ""
+            let model = step.model.map(ModelCatalog.displayName(for:)) ?? L("модель")
+            let thinking = step.thinkingMs > 0 ? L(", думал \(Fmt.ms(step.thinkingMs))") : ""
             bars.append(Bar(
                 id: "step|\(step.messageID)",
-                lane: step.isSidechain ? "Модель · субагент" : "Модель",
-                start: s, end: e, status: "Модель",
+                lane: step.isSidechain ? L("Модель · субагент") : L("Модель"),
+                start: s, end: e, status: L("Модель"),
                 label: "\(model) · \(Fmt.shortDuration(step.duration))\(thinking)"
             ))
         }
         for tool in trace.tools {
             guard let (s, e) = clamp(tool.start, tool.end ?? now) else { continue }
-            let status = tool.isRunning ? "Выполняется" : (tool.isError ? "Ошибка" : "Успех")
+            let status = tool.isRunning ? L("Выполняется") : (tool.isError ? L("Ошибка") : L("Успех"))
             let lane = (tool.call.isSidechain ? "↳ " : "") + (tool.mcpServer.map { "MCP \($0)" } ?? tool.name)
             bars.append(Bar(
                 id: "tool|\(tool.id)",
@@ -191,7 +191,7 @@ struct TraceTimelineView: View {
     /// Model lanes first, then tools by first appearance; at most 14 lanes.
     private func laneOrder(_ bars: [Bar]) -> [String] {
         var lanes: [String] = []
-        for fixed in ["Модель", "Модель · субагент"] where bars.contains(where: { $0.lane == fixed }) {
+        for fixed in [L("Модель"), L("Модель · субагент")] where bars.contains(where: { $0.lane == fixed }) {
             lanes.append(fixed)
         }
         for bar in bars.sorted(by: { $0.start < $1.start }) where !lanes.contains(bar.lane) {
@@ -218,20 +218,20 @@ struct ContextLineChart: View {
         let points = usage.values
             .filter { $0.event.timestamp >= start && $0.event.timestamp <= end }
             .sorted { $0.event.timestamp < $1.event.timestamp }
-            .map { Point(id: $0.id, time: $0.event.timestamp, tokens: Double($0.event.tokens.contextTokens), series: $0.event.isSidechain ? "Субагент" : "Основная сессия") }
+            .map { Point(id: $0.id, time: $0.event.timestamp, tokens: Double($0.event.tokens.contextTokens), series: $0.event.isSidechain ? L("Субагент") : L("Основная сессия")) }
 
         if points.isEmpty {
-            Text("Нет запросов в этом окне").foregroundStyle(.secondary).frame(height: 60)
+            Text(L("Нет запросов в этом окне")).foregroundStyle(.secondary).frame(height: 60)
         } else {
             Chart(points) { point in
-                LineMark(x: .value("Время", point.time), y: .value("Контекст", point.tokens))
-                    .foregroundStyle(by: .value("Поток", point.series))
+                LineMark(x: .value(L("Время"), point.time), y: .value(L("Контекст"), point.tokens))
+                    .foregroundStyle(by: .value(L("Поток"), point.series))
                     .lineStyle(StrokeStyle(lineWidth: 2))
-                PointMark(x: .value("Время", point.time), y: .value("Контекст", point.tokens))
-                    .foregroundStyle(by: .value("Поток", point.series))
+                PointMark(x: .value(L("Время"), point.time), y: .value(L("Контекст"), point.tokens))
+                    .foregroundStyle(by: .value(L("Поток"), point.series))
                     .symbolSize(18)
             }
-            .chartForegroundStyleScale(domain: ["Основная сессия", "Субагент"], range: [Palette.model, Palette.subagent])
+            .chartForegroundStyleScale(domain: [L("Основная сессия"), L("Субагент")], range: [Palette.model, Palette.subagent])
             .chartXScale(domain: start...end)
             .tokenYAxis()
             .frame(height: 170)
@@ -252,10 +252,10 @@ struct TimeSplitView: View {
         let thinking = Double(trace.steps.reduce(0) { $0 + $1.thinkingMs }) / 1000
 
         HStack(spacing: 12) {
-            StatTile(title: "Модель отвечала", value: Fmt.shortDuration(model), caption: "из них размышления \(Fmt.shortDuration(thinking))", systemImage: "brain")
-            StatTile(title: "Инструменты работали", value: Fmt.shortDuration(tools), caption: "\(trace.tools.count) вызовов", systemImage: "wrench.and.screwdriver")
-            StatTile(title: "Субагенты", value: Fmt.shortDuration(agents), caption: "\(trace.subagents.reduce(0) { $0 + $1.calls }) запусков", systemImage: "person.2")
-            StatTile(title: "Ожидание вас", value: Fmt.shortDuration(waiting), caption: "между ответом и следующим промптом", systemImage: "person")
+            StatTile(title: L("Модель отвечала"), value: Fmt.shortDuration(model), caption: L("из них размышления \(Fmt.shortDuration(thinking))"), systemImage: "brain")
+            StatTile(title: L("Инструменты работали"), value: Fmt.shortDuration(tools), caption: L("\(trace.tools.count) вызовов"), systemImage: "wrench.and.screwdriver")
+            StatTile(title: L("Субагенты"), value: Fmt.shortDuration(agents), caption: L("\(trace.subagents.reduce(0) { $0 + $1.calls }) запусков"), systemImage: "person.2")
+            StatTile(title: L("Ожидание вас"), value: Fmt.shortDuration(waiting), caption: L("между ответом и следующим промптом"), systemImage: "person")
         }
     }
 

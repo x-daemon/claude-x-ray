@@ -45,9 +45,9 @@ struct SourcesHelpView: View {
 
     private var lastWriteLine: String {
         guard let newest = model.newestTranscript else {
-            return "На этом Mac пока нет ни одного лога Claude Code."
+            return L("На этом Mac пока нет ни одного лога Claude Code.")
         }
-        return "Последняя запись в логах на этом Mac: \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest)))."
+        return L("Последняя запись в логах на этом Mac: \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest))).")
     }
 }
 
@@ -56,7 +56,7 @@ struct SourceFoldersCard: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
-        Card(title: "Где X-Ray ищет логи", subtitle: "транскрипты сессий, *.jsonl") {
+        Card(title: L("Где X-Ray ищет логи"), subtitle: L("транскрипты сессий, *.jsonl")) {
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(Array(model.sourceStats.enumerated()), id: \.offset) { _, source in
                     HStack(spacing: 10) {
@@ -73,7 +73,7 @@ struct SourceFoldersCard: View {
                         }
                         Spacer(minLength: 12)
                         if source.exists {
-                            Button("Показать в Finder") {
+                            Button(L("Показать в Finder")) {
                                 NSWorkspace.shared.open(source.directory)
                             }
                             .controlSize(.small)
@@ -82,11 +82,11 @@ struct SourceFoldersCard: View {
                 }
                 Divider()
                 HStack(spacing: 8) {
-                    SettingsLink { Text("Изменить папки…") }
-                    Button("Импортировать лог…") {
+                    SettingsLink { Text(L("Изменить папки…")) }
+                    Button(L("Импортировать лог…")) {
                         TranscriptImportPanel.run(model: model)
                     }
-                    Button("Пересканировать") {
+                    Button(L("Пересканировать")) {
                         Task { await model.fullRescan() }
                     }
                     Spacer()
@@ -97,11 +97,11 @@ struct SourceFoldersCard: View {
     }
 
     private func status(of source: SourceStat) -> String {
-        guard source.exists else { return "папки нет" }
-        guard source.files > 0 else { return "логов нет" }
+        guard source.exists else { return L("папки нет") }
+        guard source.files > 0 else { return L("логов нет") }
         var text = Fmt.plural(source.files, "лог", "лога", "логов")
         if let newest = source.newestModification {
-            text += " · последний изменён \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest)))"
+            text += L(" · последний изменён \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest)))")
         }
         return text
     }
@@ -110,27 +110,27 @@ struct SourceFoldersCard: View {
 /// Why cloud sessions are missing, and how to run Claude Code so that X-Ray sees it live.
 struct CloudSessionsCard: View {
     var body: some View {
-        Card(title: "Облачные сессии сюда не попадают") {
+        Card(title: L("Облачные сессии сюда не попадают")) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Сессии Claude Code в облаке (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) выполняются на серверах Anthropic, и их логи остаются там. X-Ray видит только сессии, которые идут на этом Mac:")
+                Text(L("Сессии Claude Code в облаке (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) выполняются на серверах Anthropic, и их логи остаются там. X-Ray видит только сессии, которые идут на этом Mac:"))
                     .fixedSize(horizontal: false, vertical: true)
-                way("terminal", "**Терминал:** `claude` в папке проекта.")
-                way("macwindow", "**Claude Desktop:** сессия Code в локальной среде, а не в облачной.")
+                way("terminal", L("**Терминал:** `claude` в папке проекта."))
+                way("macwindow", L("**Claude Desktop:** сессия Code в локальной среде, а не в облачной."))
                 way(
                     "antenna.radiowaves.left.and.right",
-                    "**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом Mac, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую."
+                    L("**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом Mac, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую.")
                 )
                 way(
                     "icloud.and.arrow.down",
-                    "**Облачные сессии вживую:** «Настройки → Облако». Каждая облачная сессия сама присылает сюда свой лог после каждого шага через туннель к этому Mac."
+                    L("**Облачные сессии вживую:** «Настройки → Облако». Каждая облачная сессия сама присылает сюда свой лог после каждого шага через туннель к этому Mac.")
                 )
                 way(
                     "square.and.arrow.down",
-                    "**Разово:** попросите облачную сессию прислать свой лог («пришли лог сессии для X-Ray») и перетащите файл в окно X-Ray."
+                    L("**Разово:** попросите облачную сессию прислать свой лог («пришли лог сессии для X-Ray») и перетащите файл в окно X-Ray.")
                 )
                 way(
                     "gauge.with.dots.needle.33percent",
-                    "**Лимиты всего аккаунта**, включая облако и чаты, X-Ray берёт из строки статуса Claude Code: «Настройки → Лимиты аккаунта»."
+                    L("**Лимиты всего аккаунта**, включая облако и чаты, X-Ray берёт из строки статуса Claude Code: «Настройки → Лимиты аккаунта».")
                 )
             }
             .font(.callout)

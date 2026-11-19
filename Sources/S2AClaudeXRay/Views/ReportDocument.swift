@@ -21,8 +21,8 @@ struct ReportDocument: View {
             ReportCover(summary: summary, previous: previous)
 
             if summary.requests == 0 {
-                Card(title: "Нет данных") {
-                    Text("За выбранный период запросов не было. Выберите другой период вверху окна.")
+                Card(title: L("Нет данных")) {
+                    Text(L("За выбранный период запросов не было. Выберите другой период вверху окна."))
                         .foregroundStyle(.secondary)
                 }
             } else {
@@ -30,7 +30,7 @@ struct ReportDocument: View {
 
                 if let interval = model.periodInterval {
                     let unit = model.periodChartUnit
-                    Card(title: "Расход \(Self.unitTitle(unit))", subtitle: "\(model.plan.costLabel), по моделям") {
+                    Card(title: L("Расход \(Self.unitTitle(unit))"), subtitle: L("\(model.plan.costLabel), по моделям")) {
                         CostTimelineChart(
                             buckets: Analytics.buckets(events, unit: unit, interval: interval) { model.seriesName(for: $0) },
                             unit: unit,
@@ -40,19 +40,19 @@ struct ReportDocument: View {
                 }
 
                 HStack(alignment: .top, spacing: 16) {
-                    Card(title: "Из чего складывается стоимость") {
+                    Card(title: L("Из чего складывается стоимость")) {
                         CostCompositionView(summary: summary)
                     }
-                    Card(title: "Модели", subtitle: "доля расхода") {
+                    Card(title: L("Модели"), subtitle: L("доля расхода")) {
                         RankedBarList(rows: modelRows(events, total: summary.cost.total), labelWidth: 120)
                     }
                 }
 
                 HStack(alignment: .top, spacing: 16) {
-                    Card(title: "Проекты", subtitle: "по расходу") {
+                    Card(title: L("Проекты"), subtitle: L("по расходу")) {
                         RankedBarList(rows: projectRows(events, total: summary.cost.total), labelWidth: 170)
                     }
-                    Card(title: "Самые дорогие сессии") {
+                    Card(title: L("Самые дорогие сессии")) {
                         RankedBarList(rows: sessionRows(sessions), labelWidth: 230)
                     }
                 }
@@ -61,10 +61,10 @@ struct ReportDocument: View {
                     let days = Self.daily(events, interval: interval)
                     if days.count >= 2 {
                         HStack(alignment: .top, spacing: 16) {
-                            Card(title: "Доля контекста из кэша", subtitle: "по дням") {
+                            Card(title: L("Доля контекста из кэша"), subtitle: L("по дням")) {
                                 DailyMetricChart(points: days.map { DailyPoint(day: $0.day, value: $0.cacheRate) }, domain: 0...1, format: { Fmt.percent($0) })
                             }
-                            Card(title: "Средний размер контекста", subtitle: "токенов на запрос, по дням") {
+                            Card(title: L("Средний размер контекста"), subtitle: L("токенов на запрос, по дням")) {
                                 let maxContext = days.map(\.context).max() ?? 1
                                 DailyMetricChart(points: days.map { DailyPoint(day: $0.day, value: $0.context) }, domain: 0...(maxContext * 1.15), format: { Fmt.tokens(Int($0)) })
                             }
@@ -72,7 +72,7 @@ struct ReportDocument: View {
                     }
                 }
 
-                Card(title: "Когда вы работаете", subtitle: "\(model.plan.costLabel) по дням недели и часам") {
+                Card(title: L("Когда вы работаете"), subtitle: L("\(model.plan.costLabel) по дням недели и часам")) {
                     let cells = Analytics.heatmap(events)
                     VStack(alignment: .leading, spacing: 8) {
                         ActivityHeatmap(cells: cells, showsHint: !forExport)
@@ -115,7 +115,7 @@ struct ReportDocument: View {
             RankedBarRow(
                 id: group.key,
                 label: group.key,
-                detail: "\(Fmt.plural(group.requests, "запрос", "запроса", "запросов")) · кэш \(Fmt.percent(group.summary.tokens.cacheHitRate))",
+                detail: L("\(Fmt.plural(group.requests, "запрос", "запроса", "запросов")) · кэш \(Fmt.percent(group.summary.tokens.cacheHitRate))"),
                 value: group.cost,
                 valueText: "\(Fmt.usd(group.cost)) · \(Fmt.percent(group.cost / max(total, .leastNonzeroMagnitude)))"
             )
@@ -125,7 +125,7 @@ struct ReportDocument: View {
             let cost = rest.reduce(0) { $0 + $1.cost }
             rows.append(RankedBarRow(
                 id: "__other",
-                label: "Другие (\(rest.count))",
+                label: L("Другие (\(rest.count))"),
                 value: cost,
                 valueText: "\(Fmt.usd(cost)) · \(Fmt.percent(cost / max(total, .leastNonzeroMagnitude)))",
                 color: Palette.other
@@ -139,7 +139,7 @@ struct ReportDocument: View {
             RankedBarRow(
                 id: session.id,
                 label: "\(session.projectName) · \(Fmt.dateTime(session.start))",
-                detail: "\(Fmt.plural(session.requests, "запрос", "запроса", "запросов")) · пик контекста \(Fmt.tokens(session.peakContextTokens)) · \(Fmt.duration(session.duration))",
+                detail: L("\(Fmt.plural(session.requests, "запрос", "запроса", "запросов")) · пик контекста \(Fmt.tokens(session.peakContextTokens)) · \(Fmt.duration(session.duration))"),
                 value: session.cost,
                 valueText: Fmt.usd(session.cost)
             )
@@ -150,9 +150,9 @@ struct ReportDocument: View {
 
     static func unitTitle(_ unit: Calendar.Component) -> String {
         switch unit {
-        case .hour: return "по часам"
-        case .weekOfYear: return "по неделям"
-        default: return "по дням"
+        case .hour: return L("по часам")
+        case .weekOfYear: return L("по неделям")
+        default: return L("по дням")
         }
     }
 
@@ -172,7 +172,7 @@ struct ReportDocument: View {
     /// "Чаще всего по средам (34% расхода); пиковый час — 14:00–15:00."
     static func rhythm(_ cells: [HeatCell], total: Double) -> String {
         guard total > 0 else { return "" }
-        let days = ["понедельникам", "вторникам", "средам", "четвергам", "пятницам", "субботам", "воскресеньям"]
+        let days = [L("понедельникам"), L("вторникам"), L("средам"), L("четвергам"), L("пятницам"), L("субботам"), L("воскресеньям")]
         var byDay = [Double](repeating: 0, count: 7)
         var byHour = [Double](repeating: 0, count: 24)
         for cell in cells {
@@ -181,7 +181,7 @@ struct ReportDocument: View {
         }
         guard let day = byDay.indices.max(by: { byDay[$0] < byDay[$1] }),
               let hour = byHour.indices.max(by: { byHour[$0] < byHour[$1] }) else { return "" }
-        return "Больше всего расходуется по \(days[day]) (\(Fmt.percent(byDay[day] / total))), пиковый час — \(String(format: "%02d:00–%02d:00", hour, (hour + 1) % 24))."
+        return L("Больше всего расходуется по \(days[day]) (\(Fmt.percent(byDay[day] / total))), пиковый час — \(String(format: "%02d:00–%02d:00", hour, (hour + 1) % 24)).")
     }
 }
 
@@ -202,7 +202,7 @@ struct ReportCover: View {
                     .frame(width: 28, height: 28)
                     Text("S2A Claude X-Ray").font(.headline)
                 }
-                Text("Отчёт об использовании Claude Code")
+                Text(L("Отчёт об использовании Claude Code"))
                     .font(.system(size: 26, weight: .bold))
                 Text(periodLine)
                     .font(.callout)
@@ -218,7 +218,7 @@ struct ReportCover: View {
                     .font(.callout)
                     .opacity(0.88)
                 if let previous, let change = ReportKPIRow.change(summary.cost.total, previous.cost.total) {
-                    Label("\(change >= 0 ? "+" : "−")\(Fmt.percent(abs(change))) к прошлому периоду", systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right")
+                    Label(L("\(change >= 0 ? "+" : "−")\(Fmt.percent(abs(change))) к прошлому периоду"), systemImage: change >= 0 ? "arrow.up.right" : "arrow.down.right")
                         .font(.callout.weight(.medium))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
@@ -238,7 +238,7 @@ struct ReportCover: View {
         }
         parts.append(model.period.title)
         if model.plan.isSubscription {
-            parts.append("подписка \(model.plan.title)")
+            parts.append(L("подписка \(model.plan.title)"))
         }
         return parts.joined(separator: " · ")
     }
@@ -262,16 +262,16 @@ struct ReportKPIRow: View {
             previousSessions.flatMap { $0 > 0 ? previous.cost.total / Double($0) : nil }
         }
         HStack(spacing: 12) {
-            ReportStatTile(title: "Токены", value: Fmt.tokens(summary.tokens.total),
+            ReportStatTile(title: L("Токены"), value: Fmt.tokens(summary.tokens.total),
                            change: previous.flatMap { Self.change(Double(summary.tokens.total), Double($0.tokens.total)) })
-            ReportStatTile(title: "Запросы", value: "\(summary.requests)",
+            ReportStatTile(title: L("Запросы"), value: "\(summary.requests)",
                            change: previous.flatMap { Self.change(Double(summary.requests), Double($0.requests)) })
-            ReportStatTile(title: "Сессии", value: "\(sessions)",
+            ReportStatTile(title: L("Сессии"), value: "\(sessions)",
                            change: previousSessions.flatMap { Self.change(Double(sessions), Double($0)) })
-            ReportStatTile(title: "Доля кэша", value: Fmt.percent(summary.tokens.cacheHitRate),
+            ReportStatTile(title: L("Доля кэша"), value: Fmt.percent(summary.tokens.cacheHitRate),
                            change: previous.flatMap { $0.requests > 0 ? summary.tokens.cacheHitRate - $0.tokens.cacheHitRate : nil },
                            changeIsPoints: true, upIsGood: true)
-            ReportStatTile(title: "Средняя сессия", value: Fmt.usd(costPerSession),
+            ReportStatTile(title: L("Средняя сессия"), value: Fmt.usd(costPerSession),
                            change: previousCostPerSession.flatMap { Self.change(costPerSession, $0) },
                            upIsGood: false)
         }
@@ -306,7 +306,7 @@ struct ReportStatTile: View {
                     .font(.caption.weight(.medium))
                     .foregroundStyle(color(change))
             } else {
-                Text(change == nil ? "нет данных для сравнения" : "без изменений")
+                Text(change == nil ? L("нет данных для сравнения") : L("без изменений"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -321,9 +321,9 @@ struct ReportStatTile: View {
         let sign = change > 0 ? "+" : "−"
         if changeIsPoints {
             let points = String(format: "%.1f", abs(change) * 100).replacingOccurrences(of: ".", with: ",")
-            return "\(sign)\(points) п.п. к прошлому периоду"
+            return L("\(sign)\(points) п.п. к прошлому периоду")
         }
-        return "\(sign)\(Fmt.percent(abs(change))) к прошлому периоду"
+        return L("\(sign)\(Fmt.percent(abs(change))) к прошлому периоду")
     }
 
     private func color(_ change: Double) -> Color {
@@ -348,19 +348,19 @@ struct DailyMetricChart: View {
     var body: some View {
         Chart {
             ForEach(points) { point in
-                AreaMark(x: .value("День", point.day, unit: .day), yStart: .value("Ноль", domain.lowerBound), yEnd: .value("Значение", point.value))
+                AreaMark(x: .value(L("День"), point.day, unit: .day), yStart: .value(L("Ноль"), domain.lowerBound), yEnd: .value(L("Значение"), point.value))
                     .foregroundStyle(color.opacity(0.10))
                     .interpolationMethod(.monotone)
-                LineMark(x: .value("День", point.day, unit: .day), y: .value("Значение", point.value))
+                LineMark(x: .value(L("День"), point.day, unit: .day), y: .value(L("Значение"), point.value))
                     .foregroundStyle(color)
                     .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                     .interpolationMethod(.monotone)
             }
             if let last = points.last {
-                PointMark(x: .value("День", last.day, unit: .day), y: .value("Значение", last.value))
+                PointMark(x: .value(L("День"), last.day, unit: .day), y: .value(L("Значение"), last.value))
                     .symbolSize(150)
                     .foregroundStyle(Palette.card)
-                PointMark(x: .value("День", last.day, unit: .day), y: .value("Значение", last.value))
+                PointMark(x: .value(L("День"), last.day, unit: .day), y: .value(L("Значение"), last.value))
                     .symbolSize(64)
                     .foregroundStyle(color)
                     .annotation(position: .top, alignment: .trailing, spacing: 6) {
@@ -380,7 +380,7 @@ struct DailyMetricChart: View {
         .chartXAxis {
             AxisMarks(values: .automatic(desiredCount: 6)) { _ in
                 AxisGridLine().foregroundStyle(Palette.hairline)
-                AxisValueLabel(format: .dateTime.day().month(.twoDigits))
+                AxisValueLabel(format: .dateTime.day().month(.twoDigits).locale(L10n.locale))
             }
         }
         .frame(height: 170)
@@ -395,9 +395,9 @@ struct ReportInsights: View {
     var body: some View {
         let insights = InsightEngine(pricing: model.pricing).analyze(events)
         let freeWins = insights.filter { $0.kind == .freeWin }.compactMap(\.potentialSavings).reduce(0, +)
-        Card(title: "Рекомендации", subtitle: freeWins > 0 ? "без потери качества можно сэкономить до \(Fmt.usd(freeWins))" : nil) {
+        Card(title: L("Рекомендации"), subtitle: freeWins > 0 ? L("без потери качества можно сэкономить до \(Fmt.usd(freeWins))") : nil) {
             if insights.isEmpty {
-                Text("Замечаний нет: расход выглядит сбалансированным.")
+                Text(L("Замечаний нет: расход выглядит сбалансированным."))
                     .foregroundStyle(.secondary)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
@@ -421,12 +421,12 @@ struct ReportFooter: View {
     }
 
     private var text: String {
-        var parts = ["Суммы — API-эквивалент по прайс-листу Anthropic"]
+        var parts = [L("Суммы — API-эквивалент по прайс-листу Anthropic")]
         if model.plan.isSubscription {
-            parts[0] += ": на подписке \(model.plan.title) деньги не списываются"
+            parts[0] += L(": на подписке \(model.plan.title) деньги не списываются")
         }
-        parts.append("Источники: логи Claude Code на этом Mac, импортированные логи и логи, присланные облачными сессиями")
-        parts.append("Сформировано \(Fmt.dateTime(model.now)) в S2A Claude X-Ray")
+        parts.append(L("Источники: логи Claude Code на этом Mac, импортированные логи и логи, присланные облачными сессиями"))
+        parts.append(L("Сформировано \(Fmt.dateTime(model.now)) в S2A Claude X-Ray"))
         return parts.joined(separator: ". ") + "."
     }
 }

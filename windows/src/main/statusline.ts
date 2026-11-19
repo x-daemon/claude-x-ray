@@ -6,7 +6,8 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { planUsageFromStatusLine, statusLineSummary } from "../core/plan";
 import type { StatusLineState } from "../shared/api";
-import { loadPlanUsage, Paths, readJSON, savePlanUsage, writeJSON } from "./store";
+import { L, resolveLanguage, setLanguage, type Language } from "../core/i18n";
+import { loadPlanUsage, loadSettings, Paths, readJSON, savePlanUsage, writeJSON } from "./store";
 
 export const STATUSLINE_FLAG = "--statusline";
 
@@ -50,6 +51,9 @@ function runWrapped(command: string, input: string): string {
  * own status line, which it wraps).
  */
 export function runStatusLine(): string {
+  // The line is written in the interface language, like the app (this mode starts no UI).
+  const lang = process.env.XRAY_SNAPSHOT_LANGUAGE as Language | undefined;
+  setLanguage(lang ?? resolveLanguage(loadSettings().language, [Intl.DateTimeFormat().resolvedOptions().locale]));
   const input = readStdin();
   const now = Date.now();
   let usage = loadPlanUsage();
@@ -90,7 +94,7 @@ function readSettings(): Json {
   if (!text.trim()) return {};
   const parsed = JSON.parse(text) as unknown;
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("settings.json не похож на настройки Claude Code (ожидался JSON-объект). X-Ray его не меняет.");
+    throw new Error(L`settings.json не похож на настройки Claude Code (ожидался JSON-объект). X-Ray его не меняет.`);
   }
   return parsed as Json;
 }

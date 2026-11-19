@@ -14,6 +14,7 @@ import { store, useStore } from "../state";
 import { C, categoryIcon, kindColor, kindIcon } from "../traceStyle";
 import { Chip, DetailBlock, Icon, Legend, Segmented, StatTile, Tiles, Toggle } from "../ui";
 import { itemTitle, ToolStatusChip } from "./traceParts";
+import { L } from "../../core/i18n";
 
 export const toneColor: Record<Tone, string> = { good: C.good, info: C.tool, warning: C.warning, critical: C.critical, neutral: C.other };
 
@@ -29,12 +30,12 @@ export function TraceLLMView({ trace }: { trace: SessionTrace }) {
     <div class="page">
       <CallTiles calls={calls} />
       <div class="row gap-12 wrap">
-        <Segmented value={mode} options={[{ id: "calls", title: "Запросы" }, { id: "loop", title: "Цикл агента" }]} onChange={setMode} label="Вид" />
+        <Segmented value={mode} options={[{ id: "calls", title: L`Запросы` }, { id: "loop", title: L`Цикл агента` }]} onChange={setMode} label={L`Вид`} />
         <span class="caption secondary">
-          {mode === "calls" ? "каждый вызов модели: токены, кэш, причина остановки, размышления и действия" : "мысль → действие → результат для каждого запроса хода"}
+          {mode === "calls" ? L`каждый вызов модели: токены, кэш, причина остановки, размышления и действия` : L`мысль → действие → результат для каждого запроса хода`}
         </span>
       </div>
-      {calls.length === 0 ? <div class="secondary empty-note" style={{ minHeight: "80px" }}>Запросов к модели в этой сессии пока нет</div>
+      {calls.length === 0 ? <div class="secondary empty-note" style={{ minHeight: "80px" }}>{L`Запросов к модели в этой сессии пока нет`}</div>
         : mode === "calls" ? <CallList calls={calls} hide={hide} /> : <AgentLoop trace={trace} calls={calls} hide={hide} />}
     </div>
   );
@@ -70,12 +71,12 @@ function CallTiles({ calls }: { calls: LLMCall[] }) {
   const others = [...stops.entries()].filter(([k]) => k !== topStop?.[0]).map(([k, v]) => `${stopReasonInfo(k).title} ${v}`).join(" · ");
   return (
     <Tiles>
-      <StatTile title="Запросов к модели" value={String(calls.length)} caption={`основной поток ${main} · субагенты ${calls.length - main}`} icon={I.Brain} />
-      <StatTile title="Чтение из кэша" value={context > 0 ? Fmt.percent(read / context) : "—"} caption="доля контекста всех запросов" icon={I.MemoryStick} />
-      <StatTile title="Промахи кэша" value={String(misses)} caption={misses ? `≈${Fmt.usd(extra)} лишней записи` : "с понятной причиной — нет"} icon={I.TriangleExclamationPoint} tint={misses ? C.warning : undefined} />
-      <StatTile title="Потеряно размышлений" value={String(dropped)} caption={dropped ? `блоков в ${Fmt.plural(droppedCalls, "запросе", "запросах", "запросах")}` : "API ничего не отбрасывало"} icon={I.Brain} tint={dropped ? C.warning : undefined} />
+      <StatTile title={L`Запросов к модели`} value={String(calls.length)} caption={L`основной поток ${main} · субагенты ${calls.length - main}`} icon={I.Brain} />
+      <StatTile title={L`Чтение из кэша`} value={context > 0 ? Fmt.percent(read / context) : "—"} caption={L`доля контекста всех запросов`} icon={I.MemoryStick} />
+      <StatTile title={L`Промахи кэша`} value={String(misses)} caption={misses ? L`≈${Fmt.usd(extra)} лишней записи` : L`с понятной причиной — нет`} icon={I.TriangleExclamationPoint} tint={misses ? C.warning : undefined} />
+      <StatTile title={L`Потеряно размышлений`} value={String(dropped)} caption={dropped ? L`блоков в ${Fmt.plural(droppedCalls, "запросе", "запросах", "запросах")}` : L`API ничего не отбрасывало`} icon={I.Brain} tint={dropped ? C.warning : undefined} />
       <StatTile
-        title="Чем заканчивались ответы"
+        title={L`Чем заканчивались ответы`}
         value={topStop ? Fmt.percent(topStop[1] / Math.max(calls.length, 1)) : "—"}
         caption={topStop ? `${stopReasonInfo(topStop[0]).title}${others ? " · " + others : ""}` : undefined}
         icon={I.CircleStop}
@@ -103,12 +104,12 @@ function CallList({ calls, hide }: { calls: LLMCall[]; hide: boolean }) {
   return (
     <div class="stack-10">
       <div class="row gap-14 wrap">
-        <Toggle checked={onlyIssues} onChange={setOnlyIssues} label="Только с проблемами" title="промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов" />
+        <Toggle checked={onlyIssues} onChange={setOnlyIssues} label={L`Только с проблемами`} title={L`промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов`} />
         <span class="caption secondary">{Fmt.plural(shown.length, "запрос", "запроса", "запросов")}</span>
         <span class="spacer" />
         <Legend items={[
-          { name: "чтение кэша", color: SEG.read }, { name: "запись в кэш", color: SEG.write }, { name: "свежий ввод", color: SEG.input },
-          { name: "размышления", color: SEG.thinking }, { name: "вывод", color: SEG.output },
+          { name: L`чтение кэша`, color: SEG.read }, { name: L`запись в кэш`, color: SEG.write }, { name: L`свежий ввод`, color: SEG.input },
+          { name: L`размышления`, color: SEG.thinking }, { name: L`вывод`, color: SEG.output },
         ]} />
       </div>
       {shown.slice(0, limit).map((call) => (
@@ -122,8 +123,8 @@ function CallList({ calls, hide }: { calls: LLMCall[]; hide: boolean }) {
           maxOutput={maxOutput}
         />
       ))}
-      {shown.length > limit ? <button class="btn more" type="button" onClick={() => setLimit(limit + 40)}>Показать ещё {Math.min(40, shown.length - limit)}</button> : null}
-      {shown.length === 0 ? <div class="secondary empty-note">Запросов с проблемами нет</div> : null}
+      {shown.length > limit ? <button class="btn more" type="button" onClick={() => setLimit(limit + 40)}>{L`Показать ещё ${Math.min(40, shown.length - limit)}`}</button> : null}
+      {shown.length === 0 ? <div class="secondary empty-note">{L`Запросов с проблемами нет`}</div> : null}
     </div>
   );
 }
@@ -144,11 +145,11 @@ function CallCard(props: { call: LLMCall; hide: boolean; expanded: boolean; togg
         <span class="strong num">#{call.index}</span>
         <span class="caption num secondary">{Fmt.time(call.step.start)}</span>
         {model ? <Chip text={displayModelName(model)} icon={I.Cpu} tint={C.model} /> : null}
-        {callModelSwitched(call) && requested ? <Chip text={`запрошена ${displayModelName(requested)}`} icon={I.ArrowLeftRight} tint={C.warning} /> : null}
+        {callModelSwitched(call) && requested ? <Chip text={L`запрошена ${displayModelName(requested)}`} icon={I.ArrowLeftRight} tint={C.warning} /> : null}
         {effort ? <Chip text={`effort ${effort}`} icon={I.SlidersHorizontal} tint={C.other} /> : null}
         {p?.event.speed === "fast" ? <Chip text="fast" icon={I.Zap} tint={C.warning} /> : null}
-        {call.step.isSidechain ? <Chip text="субагент" icon={I.Users} tint={C.subagent} /> : null}
-        {d.advisorModel ? <Chip text={`советник ${displayModelName(d.advisorModel)}`} icon={I.Lightbulb} tint={C.other} /> : null}
+        {call.step.isSidechain ? <Chip text={L`субагент`} icon={I.Users} tint={C.subagent} /> : null}
+        {d.advisorModel ? <Chip text={L`советник ${displayModelName(d.advisorModel)}`} icon={I.Lightbulb} tint={C.other} /> : null}
         <Chip text={stop.title} tint={toneColor[stop.tone]} />
         <span class="spacer" />
         <span class="caption num secondary nowrap">
@@ -157,7 +158,7 @@ function CallCard(props: { call: LLMCall; hide: boolean; expanded: boolean; togg
           {p ? ` · ${Fmt.usd(callCost(call))}` : ""}
         </span>
       </button>
-      {t ? <TokenBars call={call} maxContext={props.maxContext} maxOutput={props.maxOutput} /> : <div class="caption secondary">Токены этого ответа в логе не найдены</div>}
+      {t ? <TokenBars call={call} maxContext={props.maxContext} maxOutput={props.maxOutput} /> : <div class="caption secondary">{L`Токены этого ответа в логе не найдены`}</div>}
       <CallNotes call={call} />
       {expanded ? <CallBody call={call} hide={hide} /> : null}
     </div>
@@ -173,8 +174,8 @@ function TokenBars({ call, maxContext, maxOutput }: { call: LLMCall; maxContext:
   const width = (v: number, max: number) => `${Math.max(0, (v / Math.max(max, 1)) * 100)}%`;
   return (
     <div class="token-bars">
-      <span class="caption secondary">вход</span>
-      <div class="token-track" title={`чтение кэша ${Fmt.tokens(t.cacheRead)} · запись ${Fmt.tokens(write)} · свежий ввод ${Fmt.tokens(t.input)}`}>
+      <span class="caption secondary">{L`вход`}</span>
+      <div class="token-track" title={L`чтение кэша ${Fmt.tokens(t.cacheRead)} · запись ${Fmt.tokens(write)} · свежий ввод ${Fmt.tokens(t.input)}`}>
         <div class="segbar thin" style={{ width: `max(3px, ${width(context, maxContext)})` }}>
           {t.cacheRead > 0 ? <span style={{ flexGrow: t.cacheRead, background: SEG.read }} /> : null}
           {write > 0 ? <span style={{ flexGrow: write, background: SEG.write }} /> : null}
@@ -182,18 +183,17 @@ function TokenBars({ call, maxContext, maxOutput }: { call: LLMCall; maxContext:
         </div>
       </div>
       <span class="caption num secondary nowrap">
-        {Fmt.tokens(context)} · {Fmt.percent(context / window)} окна · из кэша {Fmt.percent(cacheHitRate(t))}
-        {write > 0 ? ` · запись ${Fmt.tokens(write)}${t.cacheWrite1h > 0 ? " (1 ч)" : " (5 мин)"}` : ""}
-      </span>
-      <span class="caption secondary">выход</span>
-      <div class="token-track" title={`размышления ${Fmt.tokens(t.thinking)} · вывод ${Fmt.tokens(visible)}`}>
+        {L`${Fmt.tokens(context)} · ${Fmt.percent(context / window)} окна · из кэша ${Fmt.percent(cacheHitRate(t))}${write > 0 ? L` · запись ${Fmt.tokens(write)}${t.cacheWrite1h > 0 ? L` (1 ч)` : L` (5 мин)`}` : ""}`}
+         </span>
+      <span class="caption secondary">{L`выход`}</span>
+      <div class="token-track" title={L`размышления ${Fmt.tokens(t.thinking)} · вывод ${Fmt.tokens(visible)}`}>
         <div class="segbar thin" style={{ width: `max(3px, ${width(t.output, maxOutput)})` }}>
           {t.thinking > 0 ? <span style={{ flexGrow: t.thinking, background: SEG.thinking }} /> : null}
           {visible > 0 ? <span style={{ flexGrow: visible, background: SEG.output }} /> : null}
         </div>
       </div>
       <span class="caption num secondary nowrap">
-        {Fmt.tokens(t.output)}{t.thinking > 0 ? ` · размышления ${Fmt.tokens(t.thinking)}` : ""}
+        {Fmt.tokens(t.output)}{t.thinking > 0 ? L` · размышления ${Fmt.tokens(t.thinking)}` : ""}
       </span>
     </div>
   );
@@ -209,23 +209,23 @@ function CallNotes({ call }: { call: LLMCall }) {
     const tokens = d.cacheMiss.missedTokens ?? (p ? cacheWrite(p.event.tokens) : 0);
     const extra = real && p ? missExtraCost(store.pricing, p, tokens) : 0;
     notes.push(real
-      ? { icon: I.TriangleExclamationPoint, color: C.warning, text: `Промах кэша: ${cacheMissTitle(d.cacheMiss.reason)} — ${Fmt.tokens(tokens)} токенов записаны заново${extra > 0 ? ` (≈${Fmt.usd(extra)})` : ""}` }
-      : { icon: I.Info, color: C.other, text: `Кэш: ${cacheMissTitle(d.cacheMiss.reason)}` });
+      ? { icon: I.TriangleExclamationPoint, color: C.warning, text: L`Промах кэша: ${cacheMissTitle(d.cacheMiss.reason)} — ${Fmt.tokens(tokens)} токенов записаны заново${extra > 0 ? ` (≈${Fmt.usd(extra)})` : ""}` }
+      : { icon: I.Info, color: C.other, text: L`Кэш: ${cacheMissTitle(d.cacheMiss.reason)}` });
   }
   for (const t of d.transformations ?? []) {
-    if (t.type === "thinking_dropped") notes.push({ icon: I.Brain, color: C.warning, text: `API убрало размышление из истории: ${droppedReasonTitle(t.reason)}${t.path ? ` (${t.path})` : ""}` });
-    else notes.push({ icon: I.Info, color: C.other, text: `Изменение запроса API: ${t.type}${t.reason ? ` — ${t.reason}` : ""}` });
+    if (t.type === "thinking_dropped") notes.push({ icon: I.Brain, color: C.warning, text: L`API убрало размышление из истории: ${droppedReasonTitle(t.reason)}${t.path ? ` (${t.path})` : ""}` });
+    else notes.push({ icon: I.Info, color: C.other, text: L`Изменение запроса API: ${t.type}${t.reason ? ` — ${t.reason}` : ""}` });
   }
   for (const e of d.contextEdits ?? []) {
-    const parts = [e.clearedTokens !== undefined ? `${Fmt.tokens(e.clearedTokens)} токенов` : undefined, e.clearedToolUses !== undefined ? `${e.clearedToolUses} вызовов` : undefined].filter(Boolean);
-    notes.push({ icon: I.Minimize2, color: C.context, text: `Сервер очистил контекст (${e.type})${parts.length ? ": " + parts.join(", ") : ""}` });
+    const parts = [e.clearedTokens !== undefined ? L`${Fmt.tokens(e.clearedTokens)} токенов` : undefined, e.clearedToolUses !== undefined ? L`${e.clearedToolUses} вызовов` : undefined].filter(Boolean);
+    notes.push({ icon: I.Minimize2, color: C.context, text: L`Сервер очистил контекст (${e.type})${parts.length ? ": " + parts.join(", ") : ""}` });
   }
   if (d.iterations?.length) {
-    const steps = d.iterations.map((i) => `${iterationTitle(i.type)}${i.model ? ` (${displayModelName(i.model)})` : ""}: вывод ${Fmt.tokens(i.output)}`);
-    notes.push({ icon: I.Layers, color: C.other, text: `Шаги запроса: ${steps.join(" → ")}` });
+    const steps = d.iterations.map((i) => L`${iterationTitle(i.type)}${i.model ? ` (${displayModelName(i.model)})` : ""}: вывод ${Fmt.tokens(i.output)}`);
+    notes.push({ icon: I.Layers, color: C.other, text: L`Шаги запроса: ${steps.join(" → ")}` });
   }
   if (callModelSwitched(call)) {
-    notes.push({ icon: I.ArrowLeftRight, color: C.warning, text: `Запрошена ${displayModelName(call.step.requestedModel ?? d.requestedModel ?? "")}, ответила ${displayModelName(call.step.model ?? p?.event.model ?? "")}` });
+    notes.push({ icon: I.ArrowLeftRight, color: C.warning, text: L`Запрошена ${displayModelName(call.step.requestedModel ?? d.requestedModel ?? "")}, ответила ${displayModelName(call.step.model ?? p?.event.model ?? "")}` });
   }
   if (!notes.length) return null;
   return (
@@ -247,34 +247,34 @@ function CallBody({ call, hide }: { call: LLMCall; hide: boolean }) {
     call.step.messageID,
     p?.event.requestID,
     p?.event.serviceTier ? `tier ${p.event.serviceTier}` : undefined,
-    d.inferenceGeo ? `регион ${d.inferenceGeo}` : undefined,
-    p?.event.speed ? `скорость ${p.event.speed}` : undefined,
-    d.cacheTTL ? `TTL кэша ${d.cacheTTL}` : undefined,
-    p?.event.webSearchRequests ? `веб-поиск ${p.event.webSearchRequests}` : undefined,
+    d.inferenceGeo ? L`регион ${d.inferenceGeo}` : undefined,
+    p?.event.speed ? L`скорость ${p.event.speed}` : undefined,
+    d.cacheTTL ? L`TTL кэша ${d.cacheTTL}` : undefined,
+    p?.event.webSearchRequests ? L`веб-поиск ${p.event.webSearchRequests}` : undefined,
   ].filter(Boolean);
   return (
     <div class="stack-10 call-body">
       <section class="stack-6">
-        <div class="caption strong secondary">Размышления</div>
-        {call.thinking.length === 0 ? <div class="caption secondary">Без блока размышлений</div> : call.thinking.map((item) => (
+        <div class="caption strong secondary">{L`Размышления`}</div>
+        {call.thinking.length === 0 ? <div class="caption secondary">{L`Без блока размышлений`}</div> : call.thinking.map((item) => (
           <div class="stack-4" key={item.id}>
             <div class="row gap-6 caption">
               <Icon icon={I.Brain} size={13} color={C.model} />
-              <span>{item.thinkingMs ? `думал ${Fmt.ms(item.thinkingMs)}` : "размышление"}</span>
-              <span class="secondary">· режим API: {thinkingDisplayTitle(item.thinkingDisplay)}</span>
+              <span>{item.thinkingMs ? L`думал ${Fmt.ms(item.thinkingMs)}` : L`размышление`}</span>
+              <span class="secondary">{L`· режим API: ${thinkingDisplayTitle(item.thinkingDisplay)}`}</span>
             </div>
             {item.detail && !hide ? <DetailBlock text={item.detail} />
-              : <div class="caption secondary">{hide ? "Скрыто переключателем «Скрыть содержимое»." : `Текст размышлений API не возвращает — известны только длительность и ${Fmt.tokens(p?.event.tokens.thinking ?? 0)} токенов размышлений.`}</div>}
+              : <div class="caption secondary">{hide ? L`Скрыто переключателем «Скрыть содержимое».` : L`Текст размышлений API не возвращает — известны только длительность и ${Fmt.tokens(p?.event.tokens.thinking ?? 0)} токенов размышлений.`}</div>}
           </div>
         ))}
       </section>
       <section class="stack-6">
-        <div class="caption strong secondary">Действия ({call.tools.length})</div>
-        {call.tools.length === 0 ? <div class="caption secondary">Инструменты не вызывались</div> : call.tools.map((tool) => <ActionView key={tool.call.id} tool={tool} hide={hide} />)}
+        <div class="caption strong secondary">{L`Действия (${call.tools.length})`}</div>
+        {call.tools.length === 0 ? <div class="caption secondary">{L`Инструменты не вызывались`}</div> : call.tools.map((tool) => <ActionView key={tool.call.id} tool={tool} hide={hide} />)}
       </section>
       {call.replies.length ? (
         <section class="stack-6">
-          <div class="caption strong secondary">Ответ</div>
+          <div class="caption strong secondary">{L`Ответ`}</div>
           {call.replies.map((r) => (hide ? <div class="caption secondary" key={r.id}>{itemTitle(r, true)}</div> : <DetailBlock key={r.id} text={r.detail ?? r.title} />))}
         </section>
       ) : null}
@@ -295,20 +295,20 @@ function ActionView({ tool, hide }: { tool: ToolExecution; hide: boolean }) {
         <ToolStatusChip tool={tool} />
       </div>
       <div class="row gap-10 wrap caption secondary action-meta">
-        {tool.call.inputStreamMs ? <span>аргументы генерировались {Fmt.ms(tool.call.inputStreamMs)}</span> : null}
+        {tool.call.inputStreamMs ? <span>{L`аргументы генерировались ${Fmt.ms(tool.call.inputStreamMs)}`}</span> : null}
         {decision ? <span>{decision}</span> : null}
-        {result?.sandboxed ? <span>в песочнице</span> : null}
-        {result ? <span>результат {Fmt.bytes(result.outputBytes ?? 0)} за {Fmt.shortDuration(toolDuration(tool, Date.now()))}</span> : <span>выполняется</span>}
+        {result?.sandboxed ? <span>{L`в песочнице`}</span> : null}
+        {result ? <span>{L`результат ${Fmt.bytes(result.outputBytes ?? 0)} за ${Fmt.shortDuration(toolDuration(tool, Date.now()))}`}</span> : <span>{L`выполняется`}</span>}
       </div>
       {!hide && tool.call.rawInput ? (
         <div class="stack-3">
-          <div class="caption2 secondary">Аргументы, которые сгенерировала модель</div>
+          <div class="caption2 secondary">{L`Аргументы, которые сгенерировала модель`}</div>
           <DetailBlock text={tool.call.rawInput} />
         </div>
       ) : null}
       {!hide && tool.call.execInput ? (
         <div class="stack-3">
-          <div class="caption2 warning-text">Claude Code выполнил с изменёнными аргументами</div>
+          <div class="caption2 warning-text">{L`Claude Code выполнил с изменёнными аргументами`}</div>
           <DetailBlock text={tool.call.execInput} />
         </div>
       ) : null}
@@ -330,10 +330,10 @@ function AgentLoop({ trace, calls, hide }: { trace: SessionTrace; calls: LLMCall
   return (
     <div class="stack-12">
       <div class="row gap-12 wrap">
-        <select class="select" value={String(turnIndex)} onChange={(e) => setSelected(Number((e.currentTarget as HTMLSelectElement).value))} aria-label="Ход">
+        <select class="select" value={String(turnIndex)} onChange={(e) => setSelected(Number((e.currentTarget as HTMLSelectElement).value))} aria-label={L`Ход`}>
           {turns.map((t) => (
             <option key={t.id} value={String(t.index)}>
-              {`${t.prompt ? `Ход ${t.index}` : "Начало сессии"} · ${t.prompt ? Snippet.truncate(itemTitle(t.prompt, hide), 60) : "без промпта"} · ${Fmt.plural(calls.filter((c) => c.turn === t.index).length, "запрос", "запроса", "запросов")}`}
+              {`${t.prompt ? L`Ход ${t.index}` : L`Начало сессии`} · ${t.prompt ? Snippet.truncate(itemTitle(t.prompt, hide), 60) : L`без промпта`} · ${Fmt.plural(calls.filter((c) => c.turn === t.index).length, "запрос", "запроса", "запросов")}`}
             </option>
           ))}
         </select>
@@ -349,11 +349,11 @@ function AgentLoop({ trace, calls, hide }: { trace: SessionTrace; calls: LLMCall
         </div>
       ) : null}
       <div class="loop-grid">
-        <div class="loop-head caption strong secondary">Мысль</div>
+        <div class="loop-head caption strong secondary">{L`Мысль`}</div>
         <div />
-        <div class="loop-head caption strong secondary">Действие</div>
+        <div class="loop-head caption strong secondary">{L`Действие`}</div>
         <div />
-        <div class="loop-head caption strong secondary">Результат</div>
+        <div class="loop-head caption strong secondary">{L`Результат`}</div>
         {turnCalls.map((call) => <LoopRow key={call.index} call={call} hide={hide} />)}
       </div>
     </div>
@@ -372,14 +372,14 @@ function LoopRow({ call, hide }: { call: LLMCall; hide: boolean }) {
       <div class={call.step.isSidechain ? "loop-cell sidechain" : "loop-cell"}>
         <div class="row gap-6 wrap">
           <span class="strong num caption">#{call.index}</span>
-          <Chip text={displayModelName(call.step.model ?? call.priced?.event.model ?? "модель")} icon={I.Cpu} tint={C.model} />
-          {call.step.isSidechain ? <Chip text="субагент" icon={I.Users} tint={C.subagent} /> : null}
-          {miss ? <Chip text="промах кэша" icon={I.TriangleExclamationPoint} tint={C.warning} title={cacheMissTitle(d.cacheMiss!.reason)} /> : null}
-          {droppedThinking(d) ? <Chip text="размышление потеряно" icon={I.Brain} tint={C.warning} /> : null}
+          <Chip text={displayModelName(call.step.model ?? call.priced?.event.model ?? L`модель`)} icon={I.Cpu} tint={C.model} />
+          {call.step.isSidechain ? <Chip text={L`субагент`} icon={I.Users} tint={C.subagent} /> : null}
+          {miss ? <Chip text={L`промах кэша`} icon={I.TriangleExclamationPoint} tint={C.warning} title={cacheMissTitle(d.cacheMiss!.reason)} /> : null}
+          {droppedThinking(d) ? <Chip text={L`размышление потеряно`} icon={I.Brain} tint={C.warning} /> : null}
         </div>
         <div class="caption secondary">
-          {thinkingMs ? `думал ${Fmt.ms(thinkingMs)}` : "без размышлений"}
-          {t ? ` · вход ${Fmt.tokens(contextTokens(t))} · вывод ${Fmt.tokens(t.output)}${t.thinking ? ` (размышления ${Fmt.tokens(t.thinking)})` : ""}` : ""}
+          {thinkingMs ? L`думал ${Fmt.ms(thinkingMs)}` : L`без размышлений`}
+          {t ? L` · вход ${Fmt.tokens(contextTokens(t))} · вывод ${Fmt.tokens(t.output)}${t.thinking ? L` (размышления ${Fmt.tokens(t.thinking)})` : ""}` : ""}
         </div>
         {note && !hide ? <div class="caption clamp2 note">«{note}»</div> : null}
       </div>
@@ -393,7 +393,7 @@ function LoopRow({ call, hide }: { call: LLMCall; hide: boolean }) {
         )) : call.replies.length ? (
           <div class="row top gap-6">
             <Icon icon={kindIcon.reply} size={14} color={kindColor.reply} />
-            <span class="caption clamp2">{hide ? "Ответ" : call.replies[0].title}</span>
+            <span class="caption clamp2">{hide ? L`Ответ` : call.replies[0].title}</span>
           </div>
         ) : <span class="caption secondary">—</span>}
         {stop.tone === "warning" || stop.tone === "critical" ? <Chip text={stop.title} tint={toneColor[stop.tone]} /> : null}
@@ -404,10 +404,10 @@ function LoopRow({ call, hide }: { call: LLMCall; hide: boolean }) {
           <div class="row gap-6" key={tool.call.id}>
             <ToolStatusChip tool={tool} />
             <span class={tool.result?.isError ? "caption critical ellipsis" : "caption secondary ellipsis"}>
-              {tool.result ? (hide ? Fmt.bytes(tool.result.outputBytes ?? 0) : tool.result.title) : "ждёт результата"}
+              {tool.result ? (hide ? Fmt.bytes(tool.result.outputBytes ?? 0) : tool.result.title) : L`ждёт результата`}
             </span>
           </div>
-        )) : <span class="caption secondary">{stop.tone === "good" ? "ход завершён" : stop.title}</span>}
+        )) : <span class="caption secondary">{stop.tone === "good" ? L`ход завершён` : stop.title}</span>}
       </div>
     </>
   );

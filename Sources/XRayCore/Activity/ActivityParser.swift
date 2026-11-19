@@ -74,7 +74,7 @@ public enum ActivityParser {
 
         if (entry["isCompactSummary"] as? Bool) == true {
             let text = textContent(message["content"])
-            return [base.item(0, .compact, title: "Сводка после сжатия контекста", detail: Snippet.truncate(text, detailLimit))]
+            return [base.item(0, .compact, title: L("Сводка после сжатия контекста"), detail: Snippet.truncate(text, detailLimit))]
         }
 
         if let text = message["content"] as? String {
@@ -90,7 +90,7 @@ public enum ActivityParser {
                 guard !isMeta, let text = block["text"] as? String, let item = userText(text, base, index: index) else { continue }
                 items.append(item)
             case "image":
-                if !isMeta { items.append(base.item(index, .prompt, title: "Изображение")) }
+                if !isMeta { items.append(base.item(index, .prompt, title: L("Изображение"))) }
             case "tool_result":
                 items.append(toolResult(block, entry: entry, base: base, index: index))
             default:
@@ -106,21 +106,21 @@ public enum ActivityParser {
         guard !trimmed.isEmpty else { return nil }
 
         if trimmed.hasPrefix("[Request interrupted") {
-            return base.item(index, .interrupted, title: "Прервано пользователем", detail: trimmed)
+            return base.item(index, .interrupted, title: L("Прервано пользователем"), detail: trimmed)
         }
         if let name = tag("command-name", in: trimmed) {
             let args = tag("command-args", in: trimmed) ?? ""
-            return base.item(index, .prompt, title: "Команда \(name) \(args)".trimmingCharacters(in: .whitespaces), detail: args.isEmpty ? nil : args)
+            return base.item(index, .prompt, title: L("Команда \(name) \(args)").trimmingCharacters(in: .whitespaces), detail: args.isEmpty ? nil : args)
         }
         if let output = tag("local-command-stdout", in: trimmed) {
-            return base.item(index, .note, title: "Вывод команды: " + Snippet.firstLine(output, 100), detail: Snippet.truncate(output, detailLimit))
+            return base.item(index, .note, title: L("Вывод команды: ") + Snippet.firstLine(output, 100), detail: Snippet.truncate(output, detailLimit))
         }
         if let command = tag("bash-input", in: trimmed) {
             return base.item(index, .prompt, title: "! " + Snippet.firstLine(command, 100), detail: command)
         }
         if trimmed.hasPrefix("<bash-stdout>") || trimmed.hasPrefix("<bash-stderr>") {
             let output = tag("bash-stdout", in: trimmed) ?? tag("bash-stderr", in: trimmed) ?? ""
-            return base.item(index, .note, title: "Вывод оболочки: " + Snippet.firstLine(output, 100), detail: Snippet.truncate(output, detailLimit))
+            return base.item(index, .note, title: L("Вывод оболочки: ") + Snippet.firstLine(output, 100), detail: Snippet.truncate(output, detailLimit))
         }
         return base.item(index, .prompt, title: Snippet.firstLine(trimmed, 160), detail: Snippet.truncate(trimmed, detailLimit))
     }
@@ -131,9 +131,9 @@ public enum ActivityParser {
         let isError = (block["is_error"] as? Bool) ?? false
         let result = entry["toolUseResult"] as? [String: Any]
 
-        var title = text.isEmpty ? (images > 0 ? "Изображение" : "Пустой результат") : Snippet.firstLine(text, 140)
+        var title = text.isEmpty ? (images > 0 ? L("Изображение") : L("Пустой результат")) : Snippet.firstLine(text, 140)
         if (result?["interrupted"] as? Bool) == true {
-            title = "Прервано: " + title
+            title = L("Прервано: ") + title
         }
         var detail = Snippet.truncate(text, detailLimit)
         if let stderr = result?["stderr"] as? String, !stderr.isEmpty, !text.contains(stderr.prefix(80)) {
@@ -189,7 +189,7 @@ public enum ActivityParser {
             switch blockType {
             case "thinking", "redacted_thinking":
                 let text = (block["thinking"] as? String) ?? ""
-                item = base.item(index, .thinking, title: text.isEmpty ? "Размышление" : Snippet.firstLine(text, 140), detail: text.isEmpty ? nil : Snippet.truncate(text, detailLimit))
+                item = base.item(index, .thinking, title: text.isEmpty ? L("Размышление") : Snippet.firstLine(text, 140), detail: text.isEmpty ? nil : Snippet.truncate(text, detailLimit))
                 item.thinkingMs = entry["thinkingDurationMs"] as? Int
                 item.thinkingDisplay = (entry["thinkingDisplay"] as? String) ?? (blockType == "redacted_thinking" ? "redacted" : nil)
             case "text":
@@ -250,32 +250,32 @@ public enum ActivityParser {
             let failed = strings("failedMcpServers")
             let needsAuth = strings("needsAuthMcpServers")
             let servers = Set(added.compactMap(ToolDescriber.mcpServer(of:))).sorted()
-            var title = "Инструменты: +\(added.count)"
+            var title = L("Инструменты: +\(added.count)")
             if !removed.isEmpty { title += " −\(removed.count)" }
             if !servers.isEmpty { title += " · MCP: \(servers.joined(separator: ", "))" }
             var notes: [String] = []
-            if !failed.isEmpty { notes.append("Не подключились: \(failed.joined(separator: ", "))") }
-            if !needsAuth.isEmpty { notes.append("Нужна авторизация: \(needsAuth.joined(separator: ", "))") }
-            if !pending.isEmpty { notes.append("Подключаются: \(pending.joined(separator: ", "))") }
+            if !failed.isEmpty { notes.append(L("Не подключились: \(failed.joined(separator: ", "))")) }
+            if !needsAuth.isEmpty { notes.append(L("Нужна авторизация: \(needsAuth.joined(separator: ", "))")) }
+            if !pending.isEmpty { notes.append(L("Подключаются: \(pending.joined(separator: ", "))")) }
             item = base.item(0, .context, title: title, detail: notes.isEmpty ? nil : notes.joined(separator: "\n"), isError: !failed.isEmpty)
             item.context = .tools(added: added, removed: removed, pendingMCP: pending, failedMCP: failed, needsAuthMCP: needsAuth, listingChars: chars("addedLines"))
         case "skill_listing":
             let names = strings("names")
             let count = (attachment["skillCount"] as? Int) ?? names.count
-            item = base.item(0, .context, title: "Скиллы в контексте: \(count)", detail: names.joined(separator: ", "))
+            item = base.item(0, .context, title: L("Скиллы в контексте: \(count)"), detail: names.joined(separator: ", "))
             item.context = .skills(names: names, count: count, listingChars: chars("content"))
         case "mcp_instructions_delta":
             let added = strings("addedNames")
-            item = base.item(0, .context, title: "Инструкции MCP: \(added.joined(separator: ", "))")
+            item = base.item(0, .context, title: L("Инструкции MCP: \(added.joined(separator: ", "))"))
             item.context = .mcpInstructions(added: added, removed: strings("removedNames"), chars: chars("addedBlocks"))
         case "agent_listing_delta":
             let added = strings("addedTypes")
-            item = base.item(0, .context, title: "Типы субагентов: \(added.joined(separator: ", "))")
+            item = base.item(0, .context, title: L("Типы субагентов: \(added.joined(separator: ", "))"))
             item.context = .agents(added: added, removed: strings("removedTypes"), chars: chars("addedLines"))
         case "prompt_snapshot":
             let parts = strings("systemPrompt")
             let total = parts.isEmpty ? chars("systemPrompt") : parts.reduce(0) { $0 + $1.count }
-            item = base.item(0, .context, title: "Системный промпт: \(total) символов (≈\(Fmt.tokens(total / 4)) токенов)")
+            item = base.item(0, .context, title: L("Системный промпт: \(total) символов (≈\(Fmt.tokens(total / 4)) токенов)"))
             item.context = .systemPrompt(chars: total, parts: max(parts.count, 1))
         case "environment":
             let snapshot = attachment["snapshot"] as? [String: Any] ?? [:]
@@ -283,57 +283,57 @@ public enum ActivityParser {
             for (key, value) in snapshot {
                 switch value {
                 case let text as String: values[key] = text
-                case let flag as Bool: values[key] = flag ? "да" : "нет"
+                case let flag as Bool: values[key] = flag ? L("да") : L("нет")
                 case let number as NSNumber: values[key] = number.stringValue
                 case let list as [Any]: values[key] = list.compactMap { $0 as? String }.joined(separator: ", ")
                 default: continue
                 }
             }
             let summary = [values["platform"], values["shell"], values["osVersion"]].compactMap { $0 }.joined(separator: " · ")
-            item = base.item(0, .context, title: "Окружение: \(summary)", detail: values["workingDirectory"])
+            item = base.item(0, .context, title: L("Окружение: \(summary)"), detail: values["workingDirectory"])
             item.context = .environment(values)
         case "model":
             let identity = attachment["identity"] as? [String: Any] ?? [:]
             let id = (identity["modelId"] as? String) ?? "?"
             let name = identity["marketingName"] as? String
-            item = base.item(0, .context, title: "Модель: \(name ?? id)", detail: id)
+            item = base.item(0, .context, title: L("Модель: \(name ?? id)"), detail: id)
             item.context = .model(id: id, name: name, knowledgeCutoff: identity["knowledgeCutoff"] as? String)
         case "auto_mode":
             var flags: [String: String] = [:]
             for (key, value) in attachment where key != "type" {
-                if let flag = value as? Bool { flags[key] = flag ? "да" : "нет" } else if let text = value as? String { flags[key] = text }
+                if let flag = value as? Bool { flags[key] = flag ? L("да") : L("нет") } else if let text = value as? String { flags[key] = text }
             }
-            item = base.item(0, .context, title: "Auto mode включён")
+            item = base.item(0, .context, title: L("Auto mode включён"))
             item.context = .autoMode(flags)
         case "command_permissions":
             let allowed = strings("allowedTools")
-            item = base.item(0, .context, title: "Разрешённые правила: \(allowed.count)", detail: allowed.joined(separator: "\n"))
+            item = base.item(0, .context, title: L("Разрешённые правила: \(allowed.count)"), detail: allowed.joined(separator: "\n"))
             item.context = .permissions(allowed: allowed)
         case "edited_text_file":
             let path = (attachment["filename"] as? String) ?? "?"
-            item = base.item(0, .context, title: "Файл изменён вне Claude: \(Snippet.shortPath(path))", detail: path)
+            item = base.item(0, .context, title: L("Файл изменён вне Claude: \(Snippet.shortPath(path))"), detail: path)
             item.context = .editedFile(path: path)
         case "task_reminder":
             let count = (attachment["itemCount"] as? Int) ?? 0
-            item = base.item(0, .context, title: "Список задач: \(count)")
+            item = base.item(0, .context, title: L("Список задач: \(count)"))
             item.context = .tasks(count: count)
         case "remote_session_change":
             let commit = attachment["commit"] as? String
             let pr = attachment["pr"] as? String
             let url = attachment["url"] as? String
             var kinds: [String] = []
-            if commit != nil { kinds.append("коммит") }
+            if commit != nil { kinds.append(L("коммит")) }
             if pr != nil { kinds.append("PR") }
             let details: [String] = [commit, pr, url].compactMap { $0 }
-            item = base.item(0, .context, title: "Изменения сессии: " + (kinds.isEmpty ? "ссылка" : kinds.joined(separator: ", ")), detail: details.joined(separator: "\n"))
+            item = base.item(0, .context, title: L("Изменения сессии: ") + (kinds.isEmpty ? L("ссылка") : kinds.joined(separator: ", ")), detail: details.joined(separator: "\n"))
             item.context = .remoteChange(commit: commit, pullRequest: pr, url: url)
         case "queued_command":
             let prompt = (attachment["prompt"] as? String) ?? ""
-            item = base.item(0, .queued, title: "Передано модели: " + Snippet.firstLine(prompt, 140), detail: Snippet.truncate(prompt, detailLimit))
+            item = base.item(0, .queued, title: L("Передано модели: ") + Snippet.firstLine(prompt, 140), detail: Snippet.truncate(prompt, detailLimit))
         case let hook where hook.hasPrefix("hook"):
             let name = (attachment["hookName"] as? String) ?? hook
             let content = (attachment["content"] as? String) ?? (attachment["stdout"] as? String)
-            item = base.item(0, .hook, title: "Хук: \(name)", detail: content.map { Snippet.truncate($0, detailLimit) }, isError: hook.contains("error"))
+            item = base.item(0, .hook, title: L("Хук: \(name)"), detail: content.map { Snippet.truncate($0, detailLimit) }, isError: hook.contains("error"))
         default:
             // date, silent reminders, deferred tool records; session_context and credential_org hold account data.
             return []
@@ -347,16 +347,16 @@ public enum ActivityParser {
             let count = (entry["hookCount"] as? Int) ?? 0
             let errors = (entry["hookErrors"] as? [Any])?.count ?? 0
             let prevented = (entry["preventedContinuation"] as? Bool) ?? false
-            var title = "Хуки Stop: \(count)"
-            if errors > 0 { title += ", ошибок: \(errors)" }
-            if prevented { title += " · остановили продолжение" }
+            var title = L("Хуки Stop: \(count)")
+            if errors > 0 { title += L(", ошибок: \(errors)") }
+            if prevented { title += L(" · остановили продолжение") }
             return [base.item(0, .hook, title: title, isError: errors > 0)]
         }
         if subtype.contains("compact") {
             let metadata = entry["compactMetadata"] as? [String: Any]
-            let trigger = (metadata?["trigger"] as? String).map { $0 == "auto" ? "автоматически" : "вручную" } ?? ""
-            let pre = (metadata?["preTokens"] as? Int).map { " · было \(Fmt.tokens($0)) токенов" } ?? ""
-            return [base.item(0, .compact, title: "Контекст сжат \(trigger)\(pre)".replacingOccurrences(of: "  ", with: " "))]
+            let trigger = (metadata?["trigger"] as? String).map { $0 == "auto" ? L("автоматически") : L("вручную") } ?? ""
+            let pre = (metadata?["preTokens"] as? Int).map { L(" · было \(Fmt.tokens($0)) токенов") } ?? ""
+            return [base.item(0, .compact, title: L("Контекст сжат \(trigger)\(pre)").replacingOccurrences(of: "  ", with: " "))]
         }
         if let content = entry["content"] as? String, !content.isEmpty {
             let isError = (entry["level"] as? String) == "error"
@@ -373,8 +373,8 @@ public enum ActivityParser {
             ActivityItem(id: id, kind: .queued, timestamp: base.timestamp, sessionID: base.sessionID, projectPath: base.projectPath, title: title, detail: content.isEmpty ? nil : Snippet.truncate(content, detailLimit))
         }
         switch operation {
-        case "enqueue": return content.isEmpty ? [] : [make("В очереди: " + Snippet.firstLine(content, 140))]
-        case "remove": return [make("Убрано из очереди" + (content.isEmpty ? "" : ": " + Snippet.firstLine(content, 120)))]
+        case "enqueue": return content.isEmpty ? [] : [make(L("В очереди: ") + Snippet.firstLine(content, 140))]
+        case "remove": return [make(L("Убрано из очереди") + (content.isEmpty ? "" : ": " + Snippet.firstLine(content, 120)))]
         default: return []
         }
     }
@@ -411,9 +411,9 @@ public enum ActivityParser {
         let reasonType = (decision["reasonType"] as? String) ?? ""
         var reason: String
         switch reasonType {
-        case "rule": reason = "правило"
-        case "classifier": reason = "классификатор auto mode"
-        case "user", "userApproval": reason = "пользователь"
+        case "rule": reason = L("правило")
+        case "classifier": reason = L("классификатор auto mode")
+        case "user", "userApproval": reason = L("пользователь")
         case "": reason = (decision["source"] as? String) ?? ""
         default: reason = reasonType
         }

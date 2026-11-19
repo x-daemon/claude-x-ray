@@ -12,47 +12,49 @@ import { ActivityStore, buildTrace, stateIsActive, stateTitle, type LiveStatus, 
 import { UsageStore } from "../core/transcript";
 import type { Delta, InitialState, ReceiverStatus, ScanInfo, Settings, StatusLineState, XRayBridge } from "../shared/api";
 import { applyPalette, palette, type Palette } from "./theme";
+import { L, language, N, setLanguage, titled, type Language } from "../core/i18n";
 
 export type Screen = "live" | "trace" | "overview" | "sessions" | "projects" | "models" | "insights" | "reports" | "settings";
 export type Period = "today" | "week" | "month" | "quarter" | "all";
 export type TraceTab = "feed" | "flow" | "llm" | "timeline" | "context" | "tools";
 
-export const SCREENS: { id: Screen; title: string }[] = [
-  { id: "live", title: "Сейчас" },
-  { id: "trace", title: "Live-трасса" },
-  { id: "overview", title: "Обзор" },
-  { id: "sessions", title: "Сессии" },
-  { id: "projects", title: "Проекты" },
-  { id: "models", title: "Модели" },
-  { id: "insights", title: "Оптимизация" },
-  { id: "reports", title: "Отчёты" },
-];
+export const SCREENS: { id: Screen; title: string }[] = titled([
+  { id: "live", title: N("Сейчас") },
+  { id: "trace", title: N("Live-трасса") },
+  { id: "overview", title: N("Обзор") },
+  { id: "sessions", title: N("Сессии") },
+  { id: "projects", title: N("Проекты") },
+  { id: "models", title: N("Модели") },
+  { id: "insights", title: N("Оптимизация") },
+  { id: "reports", title: N("Отчёты") },
+]);
 
-export const PERIODS: { id: Period; title: string }[] = [
-  { id: "today", title: "Сегодня" },
-  { id: "week", title: "7 дней" },
-  { id: "month", title: "30 дней" },
-  { id: "quarter", title: "90 дней" },
-  { id: "all", title: "Всё время" },
-];
+export const PERIODS: { id: Period; title: string }[] = titled([
+  { id: "today", title: N("Сегодня") },
+  { id: "week", title: N("7 дней") },
+  { id: "month", title: N("30 дней") },
+  { id: "quarter", title: N("90 дней") },
+  { id: "all", title: N("Всё время") },
+]);
 
-export const TRACE_TABS: { id: TraceTab; title: string }[] = [
-  { id: "feed", title: "Лента" },
-  { id: "flow", title: "Поток" },
-  { id: "llm", title: "LLM-запросы" },
-  { id: "timeline", title: "Таймлайн" },
-  { id: "context", title: "Контекст" },
-  { id: "tools", title: "Инструменты · MCP · скиллы" },
-];
+export const TRACE_TABS: { id: TraceTab; title: string }[] = titled([
+  { id: "feed", title: N("Лента") },
+  { id: "flow", title: N("Поток") },
+  { id: "llm", title: N("LLM-запросы") },
+  { id: "timeline", title: N("Таймлайн") },
+  { id: "context", title: N("Контекст") },
+  { id: "tools", title: N("Инструменты · MCP · скиллы") },
+]);
 
-export const PLANS: { id: Settings["plan"]; title: string }[] = [
+export const PLANS: { id: Settings["plan"]; title: string }[] = titled([
   { id: "pro", title: "Pro" },
   { id: "max5x", title: "Max 5×" },
   { id: "max20x", title: "Max 20×" },
-  { id: "api", title: "API (оплата за токены)" },
-];
+  { id: "api", title: N("API (оплата за токены)") },
+]);
 
-export const OTHER_SERIES = "Другие";
+/** The series for models past the colored slots. */
+export const otherSeries = (): string => L`Другие`;
 const MAX_COLORED_MODELS = 7;
 const DAY = 86_400_000;
 
@@ -121,6 +123,14 @@ export class Store {
     for (const fn of this.listeners) fn();
   }
 
+  /** Switches the interface language; cached results hold texts, so they are computed again. */
+  applyLanguage(lang: Language): void {
+    if (typeof document !== "undefined") document.documentElement.lang = lang;
+    if (lang === language()) return;
+    setLanguage(lang);
+    this.memos.clear();
+  }
+
   set<K extends keyof this>(key: K, value: this[K]): void {
     this[key] = value;
     this.emit();
@@ -141,9 +151,10 @@ export class Store {
       this.receiver = status;
       this.emit();
     });
-    bridge.onSettings((settings, directories) => {
+    bridge.onSettings((settings, directories, lang) => {
       this.settings = settings;
       this.directories = directories;
+      this.applyLanguage(lang);
       this.applyTheme();
       this.emit();
     });
@@ -158,6 +169,7 @@ export class Store {
   }
 
   apply(state: InitialState): void {
+    this.applyLanguage(state.language);
     this.settings = state.settings;
     this.directories = state.directories;
     this.pricing = state.pricing;
@@ -238,7 +250,7 @@ export class Store {
   }
 
   get costLabel(): string {
-    return this.isSubscription ? "API-эквивалент" : "Стоимость";
+    return this.isSubscription ? L`API-эквивалент` : L`Стоимость`;
   }
 
   get planTitle(): string {
@@ -371,10 +383,10 @@ export class Store {
     const parts: string[] = [];
     const window = this.planUsage?.fiveHour;
     if (window && this.planUsage && this.now - this.planUsage.capturedAt < 3 * 3_600_000 && this.now < window.resetsAt) {
-      parts.push(`лимит 5 ч ${Fmt.percent(Math.min(Math.max(window.usedPercentage / 100, 0), 1))}`);
+      parts.push(L`лимит 5 ч ${Fmt.percent(Math.min(Math.max(window.usedPercentage / 100, 0), 1))}`);
     }
     const active = this.activeWindow;
-    if (active) parts.push(`окно ${Fmt.usd(active.summary.totalCost)}`);
+    if (active) parts.push(L`окно ${Fmt.usd(active.summary.totalCost)}`);
     const live = this.liveStatus;
     if (live && stateIsActive(live.state)) parts.push(stateTitle(live.state));
     return ["S2A Claude X-Ray", ...parts].join(" · ");
@@ -397,7 +409,7 @@ export class Store {
   seriesName(event: UsageEvent): string {
     const name = displayModelName(event.model);
     const index = this.modelOrder.indexOf(name);
-    return index >= 0 && index < MAX_COLORED_MODELS ? name : OTHER_SERIES;
+    return index >= 0 && index < MAX_COLORED_MODELS ? name : otherSeries();
   }
 
   /** Domain and colors for the series in a chart; each model keeps its color everywhere. */
@@ -411,8 +423,8 @@ export class Store {
         range.push(this.palette.series[i % this.palette.series.length]);
       }
     });
-    if (present.has(OTHER_SERIES)) {
-      domain.push(OTHER_SERIES);
+    if (present.has(otherSeries())) {
+      domain.push(otherSeries());
       range.push(this.palette.other);
     }
     return { domain, range };

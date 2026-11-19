@@ -252,12 +252,12 @@ extension PricingTable {
             ModelPrice(
                 modelPrefix: "claude-haiku-5-5", displayName: "Haiku 5.5", input: 0.10, output: 0.50, cacheRead: 0.01,
                 longContextThreshold: 100_000, longContextMultiplier: 5,
-                note: "Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте."
+                note: L10n.key("Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте.")
             ),
             ModelPrice(modelPrefix: "claude-haiku-4-5", displayName: "Haiku 4.5", input: 1, output: 5, cacheRead: 0.10),
         ],
         fastModeMultiplier: 2,
         webSearchPer1K: 10,
-        sourceNote: "Прайс-лист API на 2026-11-03"
+        sourceNote: L10n.key("Прайс-лист API на 2026-11-03")
     )
 }

@@ -4,6 +4,7 @@ import { Fmt } from "./fmt";
 import { kindLabel, severityLabel, type Insight } from "./insights";
 import { cacheHitRate, cacheWrite, displayModelName, projectName, totalTokens } from "./model";
 import { type PricedEvent } from "./pricing";
+import { L } from "./i18n";
 
 export function csvField(value: string): string {
   return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
@@ -54,7 +55,7 @@ export function sessionsCSV(sessions: SessionSummary[]): string {
 }
 
 function groupTable(groups: GroupSummary[], total: number, name: (key: string) => string): string {
-  const lines = ["| Название | Запросы | Токены | Кэш | USD | Доля |", "|---|---|---|---|---|---|"];
+  const lines = [L`| Название | Запросы | Токены | Кэш | USD | Доля |`, "|---|---|---|---|---|---|"];
   for (const g of groups) {
     lines.push(`| ${name(g.key)} | ${g.summary.requests} | ${Fmt.tokens(g.summary.totalTokens)} | ${Fmt.percent(g.summary.cacheHitRate)} | ${Fmt.usd(g.summary.totalCost)} | ${Fmt.percent(g.summary.totalCost / total)} |`);
   }
@@ -68,39 +69,39 @@ export function markdownReport(title: string, periodLabel: string, events: Price
   const sessions = sessionSummaries(events);
   const t = summary.tokens;
   const md: string[] = [];
-  md.push(`# ${title}`, "", `Период: **${periodLabel}** · сформирован ${Fmt.dateTime(generatedAt)}`, "");
-  md.push("> Суммы — API-эквивалент по прайс-листу. На подписке Pro/Max они не списываются, но показывают, как быстро расходуются лимиты.", "");
-  md.push("## Итого", "", "| Показатель | Значение |", "|---|---|");
-  md.push(`| API-эквивалент | ${Fmt.usd(summary.totalCost)} |`);
-  md.push(`| Запросов | ${summary.requests} |`);
-  md.push(`| Сессий | ${sessions.length} |`);
-  md.push(`| Токенов всего | ${Fmt.tokens(totalTokens(t))} |`);
-  md.push(`| Ввод / вывод | ${Fmt.tokens(t.input)} / ${Fmt.tokens(t.output)} |`);
-  md.push(`| Размышления (в выводе) | ${Fmt.tokens(t.thinking)} |`);
-  md.push(`| Чтение кэша / запись | ${Fmt.tokens(t.cacheRead)} / ${Fmt.tokens(cacheWrite(t))} |`);
-  md.push(`| Доля попаданий в кэш | ${Fmt.percent(cacheHitRate(t))} |`, "");
-  md.push("### Из чего складывается стоимость", "", "| Статья | USD | Доля |", "|---|---|---|");
+  md.push(`# ${title}`, "", L`Период: **${periodLabel}** · сформирован ${Fmt.dateTime(generatedAt)}`, "");
+  md.push(L`> Суммы — API-эквивалент по прайс-листу. На подписке Pro/Max они не списываются, но показывают, как быстро расходуются лимиты.`, "");
+  md.push(L`## Итого`, "", L`| Показатель | Значение |`, "|---|---|");
+  md.push(L`| API-эквивалент | ${Fmt.usd(summary.totalCost)} |`);
+  md.push(L`| Запросов | ${summary.requests} |`);
+  md.push(L`| Сессий | ${sessions.length} |`);
+  md.push(L`| Токенов всего | ${Fmt.tokens(totalTokens(t))} |`);
+  md.push(L`| Ввод / вывод | ${Fmt.tokens(t.input)} / ${Fmt.tokens(t.output)} |`);
+  md.push(L`| Размышления (в выводе) | ${Fmt.tokens(t.thinking)} |`);
+  md.push(L`| Чтение кэша / запись | ${Fmt.tokens(t.cacheRead)} / ${Fmt.tokens(cacheWrite(t))} |`);
+  md.push(L`| Доля попаданий в кэш | ${Fmt.percent(cacheHitRate(t))} |`, "");
+  md.push(L`### Из чего складывается стоимость`, "", L`| Статья | USD | Доля |`, "|---|---|---|");
   const total = Math.max(summary.totalCost, Number.MIN_VALUE);
   for (const [name, value] of [
-    ["Ввод", summary.cost.input], ["Вывод", summary.cost.output],
-    ["Чтение кэша", summary.cost.cacheRead], ["Запись в кэш", summary.cost.cacheWrite],
-    ["Веб-поиск", summary.cost.webSearch],
+    [L`Ввод`, summary.cost.input], [L`Вывод`, summary.cost.output],
+    [L`Чтение кэша`, summary.cost.cacheRead], [L`Запись в кэш`, summary.cost.cacheWrite],
+    [L`Веб-поиск`, summary.cost.webSearch],
   ] as const) {
     if (value > 0) md.push(`| ${name} | ${Fmt.usd(value)} | ${Fmt.percent(value / total)} |`);
   }
-  md.push("", "## По моделям", "", groupTable(byModel, total, displayModelName));
-  md.push("## По проектам", "", groupTable(byProject.slice(0, 15), total, (k) => k));
-  md.push("## Самые дорогие сессии", "", "| Начало | Проект | Модели | Запросы | Пик контекста | USD |", "|---|---|---|---|---|---|");
+  md.push("", L`## По моделям`, "", groupTable(byModel, total, displayModelName));
+  md.push(L`## По проектам`, "", groupTable(byProject.slice(0, 15), total, (k) => k));
+  md.push(L`## Самые дорогие сессии`, "", L`| Начало | Проект | Модели | Запросы | Пик контекста | USD |`, "|---|---|---|---|---|---|");
   for (const s of sessions.slice(0, 10)) {
     md.push(`| ${Fmt.dateTime(s.start)} | ${sessionProject(s)} | ${sessionModelsLabel(s)} | ${s.summary.requests} | ${Fmt.tokens(s.peakContextTokens)} | ${Fmt.usd(s.summary.totalCost)} |`);
   }
-  md.push("", "## Оптимизация", "");
-  if (!insights.length) md.push("Замечаний нет.");
+  md.push("", L`## Оптимизация`, "");
+  if (!insights.length) md.push(L`Замечаний нет.`);
   for (const insight of insights) {
     let heading = `### ${severityLabel[insight.severity]}: ${insight.title}`;
-    if (insight.potentialSavings && insight.potentialSavings > 0) heading += ` (до ${Fmt.usd(insight.potentialSavings)})`;
+    if (insight.potentialSavings && insight.potentialSavings > 0) heading += L` (до ${Fmt.usd(insight.potentialSavings)})`;
     md.push(heading, "", `_${kindLabel[insight.kind]}._ ${insight.detail}`);
-    if (insight.recommendation) md.push("", `**Что сделать:** ${insight.recommendation}`);
+    if (insight.recommendation) md.push("", L`**Что сделать:** ${insight.recommendation}`);
     md.push("");
   }
   md.push("---", "S2A Claude X-Ray");

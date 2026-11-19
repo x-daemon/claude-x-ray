@@ -6,6 +6,7 @@ import type { ActivityKind, ToolCategory } from "../core/activity";
 import type { InsightSeverity } from "../core/insights";
 import type { LiveState, MCPStatus, TurnOutcome } from "../core/trace";
 import * as I from "./icons";
+import { labels, N } from "../core/i18n";
 
 export const C = {
   model: "var(--c-model)",
@@ -53,20 +54,20 @@ export const kindColor: Record<ActivityKind, string> = {
   apiError: C.critical,
 };
 
-export const kindLabel: Record<ActivityKind, string> = {
-  prompt: "Промпт",
-  queued: "Сообщение",
-  interrupted: "Прерывание",
-  thinking: "Размышление",
-  reply: "Ответ",
-  toolCall: "Инструмент",
-  toolResult: "Результат",
-  hook: "Хук",
-  compact: "Сжатие",
-  context: "Контекст",
-  apiError: "Ошибка",
-  note: "Заметка",
-};
+export const kindLabel: Record<ActivityKind, string> = labels({
+  prompt: N("Промпт"),
+  queued: N("Сообщение"),
+  interrupted: N("Прерывание"),
+  thinking: N("Размышление"),
+  reply: N("Ответ"),
+  toolCall: N("Инструмент"),
+  toolResult: N("Результат"),
+  hook: N("Хук"),
+  compact: N("Сжатие"),
+  context: N("Контекст"),
+  apiError: N("Ошибка"),
+  note: N("Заметка"),
+});
 
 export const stateIcon: Record<LiveState["type"], LucideIcon> = {
   runningTool: I.Hammer,
@@ -119,12 +120,12 @@ export const mcpIcon: Record<MCPStatus, LucideIcon> = {
   usedOnly: I.CircleDashed,
 };
 
-export const outcomeTitle: Record<TurnOutcome, string> = {
-  inProgress: "идёт",
-  completed: "завершён",
-  interrupted: "прерван",
-  failed: "ошибка",
-};
+export const outcomeTitle: Record<TurnOutcome, string> = labels({
+  inProgress: N("идёт"),
+  completed: N("завершён"),
+  interrupted: N("прерван"),
+  failed: N("ошибка"),
+});
 
 export const outcomeColor: Record<TurnOutcome, string> = {
   inProgress: C.model,

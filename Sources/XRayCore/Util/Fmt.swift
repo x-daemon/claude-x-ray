@@ -41,18 +41,18 @@ public enum Fmt {
         let seconds = Int(max(0, interval).rounded())
         let hours = seconds / 3600
         let minutes = (seconds % 3600) / 60
-        if hours > 0 { return String(format: "%ld ч %02ld мин", hours, minutes) }
-        if minutes > 0 { return "\(minutes) мин" }
-        return "\(seconds) с"
+        if hours > 0 { return L("\(hours) ч \(pad2(minutes)) мин") }
+        if minutes > 0 { return L("\(minutes) мин") }
+        return L("\(seconds) с")
     }
 
     /// Short durations for steps and tools: `850 мс`, `4.2 с`, `3 мин 05 с`, `1 ч 02 мин`.
     public static func shortDuration(_ interval: TimeInterval) -> String {
         let value = max(0, interval)
-        if value < 1 { return "\(Int((value * 1000).rounded())) мс" }
-        if value < 60 { return trimmed(value, digits: 1) + " с" }
+        if value < 1 { return L("\(Int((value * 1000).rounded())) мс") }
+        if value < 60 { return L("\(trimmed(value, digits: 1)) с") }
         let seconds = Int(value.rounded())
-        if seconds < 3600 { return String(format: "%ld мин %02ld с", seconds / 60, seconds % 60) }
+        if seconds < 3600 { return L("\(seconds / 60) мин \(pad2(seconds % 60)) с") }
         return duration(value)
     }
 
@@ -64,26 +64,15 @@ public enum Fmt {
     /// `820 Б`, `12.3 КБ`, `4.5 МБ`.
     public static func bytes(_ count: Int) -> String {
         let value = Double(count)
-        if value < 1024 { return "\(count) Б" }
-        if value < 1024 * 1024 { return trimmed(value / 1024, digits: 1) + " КБ" }
-        return trimmed(value / 1024 / 1024, digits: 1) + " МБ"
+        if value < 1024 { return L("\(count) Б") }
+        if value < 1024 * 1024 { return L("\(trimmed(value / 1024, digits: 1)) КБ") }
+        return L("\(trimmed(value / 1024 / 1024, digits: 1)) МБ")
     }
 
-    /// Russian plural: `plural(1, "раз", "раза", "раз")` -> `1 раз`, 2 -> `2 раза`, 5 -> `5 раз`.
+    /// A count with its word, given in Russian one/few/many: `plural(5, "раз", "раза", "раз")` ->
+    /// `5 раз`; in English and German the catalog's one|other forms.
     public static func plural(_ count: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let n = abs(count) % 100
-        let last = n % 10
-        let form: String
-        if n >= 11 && n <= 14 {
-            form = many
-        } else if last == 1 {
-            form = one
-        } else if last >= 2 && last <= 4 {
-            form = few
-        } else {
-            form = many
-        }
-        return "\(count) \(form)"
+        L10n.plural(count, one, few, many)
     }
 
     /// Time until an event: `45 мин`, `2 ч 10 мин`, `3 дня 4 ч`.
@@ -93,22 +82,37 @@ public enum Fmt {
         let days = Int(seconds / 86_400)
         let hours = Int(seconds.truncatingRemainder(dividingBy: 86_400) / 3600)
         let dayText = plural(days, "день", "дня", "дней")
-        return hours > 0 ? "\(dayText) \(hours) ч" : dayText
+        return hours > 0 ? L("\(dayText) \(hours) ч") : dayText
     }
 
     /// How long ago, in the largest whole unit: `только что`, `12 мин назад`, `3 ч назад`, `4 дня назад`.
     public static func ago(_ interval: TimeInterval) -> String {
         let seconds = max(0, interval)
-        if seconds < 60 { return "только что" }
-        if seconds < 3600 { return "\(Int(seconds / 60)) мин назад" }
-        if seconds < 86_400 { return "\(Int(seconds / 3600)) ч назад" }
-        return plural(Int(seconds / 86_400), "день", "дня", "дней") + " назад"
+        if seconds < 60 { return L("только что") }
+        if seconds < 3600 { return L("\(Int(seconds / 60)) мин назад") }
+        if seconds < 86_400 { return L("\(Int(seconds / 3600)) ч назад") }
+        return plural(Int(seconds / 86_400), "день назад", "дня назад", "дней назад")
     }
 
-    /// `14.11 17:23`
+    /// `14.11 17:23` (`14 Nov 17:23` in English, `14.11. 17:23` in German).
     public static func dateTime(_ date: Date, calendar: Calendar = .current) -> String {
         let c = calendar.dateComponents([.day, .month, .hour, .minute], from: date)
-        return String(format: "%02ld.%02ld %02ld:%02ld", c.day ?? 0, c.month ?? 0, c.hour ?? 0, c.minute ?? 0)
+        return "\(dayMonth(day: c.day ?? 0, month: c.month ?? 1)) \(pad2(c.hour ?? 0)):\(pad2(c.minute ?? 0))"
+    }
+
+    private static let monthsEnglish = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    /// `14.11` in Russian, `14.11.` in German, `14 Nov` in English, where a numeric 11/14 would be misread.
+    private static func dayMonth(day: Int, month: Int) -> String {
+        switch L10n.language {
+        case .en: return "\(day) \(monthsEnglish[max(0, min(11, month - 1))])"
+        case .de: return "\(pad2(day)).\(pad2(month))."
+        case .ru: return "\(pad2(day)).\(pad2(month))"
+        }
+    }
+
+    private static func pad2(_ value: Int) -> String {
+        value < 10 && value >= 0 ? "0\(value)" : "\(value)"
     }
 
     /// `2026-11-14`

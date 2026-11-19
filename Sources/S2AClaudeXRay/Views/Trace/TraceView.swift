@@ -8,12 +8,12 @@ enum TraceTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .feed: return "Лента"
-        case .flow: return "Поток"
-        case .llm: return "LLM-запросы"
-        case .timeline: return "Таймлайн"
-        case .context: return "Контекст"
-        case .tools: return "Инструменты · MCP · скиллы"
+        case .feed: return L("Лента")
+        case .flow: return L("Поток")
+        case .llm: return L("LLM-запросы")
+        case .timeline: return L("Таймлайн")
+        case .context: return L("Контекст")
+        case .tools: return L("Инструменты · MCP · скиллы")
         }
     }
 }
@@ -40,7 +40,7 @@ struct TraceView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
 
-                Picker("Раздел", selection: $model.traceTab) {
+                Picker(L("Раздел"), selection: $model.traceTab) {
                     ForEach(TraceTab.allCases) { tab in
                         Text(tab.title).tag(tab)
                     }
@@ -65,9 +65,9 @@ struct TraceView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else {
                 SourcesHelpView(
-                    title: "Нет активности за последние 3 дня",
+                    title: L("Нет активности за последние 3 дня"),
                     systemImage: "point.3.connected.trianglepath.dotted",
-                    message: "Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст."
+                    message: L("Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.")
                 )
             }
         }
@@ -83,11 +83,11 @@ struct TraceHeader: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            Picker("Сессия", selection: Binding(
+            Picker(L("Сессия"), selection: Binding(
                 get: { model.pinnedTraceSession ?? "" },
                 set: { model.pinnedTraceSession = $0.isEmpty ? nil : $0 }
             )) {
-                Text("Следовать за активной сессией").tag("")
+                Text(L("Следовать за активной сессией")).tag("")
                 Divider()
                 ForEach(sessions) { session in
                     Text("\(session.projectName) · \(session.gitBranch ?? "—") · \(Fmt.dateTime(session.lastActivity)) · \(Fmt.plural(session.items, "событие", "события", "событий"))")
@@ -96,16 +96,16 @@ struct TraceHeader: View {
             }
             .frame(maxWidth: 520)
 
-            Toggle("Скрыть содержимое", isOn: $hideContent)
+            Toggle(L("Скрыть содержимое"), isOn: $hideContent)
                 .toggleStyle(.switch)
                 .controlSize(.small)
-                .help("Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана")
+                .help(L("Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана"))
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text(trace.projectPath ?? "—").font(.caption).textSelection(.enabled)
-                Text("сессия \(trace.sessionID.prefix(8)) · \(Fmt.plural(trace.items.count, "событие", "события", "событий")) · ошибок: \(trace.errors)")
+                Text(L("сессия \(trace.sessionID.prefix(8)) · \(Fmt.plural(trace.items.count, "событие", "события", "событий")) · ошибок: \(trace.errors)"))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -164,14 +164,14 @@ struct TraceStatusBanner: View {
     private func turnLine(_ status: LiveStatus, now: Date) -> String {
         var parts: [String] = []
         if let start = status.turnStart {
-            parts.append("ход идёт \(Fmt.shortDuration(now.timeIntervalSince(start)))")
+            parts.append(L("ход идёт \(Fmt.shortDuration(now.timeIntervalSince(start)))"))
         }
-        parts.append("ответов модели: \(status.stepsInTurn)")
-        parts.append("вызовов инструментов: \(status.toolsInTurn)")
+        parts.append(L("ответов модели: \(status.stepsInTurn)"))
+        parts.append(L("вызовов инструментов: \(status.toolsInTurn)"))
         if status.runningTools > 1 {
-            parts.append("параллельно: \(status.runningTools)")
+            parts.append(L("параллельно: \(status.runningTools)"))
         }
-        parts.append("последнее событие \(Fmt.shortDuration(now.timeIntervalSince(status.lastActivity))) назад")
+        parts.append(L("последнее событие \(Fmt.shortDuration(now.timeIntervalSince(status.lastActivity))) назад"))
         return parts.joined(separator: " · ")
     }
 }
@@ -189,19 +189,19 @@ struct SessionTotalsView: View {
 
         Grid(alignment: .trailing, horizontalSpacing: 10, verticalSpacing: 3) {
             GridRow {
-                Text("Сессия").foregroundStyle(.secondary)
+                Text(L("Сессия")).foregroundStyle(.secondary)
                 Text(Fmt.usd(summary.cost.total)).monospacedDigit()
             }
             GridRow {
-                Text("Токены").foregroundStyle(.secondary)
+                Text(L("Токены")).foregroundStyle(.secondary)
                 Text("\(Fmt.tokens(summary.tokens.total)) · \(Fmt.plural(summary.requests, "запрос", "запроса", "запросов"))").monospacedDigit()
             }
             GridRow {
-                Text("Контекст").foregroundStyle(.secondary)
-                Text("\(Fmt.tokens(context)) из \(Fmt.tokens(window)) · \(Fmt.percent(Double(context) / Double(max(window, 1))))").monospacedDigit()
+                Text(L("Контекст")).foregroundStyle(.secondary)
+                Text(L("\(Fmt.tokens(context)) из \(Fmt.tokens(window)) · \(Fmt.percent(Double(context) / Double(max(window, 1))))")).monospacedDigit()
             }
             GridRow {
-                Text("Кэш, последний запрос").foregroundStyle(.secondary)
+                Text(L("Кэш, последний запрос")).foregroundStyle(.secondary)
                 Text(last.map { Fmt.percent($0.event.tokens.cacheHitRate) } ?? "—").monospacedDigit()
             }
         }

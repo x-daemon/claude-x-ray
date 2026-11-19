@@ -49,3 +49,20 @@ jobs:
         run: |
           python3 scripts/make-setup-script.py
           git diff --exit-code cloud/setup-environment.sh
+
+  l10n:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the TypeScript parser
+        working-directory: windows
+        run: npm ci --ignore-scripts
+
+      - name: Every interface text is translated (English, German)
+        run: python3 scripts/l10n.py check

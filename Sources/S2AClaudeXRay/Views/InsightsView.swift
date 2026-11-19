@@ -16,17 +16,17 @@ struct InsightsView: View {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 12) {
                     StatTile(title: model.plan.costLabel, value: Fmt.usd(summary.cost.total), caption: model.period.title)
-                    StatTile(title: "Доля кэша", value: summary.requests > 0 ? Fmt.percent(summary.tokens.cacheHitRate) : "—", caption: "чем выше, тем дешевле каждый ход")
+                    StatTile(title: L("Доля кэша"), value: summary.requests > 0 ? Fmt.percent(summary.tokens.cacheHitRate) : "—", caption: L("чем выше, тем дешевле каждый ход"))
                     StatTile(
-                        title: "Без потери качества",
-                        value: freeSavings > 0 ? "до \(Fmt.usd(freeSavings))" : "—",
-                        caption: tradeoffSavings > 0 ? "ещё до \(Fmt.usd(tradeoffSavings)) через компромиссы; оценки пересекаются" : "кэш и гигиена контекста"
+                        title: L("Без потери качества"),
+                        value: freeSavings > 0 ? L("до \(Fmt.usd(freeSavings))") : "—",
+                        caption: tradeoffSavings > 0 ? L("ещё до \(Fmt.usd(tradeoffSavings)) через компромиссы; оценки пересекаются") : L("кэш и гигиена контекста")
                     )
-                    StatTile(title: "Замечаний", value: "\(insights.filter { $0.severity >= .info }.count)", caption: "\(insights.filter { $0.severity >= .warning }.count) требуют внимания")
+                    StatTile(title: L("Замечаний"), value: "\(insights.filter { $0.severity >= .info }.count)", caption: L("\(insights.filter { $0.severity >= .warning }.count) требуют внимания"))
                 }
 
                 if model.plan.isSubscription {
-                    Label("На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита.", systemImage: "info.circle")
+                    Label(L("На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита."), systemImage: "info.circle")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
@@ -34,7 +34,7 @@ struct InsightsView: View {
                 RequestHealthCard(events: events)
 
                 if insights.isEmpty {
-                    ContentUnavailableView("Нет данных для анализа", systemImage: "lightbulb", description: Text("Выберите период, в котором были сессии Claude Code."))
+                    ContentUnavailableView(L("Нет данных для анализа"), systemImage: "lightbulb", description: Text(L("Выберите период, в котором были сессии Claude Code.")))
                         .frame(maxWidth: .infinity, minHeight: 240)
                 } else {
                     ForEach(insights) { insight in
@@ -82,7 +82,7 @@ struct InsightCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 if let savings = insight.potentialSavings, savings > 0 {
-                    Label("Потенциальная экономия: до \(Fmt.usd(savings)) за период", systemImage: "arrow.down.circle")
+                    Label(L("Потенциальная экономия: до \(Fmt.usd(savings)) за период"), systemImage: "arrow.down.circle")
                         .font(.callout.weight(.medium))
                         .foregroundStyle(Palette.good)
                 }

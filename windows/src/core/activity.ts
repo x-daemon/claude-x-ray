@@ -1,5 +1,6 @@
 // Activity trace items and tool descriptions. Port of XRayCore/Activity/{ActivityItem,ToolDescriber}.swift.
 import { projectName } from "./model";
+import { L, N } from "./i18n";
 
 export type ActivityKind =
   | "prompt" | "queued" | "interrupted" | "thinking" | "reply" | "toolCall" | "toolResult"
@@ -136,16 +137,16 @@ export function toolDisplayName(toolName: string): string {
 export function toolCategory(toolName: string): ToolCategory {
   if (toolName.startsWith("mcp__")) return "MCP";
   switch (toolName) {
-    case "Bash": case "BashOutput": case "KillShell": case "KillBash": case "Monitor": case "PowerShell": return "Оболочка";
-    case "Read": case "NotebookRead": case "ReadMcpResourceTool": case "ListMcpResourcesTool": return "Чтение";
-    case "Write": case "Edit": case "MultiEdit": case "NotebookEdit": return "Изменение файлов";
-    case "Grep": case "Glob": case "LS": case "ToolSearch": return "Поиск";
-    case "WebFetch": case "WebSearch": case "web_search": case "web_fetch": return "Веб";
-    case "Task": case "Agent": case "SendMessage": return "Субагенты";
-    case "Skill": return "Скиллы";
+    case "Bash": case "BashOutput": case "KillShell": case "KillBash": case "Monitor": case "PowerShell": return N("Оболочка");
+    case "Read": case "NotebookRead": case "ReadMcpResourceTool": case "ListMcpResourcesTool": return N("Чтение");
+    case "Write": case "Edit": case "MultiEdit": case "NotebookEdit": return N("Изменение файлов");
+    case "Grep": case "Glob": case "LS": case "ToolSearch": return N("Поиск");
+    case "WebFetch": case "WebSearch": case "web_search": case "web_fetch": return N("Веб");
+    case "Task": case "Agent": case "SendMessage": return N("Субагенты");
+    case "Skill": return N("Скиллы");
     case "TodoWrite": case "TaskCreate": case "TaskUpdate": case "TaskList": case "TaskGet": case "ExitPlanMode": case "EnterPlanMode": case "AskUserQuestion":
-      return "Планирование";
-    default: return "Другое";
+      return N("Планирование");
+    default: return N("Другое");
   }
 }
 
@@ -169,7 +170,8 @@ export function describeTool(name: string, input: Record<string, unknown>): Tool
       let detail = command ? "$ " + Snippet.truncate(command, 1_500) : undefined;
       const description = s("description");
       if (description) detail = description + (detail ? "\n" + detail : "");
-      if (input.run_in_background === true) detail = (detail ?? "") + "\n(в фоне)";
+      if (input.run_in_background === true) detail = (detail ?? "") + L`
+(в фоне)`;
       return { title: `${name}: ` + Snippet.firstLine(command, 110), detail };
     }
     case "BashOutput": case "KillShell": case "KillBash": {
@@ -179,23 +181,23 @@ export function describeTool(name: string, input: Record<string, unknown>): Tool
     case "Read": {
       const path = s("file_path") ?? "";
       const parts: string[] = [];
-      if (typeof input.offset === "number") parts.push(`с строки ${input.offset}`);
-      if (typeof input.limit === "number") parts.push(`${input.limit} строк`);
+      if (typeof input.offset === "number") parts.push(L`с строки ${input.offset}`);
+      if (typeof input.limit === "number") parts.push(L`${input.limit} строк`);
       const pages = s("pages");
-      if (pages) parts.push(`страницы ${pages}`);
+      if (pages) parts.push(L`страницы ${pages}`);
       return { title: "Read " + Snippet.shortPath(path) + (parts.length ? ` (${parts.join(", ")})` : ""), detail: path, target: path, fileAction: "read" };
     }
     case "Write": {
       const path = s("file_path") ?? "";
       const content = typeof input.content === "string" ? input.content : "";
       const lines = content ? content.split("\n").length : 0;
-      return { title: `Write ${Snippet.shortPath(path)} · ${lines} строк`, detail: `${path}\n${new TextEncoder().encode(content).length} байт`, target: path, fileAction: "write" };
+      return { title: L`Write ${Snippet.shortPath(path)} · ${lines} строк`, detail: L`${path}\n${new TextEncoder().encode(content).length} байт`, target: path, fileAction: "write" };
     }
     case "Edit": {
       const path = s("file_path") ?? "";
       const oldText = typeof input.old_string === "string" ? input.old_string : "";
       const newText = typeof input.new_string === "string" ? input.new_string : "";
-      const all = input.replace_all === true ? " · все вхождения" : "";
+      const all = input.replace_all === true ? L` · все вхождения` : "";
       return {
         title: `Edit ${Snippet.shortPath(path)}${all}`,
         detail: `${path}\n− ${Snippet.truncate(oldText, 400)}\n+ ${Snippet.truncate(newText, 400)}`,
@@ -205,7 +207,7 @@ export function describeTool(name: string, input: Record<string, unknown>): Tool
     case "MultiEdit": {
       const path = s("file_path") ?? "";
       const count = Array.isArray(input.edits) ? input.edits.length : 0;
-      return { title: `MultiEdit ${Snippet.shortPath(path)} · ${count} правок`, detail: path, target: path, fileAction: "edit" };
+      return { title: L`MultiEdit ${Snippet.shortPath(path)} · ${count} правок`, detail: path, target: path, fileAction: "edit" };
     }
     case "NotebookEdit": {
       const path = s("notebook_path") ?? "";
@@ -215,11 +217,11 @@ export function describeTool(name: string, input: Record<string, unknown>): Tool
       const pattern = s("pattern") ?? "";
       const path = s("path");
       const scope = [path ? Snippet.shortPath(path) : undefined, s("glob"), s("type")].filter(Boolean).join(", ");
-      return { title: `Grep «${Snippet.firstLine(pattern, 60)}»` + (scope ? ` в ${scope}` : ""), detail: Snippet.compactJSON(input), target: path };
+      return { title: `Grep «${Snippet.firstLine(pattern, 60)}»` + (scope ? L` в ${scope}` : ""), detail: Snippet.compactJSON(input), target: path };
     }
     case "Glob": {
       const path = s("path");
-      return { title: `Glob ${s("pattern") ?? ""}` + (path ? ` в ${Snippet.shortPath(path)}` : ""), detail: Snippet.compactJSON(input), target: path };
+      return { title: `Glob ${s("pattern") ?? ""}` + (path ? L` в ${Snippet.shortPath(path)}` : ""), detail: Snippet.compactJSON(input), target: path };
     }
     case "LS":
       return { title: `LS ${Snippet.shortPath(s("path") ?? "")}`, target: s("path") };
@@ -238,10 +240,10 @@ export function describeTool(name: string, input: Record<string, unknown>): Tool
       return { title: `WebSearch «${Snippet.firstLine(query, 80)}»`, detail: query };
     }
     case "Task": case "Agent": {
-      const description = s("description") ?? "задача";
+      const description = s("description") ?? L`задача`;
       const type = s("subagent_type");
       const prompt = s("prompt");
-      return { title: `Субагент${type ? ` (${type})` : ""}: ${Snippet.firstLine(description, 90)}`, detail: prompt ? Snippet.truncate(prompt, 1_500) : undefined, target: type };
+      return { title: L`Субагент${type ? ` (${type})` : ""}: ${Snippet.firstLine(description, 90)}`, detail: prompt ? Snippet.truncate(prompt, 1_500) : undefined, target: type };
     }
     case "Skill": {
       const skill = s("skill") ?? s("command") ?? "?";
@@ -254,17 +256,17 @@ export function describeTool(name: string, input: Record<string, unknown>): Tool
         const mark = status === "completed" ? "☑" : status === "in_progress" ? "▶" : "☐";
         return `${mark} ${typeof todo.content === "string" ? todo.content : ""}`;
       });
-      return { title: `TodoWrite · ${todos.length} задач`, detail: lines.join("\n") };
+      return { title: L`TodoWrite · ${todos.length} задач`, detail: lines.join("\n") };
     }
     case "AskUserQuestion": {
       const questions = (Array.isArray(input.questions) ? (input.questions as Record<string, unknown>[]) : [])
         .map((q) => q.question)
         .filter((q): q is string => typeof q === "string");
-      return { title: "Вопрос пользователю", detail: questions.join("\n") };
+      return { title: L`Вопрос пользователю`, detail: questions.join("\n") };
     }
     case "ExitPlanMode": {
       const plan = s("plan");
-      return { title: "План готов", detail: plan ? Snippet.truncate(plan, 1_500) : undefined };
+      return { title: L`План готов`, detail: plan ? Snippet.truncate(plan, 1_500) : undefined };
     }
     case "ToolSearch":
       return { title: `ToolSearch «${Snippet.firstLine(s("query") ?? "", 80)}»`, detail: Snippet.compactJSON(input) };

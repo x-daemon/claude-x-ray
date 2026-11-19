@@ -1,7 +1,7 @@
 {
   "name": "s2a-claude-x-ray",
   "productName": "S2A Claude X-Ray",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Usage, live trace and reports for Claude Code on Windows",
   "author": "S2A",
   "license": "UNLICENSED",

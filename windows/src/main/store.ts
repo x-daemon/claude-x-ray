@@ -48,13 +48,16 @@ export const defaultSettings = (): Settings => ({
   plan: "max5x",
   theme: "s2a",
   appearance: "auto",
+  language: "system",
   receiverEnabled: false,
   receiverPort: 47318,
   hideContent: false,
 });
 
 export function loadSettings(): Settings {
-  return { ...defaultSettings(), ...(readJSON<Partial<Settings>>(Paths.settings) ?? {}) };
+  const saved = readJSON<Partial<Settings>>(Paths.settings);
+  // Settings saved before the language setting existed: keep the Russian interface they had.
+  return { ...defaultSettings(), ...(saved ? { language: "ru" as const } : {}), ...(saved ?? {}) };
 }
 
 export function saveSettings(settings: Settings): void {

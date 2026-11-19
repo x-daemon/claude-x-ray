@@ -7,10 +7,10 @@ public enum InsightSeverity: Int, Comparable, Sendable, CaseIterable {
 
     public var label: String {
         switch self {
-        case .good: return "Хорошо"
-        case .info: return "Совет"
-        case .warning: return "Внимание"
-        case .critical: return "Критично"
+        case .good: return L("Хорошо")
+        case .info: return L("Совет")
+        case .warning: return L("Внимание")
+        case .critical: return L("Критично")
         }
     }
 }
@@ -26,9 +26,9 @@ public enum InsightKind: String, Sendable {
 
     public var label: String {
         switch self {
-        case .freeWin: return "Без потери качества"
-        case .tradeoff: return "Компромисс"
-        case .observation: return "Наблюдение"
+        case .freeWin: return L("Без потери качества")
+        case .tradeoff: return L("Компромисс")
+        case .observation: return L("Наблюдение")
         }
     }
 }
@@ -117,17 +117,17 @@ public struct InsightEngine {
         if hit >= 0.85 {
             return [Insight(
                 id: "cache.hit", severity: .good, kind: .observation,
-                title: "Кэш промптов работает хорошо",
-                detail: "\(metric) контекста читается из кэша — это самый дешёвый вид входных токенов.",
+                title: L("Кэш промптов работает хорошо"),
+                detail: L("\(metric) контекста читается из кэша — это самый дешёвый вид входных токенов."),
                 metric: metric
             )]
         }
         let severity: InsightSeverity = hit < 0.6 ? .warning : .info
         return [Insight(
             id: "cache.hit", severity: severity, kind: .freeWin,
-            title: "Низкая доля попаданий в кэш",
-            detail: "Из кэша читается только \(metric) контекста. Остальное оплачивается как свежий ввод или как запись в кэш, которая дороже ввода.",
-            recommendation: "Не меняйте модель и настройки посреди сессии, держите CLAUDE.md и системные инструкции стабильными, между задачами начинайте новую сессию (/clear), а не продолжайте старую с другим контекстом.",
+            title: L("Низкая доля попаданий в кэш"),
+            detail: L("Из кэша читается только \(metric) контекста. Остальное оплачивается как свежий ввод или как запись в кэш, которая дороже ввода."),
+            recommendation: L("Не меняйте модель и настройки посреди сессии, держите CLAUDE.md и системные инструкции стабильными, между задачами начинайте новую сессию (/clear), а не продолжайте старую с другим контекстом."),
             metric: metric
         )]
     }
@@ -137,15 +137,15 @@ public struct InsightEngine {
         guard share >= 0.25 else { return [] }
         let writes = summary.tokens.cacheWrite
         let oneHourShare = writes > 0 ? Double(summary.tokens.cacheWrite1h) / Double(writes) : 0
-        var detail = "Запись в кэш — \(Fmt.percent(share)) стоимости (\(Fmt.usd(summary.cost.cacheWrite)))."
+        var detail = L("Запись в кэш — \(Fmt.percent(share)) стоимости (\(Fmt.usd(summary.cost.cacheWrite))).")
         if oneHourShare > 0.5 {
-            detail += " \(Fmt.percent(oneHourShare)) записей идут с TTL 1 час: такая запись стоит 2× цены ввода (TTL 5 минут — 1.25×), зато переживает паузы до часа."
+            detail += L(" \(Fmt.percent(oneHourShare)) записей идут с TTL 1 час: такая запись стоит 2× цены ввода (TTL 5 минут — 1.25×), зато переживает паузы до часа.")
         }
         return [Insight(
             id: "cache.writes", severity: share >= 0.4 ? .warning : .info, kind: .freeWin,
-            title: "Много платите за запись в кэш",
+            title: L("Много платите за запись в кэш"),
             detail: detail,
-            recommendation: "Каждый раз, когда начало контекста меняется, весь контекст после изменения записывается в кэш заново. Сокращайте контекст (/compact), не переключайте модель внутри длинной сессии и начинайте новую задачу с /clear.",
+            recommendation: L("Каждый раз, когда начало контекста меняется, весь контекст после изменения записывается в кэш заново. Сокращайте контекст (/compact), не переключайте модель внутри длинной сессии и начинайте новую задачу с /clear."),
             metric: Fmt.percent(share)
         )]
     }
@@ -190,9 +190,9 @@ public struct InsightEngine {
         guard count >= 3, cost / summary.cost.total >= 0.03 else { return [] }
         return [Insight(
             id: "cache.rewarm", severity: cost / summary.cost.total >= 0.1 ? .warning : .info, kind: .freeWin,
-            title: "Паузы обнуляют кэш",
-            detail: "\(count) раз после паузы длиннее срока жизни кэша весь контекст сессии записывался заново: \(Fmt.usd(cost)) за запись.",
-            recommendation: "Возвращаясь после перерыва к новой задаче, начинайте её с /clear. Если нужен прежний контекст, сделайте /compact перед перерывом, чтобы перезаписывать меньше.",
+            title: L("Паузы обнуляют кэш"),
+            detail: L("\(count) раз после паузы длиннее срока жизни кэша весь контекст сессии записывался заново: \(Fmt.usd(cost)) за запись."),
+            recommendation: L("Возвращаясь после перерыва к новой задаче, начинайте её с /clear. Если нужен прежний контекст, сделайте /compact перед перерывом, чтобы перезаписывать меньше."),
             metric: "\(count)×",
             potentialSavings: avoidable
         )]
@@ -206,9 +206,9 @@ public struct InsightEngine {
         guard share >= 0.2 else { return [] }
         return [Insight(
             id: "context.large", severity: share >= 0.5 ? .warning : .info, kind: .freeWin,
-            title: "Дорогой длинный контекст",
-            detail: "\(Fmt.percent(share)) стоимости (\(Fmt.usd(largeCost))) приходится на запросы с контекстом больше \(Fmt.tokens(largeContextThreshold)) токенов. Средний контекст запроса — \(Fmt.tokens(Int(summary.averageContextTokens))).",
-            recommendation: "Каждый ход заново отправляет весь контекст сессии. Делайте /compact на длинных задачах, /clear между независимыми задачами, не читайте большие файлы и логи целиком и держите CLAUDE.md коротким.",
+            title: L("Дорогой длинный контекст"),
+            detail: L("\(Fmt.percent(share)) стоимости (\(Fmt.usd(largeCost))) приходится на запросы с контекстом больше \(Fmt.tokens(largeContextThreshold)) токенов. Средний контекст запроса — \(Fmt.tokens(Int(summary.averageContextTokens)))."),
+            recommendation: L("Каждый ход заново отправляет весь контекст сессии. Делайте /compact на длинных задачах, /clear между независимыми задачами, не читайте большие файлы и логи целиком и держите CLAUDE.md коротким."),
             metric: Fmt.percent(share)
         )]
     }
@@ -225,9 +225,9 @@ public struct InsightEngine {
         let cheaperName = pricing.models.first { $0.modelPrefix == cheaperModelPrefix }?.displayName ?? cheaperModelPrefix
         return [Insight(
             id: "model.mix", severity: .info, kind: .tradeoff,
-            title: "Почти всё уходит на старшие модели",
-            detail: "\(Fmt.percent(share)) стоимости — Opus/Fable. Те же запросы на \(cheaperName) стоили бы \(Fmt.usd(whatIf)) вместо \(Fmt.usd(topCost)).",
-            recommendation: "Для рутинных задач (правки, тесты, поиск по коду) переключайтесь на \(cheaperName) командой /model. На подписке это обычно медленнее расходует лимит окна. Качество на сложных задачах может отличаться — проверьте на своих.",
+            title: L("Почти всё уходит на старшие модели"),
+            detail: L("\(Fmt.percent(share)) стоимости — Opus/Fable. Те же запросы на \(cheaperName) стоили бы \(Fmt.usd(whatIf)) вместо \(Fmt.usd(topCost))."),
+            recommendation: L("Для рутинных задач (правки, тесты, поиск по коду) переключайтесь на \(cheaperName) командой /model. На подписке это обычно медленнее расходует лимит окна. Качество на сложных задачах может отличаться — проверьте на своих."),
             metric: Fmt.percent(share),
             potentialSavings: savings
         )]
@@ -240,9 +240,9 @@ public struct InsightEngine {
         guard requestShare >= 0.5, thinkingShare >= 0.3 else { return [] }
         return [Insight(
             id: "effort.high", severity: .info, kind: .tradeoff,
-            title: "Высокий effort по умолчанию",
-            detail: "\(Fmt.percent(requestShare)) запросов идут с effort xhigh/max; размышления — \(Fmt.percent(thinkingShare)) выходных токенов.",
-            recommendation: "Высокий effort окупается на сложных задачах. Для простых правок и вопросов понизьте effort в настройках модели Claude Code — это сокращает размышления и число вызовов инструментов.",
+            title: L("Высокий effort по умолчанию"),
+            detail: L("\(Fmt.percent(requestShare)) запросов идут с effort xhigh/max; размышления — \(Fmt.percent(thinkingShare)) выходных токенов."),
+            recommendation: L("Высокий effort окупается на сложных задачах. Для простых правок и вопросов понизьте effort в настройках модели Claude Code — это сокращает размышления и число вызовов инструментов."),
             metric: Fmt.percent(requestShare)
         )]
     }
@@ -253,9 +253,9 @@ public struct InsightEngine {
         guard share >= 0.3 else { return [] }
         return [Insight(
             id: "subagents", severity: .info, kind: .observation,
-            title: "Субагенты — заметная часть расходов",
-            detail: "\(Fmt.percent(share)) стоимости (\(Fmt.usd(sidechain))) тратят субагенты. Каждый начинает со своего контекста и не делит кэш с основной сессией.",
-            recommendation: "Субагенты выгодны для объёмного чтения и поиска. Для мелких шагов, которым нужен контекст основной сессии, они обходятся дороже.",
+            title: L("Субагенты — заметная часть расходов"),
+            detail: L("\(Fmt.percent(share)) стоимости (\(Fmt.usd(sidechain))) тратят субагенты. Каждый начинает со своего контекста и не делит кэш с основной сессией."),
+            recommendation: L("Субагенты выгодны для объёмного чтения и поиска. Для мелких шагов, которым нужен контекст основной сессии, они обходятся дороже."),
             metric: Fmt.percent(share)
         )]
     }
@@ -267,9 +267,9 @@ public struct InsightEngine {
         guard share >= 0.3 else { return [] }
         return [Insight(
             id: "sessions.concentration", severity: .info, kind: .observation,
-            title: "Одна сессия съела большую часть",
-            detail: "Сессия в «\(top.projectName)» от \(Fmt.dateTime(top.start)) — \(Fmt.percent(share)) стоимости периода (\(Fmt.usd(top.cost)), \(top.requests) запросов, пик контекста \(Fmt.tokens(top.peakContextTokens))).",
-            recommendation: "Длинные сессии дорожают с каждым ходом: весь накопленный контекст отправляется снова. Дробите большие задачи на сессии поменьше.",
+            title: L("Одна сессия съела большую часть"),
+            detail: L("Сессия в «\(top.projectName)» от \(Fmt.dateTime(top.start)) — \(Fmt.percent(share)) стоимости периода (\(Fmt.usd(top.cost)), \(top.requests) запросов, пик контекста \(Fmt.tokens(top.peakContextTokens)))."),
+            recommendation: L("Длинные сессии дорожают с каждым ходом: весь накопленный контекст отправляется снова. Дробите большие задачи на сессии поменьше."),
             metric: Fmt.percent(share)
         )]
     }
@@ -282,8 +282,8 @@ public struct InsightEngine {
         return [Insight(
             id: "fast.mode", severity: .info, kind: .tradeoff,
             title: "Fast mode",
-            detail: "\(fast.count) запросов шли в fast mode: \(Fmt.usd(fastCost)), из них наценка за скорость — \(Fmt.usd(premium)).",
-            recommendation: "Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач.",
+            detail: L("\(fast.count) запросов шли в fast mode: \(Fmt.usd(fastCost)), из них наценка за скорость — \(Fmt.usd(premium))."),
+            recommendation: L("Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач."),
             metric: "\(fast.count)",
             potentialSavings: premium
         )]
@@ -297,14 +297,14 @@ public struct InsightEngine {
 
         if issues.realMisses > 0 {
             let real = issues.misses.filter { LLMCalls.isRealMiss($0.reason) }
-            let parts = real.map { "\(LLMCalls.cacheMissTitle($0.reason)) — \(Fmt.plural($0.count, "раз", "раза", "раз")), \(Fmt.tokens($0.missedTokens)) токенов" }
+            let parts = real.map { L("\(LLMCalls.cacheMissTitle($0.reason)) — \(Fmt.plural($0.count, "раз", "раза", "раз")), \(Fmt.tokens($0.missedTokens)) токенов") }
             let share = total > 0 ? issues.realExtraCost / total : 0
             insights.append(Insight(
                 id: "cache.misses",
                 severity: share >= 0.05 || issues.realMisses >= 10 ? .warning : .info,
                 kind: .freeWin,
-                title: "Кэш сбрасывался из-за изменений в запросе",
-                detail: "API сообщило о \(Fmt.plural(issues.realMisses, "промахе", "промахах", "промахах")) кэша с понятной причиной: \(parts.joined(separator: "; ")). Эти токены записаны в кэш заново вместо дешёвого чтения: ≈\(Fmt.usd(issues.realExtraCost)).",
+                title: L("Кэш сбрасывался из-за изменений в запросе"),
+                detail: L("API сообщило о \(Fmt.plural(issues.realMisses, "промахе", "промахах", "промахах")) кэша с понятной причиной: \(parts.joined(separator: "; ")). Эти токены записаны в кэш заново вместо дешёвого чтения: ≈\(Fmt.usd(issues.realExtraCost))."),
                 recommendation: real.first.map { LLMCalls.cacheMissAdvice($0.reason) },
                 metric: "\(issues.realMisses)",
                 potentialSavings: issues.realExtraCost > 0 ? issues.realExtraCost : nil
@@ -317,9 +317,9 @@ public struct InsightEngine {
                 id: "thinking.dropped",
                 severity: issues.droppedRequests >= 10 ? .warning : .info,
                 kind: .freeWin,
-                title: "Модель теряла свои прежние размышления",
-                detail: "В \(Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")) API убрало из истории размышления модели: \(reasons.joined(separator: "; ")). Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.",
-                recommendation: "Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными.",
+                title: L("Модель теряла свои прежние размышления"),
+                detail: L("В \(Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")) API убрало из истории размышления модели: \(reasons.joined(separator: "; ")). Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время."),
+                recommendation: L("Не меняйте модель и историю посреди задачи: откат, правка сообщений, смена модели или настройки инструментов делают прежние размышления недействительными."),
                 metric: "\(issues.droppedRequests)"
             ))
         }
@@ -327,9 +327,9 @@ public struct InsightEngine {
         if issues.truncated > 0 {
             insights.append(Insight(
                 id: "stop.max_tokens", severity: .warning, kind: .observation,
-                title: "Ответы обрывались на лимите вывода",
-                detail: "\(Fmt.plural(issues.truncated, "ответ", "ответа", "ответов")) остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос.",
-                recommendation: "Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями.",
+                title: L("Ответы обрывались на лимите вывода"),
+                detail: L("\(Fmt.plural(issues.truncated, "ответ", "ответа", "ответов")) остановились по max_tokens: модель не успела закончить, и Claude Code продолжал или повторял запрос."),
+                recommendation: L("Увеличьте лимит вывода (переменная CLAUDE_CODE_MAX_OUTPUT_TOKENS) или просите модель делать изменения меньшими частями."),
                 metric: "\(issues.truncated)"
             ))
         }
@@ -337,18 +337,18 @@ public struct InsightEngine {
         if !issues.refusals.isEmpty {
             let count = issues.refusals.values.reduce(0, +)
             let categories = issues.refusals.sorted { $0.key < $1.key }.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
-            let fallback = issues.fallbacks > 0 ? " \(Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")) дала резервная модель." : ""
+            let fallback = issues.fallbacks > 0 ? L(" \(Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")) дала резервная модель.") : ""
             insights.append(Insight(
                 id: "stop.refusal", severity: .info, kind: .observation,
-                title: "Модель отказывала в ответе",
-                detail: "\(Fmt.plural(count, "отказ", "отказа", "отказов")) по категориям защитных классификаторов (\(categories)).\(fallback)",
+                title: L("Модель отказывала в ответе"),
+                detail: L("\(Fmt.plural(count, "отказ", "отказа", "отказов")) по категориям защитных классификаторов (\(categories)).\(fallback)"),
                 metric: "\(count)"
             ))
         } else if issues.fallbacks > 0 {
             insights.append(Insight(
                 id: "stop.fallback", severity: .info, kind: .observation,
-                title: "Отвечала резервная модель",
-                detail: "\(Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")) дала резервная модель после отказа основной.",
+                title: L("Отвечала резервная модель"),
+                detail: L("\(Fmt.plural(issues.fallbacks, "ответ", "ответа", "ответов")) дала резервная модель после отказа основной."),
                 metric: "\(issues.fallbacks)"
             ))
         }
@@ -356,8 +356,8 @@ public struct InsightEngine {
         if issues.modelSwitches > 0 {
             insights.append(Insight(
                 id: "model.switched", severity: .info, kind: .observation,
-                title: "Запросы обслуживала другая модель",
-                detail: "В \(Fmt.plural(issues.modelSwitches, "запросе", "запросах", "запросах")) ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие.",
+                title: L("Запросы обслуживала другая модель"),
+                detail: L("В \(Fmt.plural(issues.modelSwitches, "запросе", "запросах", "запросах")) ответила не та модель, которую запросил Claude Code (резервная модель или переключение). Кэш и размышления у разных моделей не общие."),
                 metric: "\(issues.modelSwitches)"
             ))
         }
@@ -370,9 +370,9 @@ public struct InsightEngine {
         let list = models.sorted().joined(separator: ", ")
         return [Insight(
             id: "pricing.estimated", severity: .info, kind: .observation,
-            title: "Цены для части моделей оценены",
-            detail: "Для \(list) нет точной строки в таблице цен; стоимость взята по семейству модели.",
-            recommendation: "Добавьте эти модели в «Настройки → Цены».",
+            title: L("Цены для части моделей оценены"),
+            detail: L("Для \(list) нет точной строки в таблице цен; стоимость взята по семейству модели."),
+            recommendation: L("Добавьте эти модели в «Настройки → Цены»."),
             metric: "\(models.count)"
         )]
     }

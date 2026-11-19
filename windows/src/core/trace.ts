@@ -2,6 +2,7 @@
 // Port of XRayCore/Activity/{ActivityStore,Trace,TraceBuilder}.swift. Times are epoch ms.
 import { mcpServer, mcpTool, toolCategory, type ActivityItem, type ToolCategory } from "./activity";
 import { projectName } from "./model";
+import { L, labels, N } from "./i18n";
 
 // MARK: Store
 
@@ -199,13 +200,13 @@ export const statAverage = (s: ToolStat): number => {
 };
 
 export type MCPStatus = "connected" | "pending" | "failed" | "needsAuth" | "usedOnly";
-export const mcpStatusTitle: Record<MCPStatus, string> = {
-  connected: "Подключён",
-  pending: "Подключается",
-  failed: "Ошибка подключения",
-  needsAuth: "Нужна авторизация",
-  usedOnly: "Вызывался",
-};
+export const mcpStatusTitle: Record<MCPStatus, string> = labels({
+  connected: N("Подключён"),
+  pending: N("Подключается"),
+  failed: N("Ошибка подключения"),
+  needsAuth: N("Нужна авторизация"),
+  usedOnly: N("Вызывался"),
+});
 
 export interface MCPServerUsage {
   name: string;
@@ -271,11 +272,11 @@ export const estimatedTokens = (chars: number): number => Math.floor(chars / 4);
 /** Known pieces of the context with estimated token counts (chars / 4). */
 export function knownComponents(c: ContextSnapshot): { name: string; tokens: number }[] {
   return [
-    { name: "Системный промпт", tokens: estimatedTokens(c.systemPromptChars ?? 0) },
-    { name: "Список скиллов", tokens: estimatedTokens(c.skillListingChars) },
-    { name: "Инструкции MCP", tokens: estimatedTokens(c.mcpInstructionChars) },
-    { name: "Типы субагентов", tokens: estimatedTokens(c.agentListingChars) },
-    { name: "Список отложенных инструментов", tokens: estimatedTokens(c.toolListingChars) },
+    { name: L`Системный промпт`, tokens: estimatedTokens(c.systemPromptChars ?? 0) },
+    { name: L`Список скиллов`, tokens: estimatedTokens(c.skillListingChars) },
+    { name: L`Инструкции MCP`, tokens: estimatedTokens(c.mcpInstructionChars) },
+    { name: L`Типы субагентов`, tokens: estimatedTokens(c.agentListingChars) },
+    { name: L`Список отложенных инструментов`, tokens: estimatedTokens(c.toolListingChars) },
   ].filter((x) => x.tokens > 0);
 }
 
@@ -305,14 +306,14 @@ export const stateIsActive = (s: LiveState): boolean =>
 
 export function stateTitle(s: LiveState): string {
   switch (s.type) {
-    case "runningTool": return `Выполняет ${s.name}`;
-    case "runningSubagent": return "Работает субагент";
-    case "thinking": return "Думает";
-    case "writing": return "Пишет ответ";
-    case "waitingForUser": return "Ждёт вас";
-    case "interrupted": return "Прервано";
-    case "error": return "Ошибка";
-    case "idle": return "Нет активности";
+    case "runningTool": return L`Выполняет ${s.name}`;
+    case "runningSubagent": return L`Работает субагент`;
+    case "thinking": return L`Думает`;
+    case "writing": return L`Пишет ответ`;
+    case "waitingForUser": return L`Ждёт вас`;
+    case "interrupted": return L`Прервано`;
+    case "error": return L`Ошибка`;
+    case "idle": return L`Нет активности`;
   }
 }
 
@@ -686,8 +687,8 @@ export function flowLabel(tool: ToolExecution): string {
   const server = toolMcpServer(tool);
   if (server) return `MCP: ${server}`;
   const category = toolCat(tool);
-  if (category === "Субагенты") return "Субагент";
-  if (category === "Скиллы") return "Скилл";
+  if (category === "Субагенты") return L`Субагент`;
+  if (category === "Скиллы") return L`Скилл`;
   return toolName(tool);
 }
 
@@ -699,22 +700,22 @@ function buildTransitions(items: ActivityItem[], tools: ToolExecution[]): FlowTr
   for (const item of items) {
     if (item.isSidechain) continue;
     switch (item.kind) {
-      case "prompt": sequence.push("Промпт"); lastMessage = undefined; break;
-      case "queued": if (item.title.startsWith("Передано")) sequence.push("Сообщение во время работы"); break;
-      case "interrupted": sequence.push("Прерывание"); break;
-      case "compact": sequence.push("Сжатие контекста"); break;
-      case "apiError": sequence.push("Ошибка API"); break;
+      case "prompt": sequence.push(L`Промпт`); lastMessage = undefined; break;
+      case "queued": if (item.title.startsWith(L`Передано модели: `)) sequence.push(L`Сообщение во время работы`); break;
+      case "interrupted": sequence.push(L`Прерывание`); break;
+      case "compact": sequence.push(L`Сжатие контекста`); break;
+      case "apiError": sequence.push(L`Ошибка API`); break;
       case "thinking": case "reply": case "toolCall": {
         if (item.messageID && item.messageID !== lastMessage) {
-          sequence.push("Модель");
+          sequence.push(L`Модель`);
           lastMessage = item.messageID;
         }
         const tool = item.kind === "toolCall" ? toolByCall.get(item.id) : undefined;
         if (tool) {
           sequence.push(flowLabel(tool));
-          if (toolIsError(tool)) sequence.push("Ошибка инструмента");
+          if (toolIsError(tool)) sequence.push(L`Ошибка инструмента`);
         }
-        if (item.kind === "reply" && item.stopReason === "end_turn") sequence.push("Ответ");
+        if (item.kind === "reply" && item.stopReason === "end_turn") sequence.push(L`Ответ`);
         break;
       }
     }

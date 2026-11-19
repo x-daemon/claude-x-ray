@@ -21,33 +21,38 @@ struct S2AClaudeXRayApp: App {
     @State private var model = AppModel()
     @AppStorage(AppTheme.storageKey) private var themeRaw = AppTheme.s2a.rawValue
     @AppStorage(AppAppearance.storageKey) private var appearanceRaw = AppAppearance.auto.rawValue
+    /// Read so that a new language rebuilds the windows; AppLanguage.save has applied it already.
+    @AppStorage(AppLanguage.storageKey) private var languageRaw = AppLanguage.system
 
     private var appearance: AppAppearance { AppAppearance(rawValue: appearanceRaw) ?? .auto }
+    /// Rebuilds a window's views when the theme or the language changes.
+    private var viewID: String { "\(themeRaw)|\(languageRaw)" }
 
     var body: some Scene {
         Window("S2A Claude X-Ray", id: "main") {
             RootView()
                 .environment(model)
+                .environment(\.locale, L10n.locale)
                 .frame(minWidth: 960, minHeight: 620)
                 .themedWindow(appearance: appearance)
-                .id(themeRaw)
+                .id(viewID)
         }
         .defaultSize(width: 1220, height: 800)
         .commands {
             CommandGroup(after: .newItem) {
-                Button("Обновить данные") {
+                Button(L("Обновить данные")) {
                     Task { await model.rescan() }
                 }
                 .keyboardShortcut("r", modifiers: .command)
 
-                Button("Пересканировать всё") {
+                Button(L("Пересканировать всё")) {
                     Task { await model.fullRescan() }
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
 
                 Divider()
 
-                Button("Импортировать лог сессии…") {
+                Button(L("Импортировать лог сессии…")) {
                     TranscriptImportPanel.run(model: model)
                 }
                 .keyboardShortcut("i", modifiers: .command)
@@ -57,18 +62,21 @@ struct S2AClaudeXRayApp: App {
         MenuBarExtra {
             MenuBarView()
                 .environment(model)
+                .environment(\.locale, L10n.locale)
                 .themedWindow(appearance: appearance)
-                .id(themeRaw)
+                .id(viewID)
         } label: {
             MenuBarLabel(model: model)
+                .id(viewID)
         }
         .menuBarExtraStyle(.window)
 
         Settings {
             SettingsView()
                 .environment(model)
+                .environment(\.locale, L10n.locale)
                 .themedWindow(appearance: appearance)
-                .id(themeRaw)
+                .id(viewID)
         }
     }
 }

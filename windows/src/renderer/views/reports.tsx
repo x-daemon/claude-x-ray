@@ -16,6 +16,7 @@ import { Button, Card, Icon, RankedBarList, type RankedRow } from "../ui";
 import { InsightCard } from "./insights";
 import { RequestHealthCard } from "./requestHealth";
 import { ActivityHeatmap, CostComposition, CostTimelineChart, unitTitle } from "./overview";
+import { L, N, tr } from "../../core/i18n";
 
 export function ReportsView() {
   const s = useStore();
@@ -23,22 +24,22 @@ export function ReportsView() {
   const [menu, setMenu] = useState(false);
   const stamp = Fmt.isoDay(s.now);
   const markdown = () =>
-    markdownReport("S2A Claude X-Ray — отчёт об использовании Claude Code", PERIODS.find((p) => p.id === s.period)!.title, s.periodEvents, analyzeInsights(s.pricing, s.periodEvents));
-  const saved = (file?: string) => file && setStatus(`Сохранено: ${file.split(/[\\/]/).pop()}`);
+    markdownReport(L`S2A Claude X-Ray — отчёт об использовании Claude Code`, PERIODS.find((p) => p.id === s.period)!.title, s.periodEvents, analyzeInsights(s.pricing, s.periodEvents));
+  const saved = (file?: string) => file && setStatus(L`Сохранено: ${file.split(/[\\/]/).pop()}`);
   const saveText = async (name: string, text: string, kind: "md" | "csv") => {
     setMenu(false);
     try {
       saved(await s.bridge.saveText(name, text, kind));
     } catch (error) {
-      setStatus(`Не удалось сохранить: ${(error as Error).message}`);
+      setStatus(L`Не удалось сохранить: ${(error as Error).message}`);
     }
   };
   const savePDF = async () => {
     try {
       const size = await prepareExport();
-      saved(await s.bridge.savePDF(`S2A Claude X-Ray — отчёт ${stamp}.pdf`, size));
+      saved(await s.bridge.savePDF(L`S2A Claude X-Ray — отчёт ${stamp}.pdf`, size));
     } catch (error) {
-      setStatus(`Не удалось построить PDF: ${(error as Error).message}`);
+      setStatus(L`Не удалось построить PDF: ${(error as Error).message}`);
     } finally {
       finishExport();
     }
@@ -58,16 +59,16 @@ export function ReportsView() {
   return (
     <div class="reports">
       <div class="report-toolbar row gap-10">
-        <Button icon={I.FileDown} onClick={() => void savePDF()} title="Ctrl+S">Сохранить PDF…</Button>
+        <Button icon={I.FileDown} onClick={() => void savePDF()} title="Ctrl+S">{L`Сохранить PDF…`}</Button>
         <div class="menu-anchor">
-          <Button icon={I.Table2} onClick={() => setMenu(!menu)}>Данные <Icon icon={I.ChevronDown} size={12} /></Button>
+          <Button icon={I.Table2} onClick={() => setMenu(!menu)}>{L`Данные `}<Icon icon={I.ChevronDown} size={12} /></Button>
           {menu ? (
             <div class="menu" onMouseLeave={() => setMenu(false)}>
               <button type="button" onClick={() => void saveText(`claude-xray-${stamp}.md`, markdown(), "md")}>Markdown…</button>
-              <button type="button" onClick={() => void saveText(`claude-xray-daily-${stamp}.csv`, dailyCSV(s.periodEvents), "csv")}>CSV по дням…</button>
-              <button type="button" onClick={() => void saveText(`claude-xray-sessions-${stamp}.csv`, sessionsCSV(sessionSummaries(s.periodEvents)), "csv")}>CSV по сессиям…</button>
+              <button type="button" onClick={() => void saveText(`claude-xray-daily-${stamp}.csv`, dailyCSV(s.periodEvents), "csv")}>{L`CSV по дням…`}</button>
+              <button type="button" onClick={() => void saveText(`claude-xray-sessions-${stamp}.csv`, sessionsCSV(sessionSummaries(s.periodEvents)), "csv")}>{L`CSV по сессиям…`}</button>
               <hr />
-              <button type="button" onClick={async () => { setMenu(false); await s.bridge.copyText(markdown()); setStatus("Отчёт скопирован в буфер обмена"); }}>Копировать как Markdown</button>
+              <button type="button" onClick={async () => { setMenu(false); await s.bridge.copyText(markdown()); setStatus(L`Отчёт скопирован в буфер обмена`); }}>{L`Копировать как Markdown`}</button>
             </div>
           ) : null}
         </div>
@@ -131,34 +132,34 @@ export function ReportDocument() {
     <div class="report-doc">
       <ReportCover summary={summary} previous={previous} />
       {summary.requests === 0 ? (
-        <Card title="Нет данных"><div class="secondary">За выбранный период запросов не было. Выберите другой период вверху окна.</div></Card>
+        <Card title={L`Нет данных`}><div class="secondary">{L`За выбранный период запросов не было. Выберите другой период вверху окна.`}</div></Card>
       ) : (
         <>
           <KPIRow summary={summary} previous={previous} sessions={sessions.length} previousSessions={previousSessions} />
           {interval ? (
-            <Card title={`Расход ${unitTitle(unit)}`} subtitle={`${s.costLabel}, по моделям`}>
+            <Card title={L`Расход ${unitTitle(unit)}`} subtitle={L`${s.costLabel}, по моделям`}>
               <CostTimelineChart buckets={Analytics.buckets(events, unit, interval, (e) => s.seriesName(e))} unit={unit} interval={interval} />
             </Card>
           ) : null}
           <div class="row top gap-16">
-            <Card title="Из чего складывается стоимость" class="grow basis0"><CostComposition summary={summary} /></Card>
-            <Card title="Модели" subtitle="доля расхода" class="grow basis0"><RankedBarList rows={modelRows(events, summary.totalCost)} labelWidth={120} /></Card>
+            <Card title={L`Из чего складывается стоимость`} class="grow basis0"><CostComposition summary={summary} /></Card>
+            <Card title={L`Модели`} subtitle={L`доля расхода`} class="grow basis0"><RankedBarList rows={modelRows(events, summary.totalCost)} labelWidth={120} /></Card>
           </div>
           <div class="row top gap-16">
-            <Card title="Проекты" subtitle="по расходу" class="grow basis0"><RankedBarList rows={projectRows(events, summary.totalCost)} labelWidth={170} /></Card>
-            <Card title="Самые дорогие сессии" class="grow basis0"><RankedBarList rows={sessionRows(sessions)} labelWidth={230} /></Card>
+            <Card title={L`Проекты`} subtitle={L`по расходу`} class="grow basis0"><RankedBarList rows={projectRows(events, summary.totalCost)} labelWidth={170} /></Card>
+            <Card title={L`Самые дорогие сессии`} class="grow basis0"><RankedBarList rows={sessionRows(sessions)} labelWidth={230} /></Card>
           </div>
           {days.length >= 2 ? (
             <div class="row top gap-16">
-              <Card title="Доля контекста из кэша" subtitle="по дням" class="grow basis0">
+              <Card title={L`Доля контекста из кэша`} subtitle={L`по дням`} class="grow basis0">
                 <DailyMetricChart points={days.map((d) => ({ day: d.day, value: d.cacheRate }))} max={1} format={(v) => Fmt.percent(v)} />
               </Card>
-              <Card title="Средний размер контекста" subtitle="токенов на запрос, по дням" class="grow basis0">
+              <Card title={L`Средний размер контекста`} subtitle={L`токенов на запрос, по дням`} class="grow basis0">
                 <DailyMetricChart points={days.map((d) => ({ day: d.day, value: d.context }))} max={Math.max(...days.map((d) => d.context)) * 1.15} format={(v) => Fmt.tokens(Math.trunc(v))} />
               </Card>
             </div>
           ) : null}
-          <Card title="Когда вы работаете" subtitle={`${s.costLabel} по дням недели и часам`}>
+          <Card title={L`Когда вы работаете`} subtitle={L`${s.costLabel} по дням недели и часам`}>
             <div class="stack-8">
               <ActivityHeatmap cells={cells} showsHint={!forExport} />
               <div class="callout secondary">{rhythm(cells, summary.totalCost)}</div>
@@ -193,14 +194,14 @@ function projectRows(events: PricedEvent[], total: number): RankedRow[] {
   const rows: RankedRow[] = groups.slice(0, 7).map((g) => ({
     id: g.key,
     label: g.key,
-    detail: `${Fmt.plural(g.summary.requests, "запрос", "запроса", "запросов")} · кэш ${Fmt.percent(g.summary.cacheHitRate)}`,
+    detail: L`${Fmt.plural(g.summary.requests, "запрос", "запроса", "запросов")} · кэш ${Fmt.percent(g.summary.cacheHitRate)}`,
     value: g.summary.totalCost,
     valueText: `${Fmt.usd(g.summary.totalCost)} · ${share(g.summary.totalCost)}`,
   }));
   const rest = groups.slice(7);
   if (rest.length) {
     const cost = rest.reduce((a, g) => a + g.summary.totalCost, 0);
-    rows.push({ id: "__other", label: `Другие (${rest.length})`, value: cost, valueText: `${Fmt.usd(cost)} · ${share(cost)}`, color: C.other });
+    rows.push({ id: "__other", label: L`Другие (${rest.length})`, value: cost, valueText: `${Fmt.usd(cost)} · ${share(cost)}`, color: C.other });
   }
   return rows;
 }
@@ -209,7 +210,7 @@ function sessionRows(sessions: SessionSummary[]): RankedRow[] {
   return [...sessions].sort((a, b) => b.summary.totalCost - a.summary.totalCost).slice(0, 6).map((x) => ({
     id: x.id,
     label: `${sessionProject(x)} · ${Fmt.dateTime(x.start)}`,
-    detail: `${Fmt.plural(x.summary.requests, "запрос", "запроса", "запросов")} · пик контекста ${Fmt.tokens(x.peakContextTokens)} · ${Fmt.duration((x.end - x.start) / 1000)}`,
+    detail: L`${Fmt.plural(x.summary.requests, "запрос", "запроса", "запросов")} · пик контекста ${Fmt.tokens(x.peakContextTokens)} · ${Fmt.duration((x.end - x.start) / 1000)}`,
     value: x.summary.totalCost,
     valueText: Fmt.usd(x.summary.totalCost),
   }));
@@ -228,7 +229,7 @@ function daily(events: PricedEvent[], interval: Interval): Day[] {
     .map((b) => ({ day: b.start, cacheRate: b.summary.cacheHitRate, context: b.summary.averageContextTokens }));
 }
 
-const DAY_DATIVE = ["понедельникам", "вторникам", "средам", "четвергам", "пятницам", "субботам", "воскресеньям"];
+const DAY_DATIVE = [N("понедельникам"), N("вторникам"), N("средам"), N("четвергам"), N("пятницам"), N("субботам"), N("воскресеньям")];
 
 /** "Больше всего расходуется по средам (34%), пиковый час — 14:00–15:00." */
 function rhythm(cells: HeatCell[], total: number): string {
@@ -242,7 +243,7 @@ function rhythm(cells: HeatCell[], total: number): string {
   const day = byDay.indexOf(Math.max(...byDay));
   const hour = byHour.indexOf(Math.max(...byHour));
   const hh = (h: number) => String(h).padStart(2, "0");
-  return `Больше всего расходуется по ${DAY_DATIVE[day]} (${Fmt.percent(byDay[day] / total)}), пиковый час — ${hh(hour)}:00–${hh((hour + 1) % 24)}:00.`;
+  return L`Больше всего расходуется по ${tr(DAY_DATIVE[day])} (${Fmt.percent(byDay[day] / total)}), пиковый час — ${hh(hour)}:00–${hh((hour + 1) % 24)}:00.`;
 }
 
 const change = (current: number, previous: number): number | undefined => (previous > 0 ? (current - previous) / previous : undefined);
@@ -254,7 +255,7 @@ function ReportCover({ summary, previous }: { summary: UsageSummary; previous?: 
   const parts: string[] = [];
   if (interval) parts.push(`${Fmt.day(interval.start)} – ${Fmt.day(interval.end - 1)}`);
   parts.push(PERIODS.find((p) => p.id === s.period)!.title);
-  if (s.isSubscription) parts.push(`подписка ${s.planTitle}`);
+  if (s.isSubscription) parts.push(L`подписка ${s.planTitle}`);
   const delta = previous ? change(summary.totalCost, previous.totalCost) : undefined;
   return (
     <div class="report-cover">
@@ -263,7 +264,7 @@ function ReportCover({ summary, previous }: { summary: UsageSummary; previous?: 
           <span class="cover-mark"><Icon icon={I.Activity} size={16} /></span>
           <strong>S2A Claude X-Ray</strong>
         </div>
-        <div class="cover-title">Отчёт об использовании Claude Code</div>
+        <div class="cover-title">{L`Отчёт об использовании Claude Code`}</div>
         <div class="callout cover-dim">{parts.join(" · ")}</div>
       </div>
       <span class="spacer" />
@@ -273,7 +274,7 @@ function ReportCover({ summary, previous }: { summary: UsageSummary; previous?: 
         {delta !== undefined ? (
           <span class="cover-pill">
             <Icon icon={delta >= 0 ? I.ArrowUpRight : I.ArrowDownRight} size={14} />
-            {`${delta >= 0 ? "+" : "−"}${Fmt.percent(Math.abs(delta))} к прошлому периоду`}
+            {L`${delta >= 0 ? "+" : "−"}${Fmt.percent(Math.abs(delta))} к прошлому периоду`}
           </span>
         ) : null}
       </div>
@@ -287,17 +288,17 @@ function KPIRow({ summary, previous, sessions, previousSessions }: { summary: Us
   const previousPerSession = previous && previousSessions ? previous.totalCost / previousSessions : undefined;
   return (
     <div class="tiles">
-      <ReportStat title="Токены" value={Fmt.tokens(summary.totalTokens)} change={previous ? change(summary.totalTokens, previous.totalTokens) : undefined} />
-      <ReportStat title="Запросы" value={String(summary.requests)} change={previous ? change(summary.requests, previous.requests) : undefined} />
-      <ReportStat title="Сессии" value={String(sessions)} change={previousSessions !== undefined ? change(sessions, previousSessions) : undefined} />
+      <ReportStat title={L`Токены`} value={Fmt.tokens(summary.totalTokens)} change={previous ? change(summary.totalTokens, previous.totalTokens) : undefined} />
+      <ReportStat title={L`Запросы`} value={String(summary.requests)} change={previous ? change(summary.requests, previous.requests) : undefined} />
+      <ReportStat title={L`Сессии`} value={String(sessions)} change={previousSessions !== undefined ? change(sessions, previousSessions) : undefined} />
       <ReportStat
-        title="Доля кэша"
+        title={L`Доля кэша`}
         value={Fmt.percent(summary.cacheHitRate)}
         change={previous && previous.requests > 0 ? summary.cacheHitRate - previous.cacheHitRate : undefined}
         points
         upIsGood
       />
-      <ReportStat title="Средняя сессия" value={Fmt.usd(perSession)} change={previousPerSession !== undefined ? change(perSession, previousPerSession) : undefined} upIsGood={false} />
+      <ReportStat title={L`Средняя сессия`} value={Fmt.usd(perSession)} change={previousPerSession !== undefined ? change(perSession, previousPerSession) : undefined} upIsGood={false} />
     </div>
   );
 }
@@ -308,8 +309,8 @@ function ReportStat({ title, value, change, points, upIsGood }: { title: string;
   if (change !== undefined && Math.abs(change) >= 0.0005) {
     const sign = change > 0 ? "+" : "−";
     const text = points
-      ? `${sign}${(Math.abs(change) * 100).toFixed(1).replace(".", ",")} п.п. к прошлому периоду`
-      : `${sign}${Fmt.percent(Math.abs(change))} к прошлому периоду`;
+      ? L`${sign}${(Math.abs(change) * 100).toFixed(1).replace(".", ",")} п.п. к прошлому периоду`
+      : L`${sign}${Fmt.percent(Math.abs(change))} к прошлому периоду`;
     const color = upIsGood === undefined ? "var(--text2)" : (change > 0) === upIsGood ? C.good : C.critical;
     note = (
       <span class="label caption strong" style={{ color }}>
@@ -318,7 +319,7 @@ function ReportStat({ title, value, change, points, upIsGood }: { title: string;
       </span>
     );
   } else {
-    note = <span class="caption secondary">{change === undefined ? "нет данных для сравнения" : "без изменений"}</span>;
+    note = <span class="caption secondary">{change === undefined ? L`нет данных для сравнения` : L`без изменений`}</span>;
   }
   return (
     <div class="tile">
@@ -344,14 +345,14 @@ function DailyMetricChart({ points, max, format }: { points: { day: number; valu
         axisPointer: { type: "line", lineStyle: { color: p.other, opacity: 0.55 } },
         formatter: (params: unknown) => {
           const list = (Array.isArray(params) ? params : [params]) as { value: [number, number] }[];
-          return list.length ? tooltipHTML(Fmt.day(list[0].value[0]), [{ label: "Значение", value: format(list[0].value[1]), color }]) : "";
+          return list.length ? tooltipHTML(Fmt.day(list[0].value[0]), [{ label: L`Значение`, value: format(list[0].value[1]), color }]) : "";
         },
       },
       xAxis: {
         type: "time",
         ...axis(p),
         splitNumber: 6,
-        axisLabel: { ...axis(p).axisLabel, formatter: (v: number) => { const d = new Date(v); return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}`; } },
+        axisLabel: { ...axis(p).axisLabel, formatter: (v: number) => Fmt.dayMonth(v) },
       },
       yAxis: { type: "value", min: 0, max, splitNumber: 4, ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: (v: number) => format(v) } },
       series: [{
@@ -382,8 +383,8 @@ function ReportInsights({ events }: { events: PricedEvent[] }) {
   const insights = analyzeInsights(s.pricing, events);
   const free = insights.filter((i) => i.kind === "freeWin").reduce((a, i) => a + (i.potentialSavings ?? 0), 0);
   return (
-    <Card title="Рекомендации" subtitle={free > 0 ? `без потери качества можно сэкономить до ${Fmt.usd(free)}` : undefined}>
-      {insights.length === 0 ? <div class="secondary">Замечаний нет: расход выглядит сбалансированным.</div> : (
+    <Card title={L`Рекомендации`} subtitle={free > 0 ? L`без потери качества можно сэкономить до ${Fmt.usd(free)}` : undefined}>
+      {insights.length === 0 ? <div class="secondary">{L`Замечаний нет: расход выглядит сбалансированным.`}</div> : (
         <div class="stack-12">{insights.map((i) => <InsightCard key={i.id} insight={i} />)}</div>
       )}
     </Card>
@@ -392,10 +393,10 @@ function ReportInsights({ events }: { events: PricedEvent[] }) {
 
 function ReportFooter() {
   const s = useStore();
-  const parts = ["Суммы — API-эквивалент по прайс-листу Anthropic"];
-  if (s.isSubscription) parts[0] += `: на подписке ${s.planTitle} деньги не списываются`;
-  parts.push("Источники: логи Claude Code на этом компьютере, импортированные логи и логи, присланные облачными сессиями");
-  parts.push(`Сформировано ${Fmt.dateTime(s.now)} в S2A Claude X-Ray`);
+  const parts = [L`Суммы — API-эквивалент по прайс-листу Anthropic`];
+  if (s.isSubscription) parts[0] += L`: на подписке ${s.planTitle} деньги не списываются`;
+  parts.push(L`Источники: логи Claude Code на этом компьютере, импортированные логи и логи, присланные облачными сессиями`);
+  parts.push(L`Сформировано ${Fmt.dateTime(s.now)} в S2A Claude X-Ray`);
   return <div class="caption secondary">{parts.join(". ") + "."}</div>;
 }
 

@@ -11,14 +11,14 @@ enum SubscriptionPlan: String, CaseIterable, Identifiable, Codable {
         case .pro: return "Pro"
         case .max5x: return "Max 5×"
         case .max20x: return "Max 20×"
-        case .api: return "API (оплата за токены)"
+        case .api: return L("API (оплата за токены)")
         }
     }
 
     var isSubscription: Bool { self != .api }
 
     /// Label for dollar figures: on a subscription they are an API-equivalent, not a charge.
-    var costLabel: String { isSubscription ? "API-эквивалент" : "Стоимость" }
+    var costLabel: String { isSubscription ? L("API-эквивалент") : L("Стоимость") }
 }
 
 /// Persists user settings: data folders and plan in UserDefaults, prices as JSON in Application Support.

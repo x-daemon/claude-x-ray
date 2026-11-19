@@ -21,6 +21,7 @@ import { TraceLLMView } from "./traceLLM";
 import { itemChips, itemTitle, rowIcon, ToolStatusChip, TraceStatusBanner, UsageLine } from "./traceParts";
 import { TraceTimelineView } from "./traceTimeline";
 import { TraceToolsView } from "./traceTools";
+import { L, N, titled } from "../../core/i18n";
 
 export function TraceView() {
   const s = useStore();
@@ -28,9 +29,9 @@ export function TraceView() {
   if (!sessionID) {
     return (
       <SourcesHelp
-        title="Нет активности за последние 3 дня"
+        title={L`Нет активности за последние 3 дня`}
         icon={I.Waypoints}
-        message="Как только Claude Code начнёт работать на этом компьютере или облачная сессия пришлёт свой лог, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст."
+        message={L`Как только Claude Code начнёт работать на этом компьютере или облачная сессия пришлёт свой лог, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.`}
       />
     );
   }
@@ -42,7 +43,7 @@ export function TraceView() {
       <div class="trace-top">
         <TraceHeader trace={trace} />
         <TraceStatusBanner trace={trace} usage={usage} />
-        <Segmented value={s.traceTab} options={TRACE_TABS} onChange={(tab) => store.set("traceTab", tab)} label="Раздел" class="wide" />
+        <Segmented value={s.traceTab} options={TRACE_TABS} onChange={(tab) => store.set("traceTab", tab)} label={L`Раздел`} class="wide" />
       </div>
       <div class="trace-body" data-scroll>
         {s.traceTab === "feed" ? <TraceFeed key={sessionID} trace={trace} usage={usage} hideContent={hideContent} />
@@ -67,9 +68,9 @@ function TraceHeader({ trace }: { trace: SessionTrace }) {
         style={{ maxWidth: "520px" }}
         value={s.pinnedTrace ?? ""}
         onChange={(e) => store.set("pinnedTrace", (e.currentTarget as HTMLSelectElement).value || undefined)}
-        aria-label="Сессия"
+        aria-label={L`Сессия`}
       >
-        <option value="">Следовать за активной сессией</option>
+        <option value="">{L`Следовать за активной сессией`}</option>
         {sessions.map((session) => (
           <option key={session.id} value={session.id}>
             {`${sessionActivityProject(session)} · ${session.gitBranch ?? "—"} · ${Fmt.dateTime(session.lastActivity)} · ${Fmt.plural(session.items, "событие", "события", "событий")}`}
@@ -79,14 +80,14 @@ function TraceHeader({ trace }: { trace: SessionTrace }) {
       <Toggle
         checked={s.settings.hideContent}
         onChange={(value) => void s.updateSettings({ hideContent: value })}
-        label="Скрыть содержимое"
-        title="Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана"
+        label={L`Скрыть содержимое`}
+        title={L`Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана`}
       />
       <span class="spacer" />
       <div class="right-col">
         <div class="caption selectable">{traceProjectPath(trace) ?? "—"}</div>
         <div class="caption2 secondary">
-          сессия {trace.sessionID.slice(0, 8)} · {Fmt.plural(trace.items.length, "событие", "события", "событий")} · ошибок: {trace.errors}
+          {L`сессия ${trace.sessionID.slice(0, 8)} · ${Fmt.plural(trace.items.length, "событие", "события", "событий")} · ошибок: ${trace.errors}`}
         </div>
       </div>
     </div>
@@ -103,14 +104,14 @@ interface FeedRow {
 
 type FeedFilter = "all" | "user" | "model" | "tools" | "context" | "errors";
 
-const FEED_FILTERS: { id: FeedFilter; title: string }[] = [
-  { id: "all", title: "Всё" },
-  { id: "user", title: "Вы" },
-  { id: "model", title: "Модель" },
-  { id: "tools", title: "Инструменты" },
-  { id: "context", title: "Контекст и система" },
-  { id: "errors", title: "Ошибки" },
-];
+const FEED_FILTERS: { id: FeedFilter; title: string }[] = titled([
+  { id: "all", title: N("Всё") },
+  { id: "user", title: N("Вы") },
+  { id: "model", title: N("Модель") },
+  { id: "tools", title: N("Инструменты") },
+  { id: "context", title: N("Контекст и система") },
+  { id: "errors", title: N("Ошибки") },
+]);
 
 function matches(filter: FeedFilter, item: ActivityItem): boolean {
   switch (filter) {
@@ -164,17 +165,17 @@ function TraceFeed({ trace, usage, hideContent }: { trace: SessionTrace; usage: 
   return (
     <div class="feed">
       <div class="row gap-12 feed-bar">
-        <Segmented value={filter} options={FEED_FILTERS} onChange={setFilter} label="Фильтр" />
-        <input class="search" type="search" placeholder="Поиск по командам, файлам, текстам" value={query} onInput={(e) => setQuery((e.currentTarget as HTMLInputElement).value)} />
+        <Segmented value={filter} options={FEED_FILTERS} onChange={setFilter} label={L`Фильтр`} />
+        <input class="search" type="search" placeholder={L`Поиск по командам, файлам, текстам`} value={query} onInput={(e) => setQuery((e.currentTarget as HTMLInputElement).value)} />
         <span class="spacer" />
-        <span class="caption secondary">{rows.length} событий</span>
+        <span class="caption secondary">{L`${rows.length} событий`}</span>
       </div>
       <div class="feed-list">
         {rows.slice(0, limit).map((row) => (
           <FeedRowView key={row.item.id} row={row} hideContent={hideContent} expanded={expanded.has(row.item.id)} toggle={() => toggle(row.item.id)} />
         ))}
         {rows.length > limit ? (
-          <button class="btn more" type="button" onClick={() => setLimit(limit + 250)}>Показать ещё {Math.min(250, rows.length - limit)}</button>
+          <button class="btn more" type="button" onClick={() => setLimit(limit + 250)}>{L`Показать ещё ${Math.min(250, rows.length - limit)}`}</button>
         ) : null}
       </div>
     </div>
@@ -197,7 +198,7 @@ function FeedRowView({ row, hideContent, expanded, toggle }: { row: FeedRow; hid
         <span class="spacer" />
         {row.tool ? <ToolStatusChip tool={row.tool} /> : null}
         {hasDetail ? (
-          <button class="btn borderless icon-only" type="button" onClick={toggle} title={expanded ? "Свернуть" : "Подробнее"}>
+          <button class="btn borderless icon-only" type="button" onClick={toggle} title={expanded ? L`Свернуть` : L`Подробнее`}>
             <Icon icon={expanded ? I.ChevronDown : I.ChevronRight} size={14} />
           </button>
         ) : null}
@@ -211,11 +212,11 @@ function FeedRowView({ row, hideContent, expanded, toggle }: { row: FeedRow; hid
           {!hideContent && item.detail !== undefined ? <DetailBlock text={item.detail} /> : null}
           {result ? (
             <>
-              <div class={result.isError ? "caption strong critical" : "caption strong secondary"}>{result.isError ? "Результат (ошибка)" : "Результат"}</div>
-              <DetailBlock text={hideContent ? `${Fmt.bytes(result.outputBytes ?? 0)} скрыто` : result.detail ?? result.title} />
+              <div class={result.isError ? "caption strong critical" : "caption strong secondary"}>{result.isError ? L`Результат (ошибка)` : L`Результат`}</div>
+              <DetailBlock text={hideContent ? L`${Fmt.bytes(result.outputBytes ?? 0)} скрыто` : result.detail ?? result.title} />
             </>
           ) : null}
-          {hideContent ? <div class="caption secondary">Содержимое скрыто переключателем «Скрыть содержимое».</div> : null}
+          {hideContent ? <div class="caption secondary">{L`Содержимое скрыто переключателем «Скрыть содержимое».`}</div> : null}
         </div>
       ) : null}
     </div>
@@ -238,15 +239,15 @@ function TraceFlow({ trace, usage, hideContent }: { trace: SessionTrace; usage: 
   return (
     <div class="page">
       <div class="row top gap-16 wrap-narrow">
-        <Card title="Карта переходов" subtitle="что за чем следует в основном потоке" class="grow">
-          {trace.transitions.length === 0 ? <div class="secondary">Переходов пока нет</div> : (
+        <Card title={L`Карта переходов`} subtitle={L`что за чем следует в основном потоке`} class="grow">
+          {trace.transitions.length === 0 ? <div class="secondary">{L`Переходов пока нет`}</div> : (
             <RankedBarList rows={trace.transitions.slice(0, 16).map((t) => {
               const id = `${t.from} → ${t.to}`;
               return { id, label: id, value: t.count, valueText: Fmt.plural(t.count, "раз", "раза", "раз") };
             })} />
           )}
         </Card>
-        <Card title="Ходы сессии" style={{ maxWidth: "380px", flex: "0 0 380px" }}>
+        <Card title={L`Ходы сессии`} style={{ maxWidth: "380px", flex: "0 0 380px" }}>
           <TurnSummary trace={trace} usage={usage} />
         </Card>
       </div>
@@ -273,14 +274,14 @@ function TurnSummary({ trace, usage }: { trace: SessionTrace; usage: Map<string,
   const cost = [...usage.values()].reduce((a, p) => a + costTotal(p.cost), 0);
   return (
     <KeyValues rows={[
-      ["Ходов", String(trace.turns.filter((t) => t.prompt).length)],
-      ["Завершено / прервано", `${completed} / ${interrupted}`],
-      ["Ответов модели", `${main} + ${trace.steps.length - main} у субагентов`],
-      ["Вызовов инструментов", `${trace.tools.length}, ошибок ${trace.tools.filter(toolIsError).length}`],
-      ["Время размышлений", Fmt.ms(thinking)],
-      ["Генерация ввода инструментов", Fmt.ms(streaming)],
-      ["Сообщений во время работы", String(trace.items.filter((i) => i.kind === "queued" && i.title.startsWith("В очереди")).length)],
-      ["API-эквивалент", Fmt.usd(cost)],
+      [L`Ходов`, String(trace.turns.filter((t) => t.prompt).length)],
+      [L`Завершено / прервано`, `${completed} / ${interrupted}`],
+      [L`Ответов модели`, L`${main} + ${trace.steps.length - main} у субагентов`],
+      [L`Вызовов инструментов`, L`${trace.tools.length}, ошибок ${trace.tools.filter(toolIsError).length}`],
+      [L`Время размышлений`, Fmt.ms(thinking)],
+      [L`Генерация ввода инструментов`, Fmt.ms(streaming)],
+      [L`Сообщений во время работы`, String(trace.items.filter((i) => i.kind === "queued" && i.title.startsWith(L`В очереди`)).length)],
+      [L`API-эквивалент`, Fmt.usd(cost)],
     ]} />
   );
 }
@@ -293,14 +294,14 @@ function TurnCard({ turn, usage, hideContent, expanded, toggle }: { turn: TraceT
     <div class="card">
       <button class="turn-head" type="button" onClick={toggle}>
         <Icon icon={expanded ? I.ChevronDown : I.ChevronRight} size={14} class="secondary" />
-        <h3>{turn.prompt ? `Ход ${turn.index}` : "Начало сессии"}</h3>
+        <h3>{turn.prompt ? L`Ход ${turn.index}` : L`Начало сессии`}</h3>
         <Chip text={outcomeTitle[turn.outcome]} tint={outcomeColor[turn.outcome]} />
         {turn.prompt ? <span class="ellipsis callout">{itemTitle(turn.prompt, hideContent)}</span> : null}
         <span class="spacer" />
         <span class="caption num secondary nowrap">
-          {Fmt.dateTime(turn.start)} · {Fmt.shortDuration(duration)} · {turn.stepIDs.length} отв. · {turn.toolCalls} инстр. · {Fmt.tokens(tokens)} ток. · {Fmt.usd(cost)}
+          {L`${Fmt.dateTime(turn.start)} · ${Fmt.shortDuration(duration)} · ${turn.stepIDs.length} отв. · ${turn.toolCalls} инстр. · ${Fmt.tokens(tokens)} ток. · ${Fmt.usd(cost)}`}
         </span>
-        {turn.errors > 0 ? <Chip text={`ошибок ${turn.errors}`} icon={I.CircleX} tint={C.critical} /> : null}
+        {turn.errors > 0 ? <Chip text={L`ошибок ${turn.errors}`} icon={I.CircleX} tint={C.critical} /> : null}
       </button>
       {expanded ? (
         <div class="stack-8" style={{ marginTop: "10px" }}>
@@ -331,13 +332,13 @@ function FlowStep({ step, children, usage, hideContent }: { step: ModelStep; chi
     <div class="stack-4">
       <div class="row baseline gap-6 wrap">
         <Icon icon={I.Brain} size={15} color={C.model} />
-        <span class="callout strong">{step.model ? displayModelName(step.model) : "Модель"}</span>
-        {step.isSidechain ? <Chip text="субагент" icon={I.Users} tint={C.subagent} /> : null}
+        <span class="callout strong">{step.model ? displayModelName(step.model) : L`Модель`}</span>
+        {step.isSidechain ? <Chip text={L`субагент`} icon={I.Users} tint={C.subagent} /> : null}
         {step.effort ? <Chip text={`effort ${step.effort}`} tint={C.other} /> : null}
-        <Chip text={`шаг ${Fmt.shortDuration(stepDuration(step))}`} icon={I.Timer} tint={C.other} />
-        {step.thinkingMs > 0 ? <Chip text={`думал ${Fmt.ms(step.thinkingMs)}`} icon={I.Brain} tint={C.model} /> : null}
-        {step.inputStreamMs > 0 ? <Chip text={`ввод ${Fmt.ms(step.inputStreamMs)}`} icon={I.Keyboard} tint={C.other} /> : null}
-        {step.attributionSkill ? <Chip text={`скилл ${step.attributionSkill}`} icon={I.Sparkles} tint={C.skill} /> : null}
+        <Chip text={L`шаг ${Fmt.shortDuration(stepDuration(step))}`} icon={I.Timer} tint={C.other} />
+        {step.thinkingMs > 0 ? <Chip text={L`думал ${Fmt.ms(step.thinkingMs)}`} icon={I.Brain} tint={C.model} /> : null}
+        {step.inputStreamMs > 0 ? <Chip text={L`ввод ${Fmt.ms(step.inputStreamMs)}`} icon={I.Keyboard} tint={C.other} /> : null}
+        {step.attributionSkill ? <Chip text={L`скилл ${step.attributionSkill}`} icon={I.Sparkles} tint={C.skill} /> : null}
         <span class="spacer" />
         <span class="caption num secondary">{Fmt.time(step.start)}</span>
       </div>

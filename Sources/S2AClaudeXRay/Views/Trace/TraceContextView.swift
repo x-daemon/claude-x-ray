@@ -19,55 +19,55 @@ struct TraceContextView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 12) {
-                    StatTile(title: "Контекст сейчас", value: Fmt.tokens(contextNow), caption: "\(Fmt.percent(ratio)) окна \(Fmt.tokens(window))", systemImage: "gauge.with.dots.needle.50percent")
+                    StatTile(title: L("Контекст сейчас"), value: Fmt.tokens(contextNow), caption: L("\(Fmt.percent(ratio)) окна \(Fmt.tokens(window))"), systemImage: "gauge.with.dots.needle.50percent")
                     StatTile(
-                        title: "Модель",
+                        title: L("Модель"),
                         value: snapshot.modelName ?? last.map { ModelCatalog.displayName(for: $0.event.model) } ?? "—",
-                        caption: [snapshot.modelID ?? last?.event.model, snapshot.knowledgeCutoff.map { "знания до \($0)" }].compactMap { $0 }.joined(separator: " · "),
+                        caption: [snapshot.modelID ?? last?.event.model, snapshot.knowledgeCutoff.map { L("знания до \($0)") }].compactMap { $0 }.joined(separator: " · "),
                         systemImage: "cpu"
                     )
-                    StatTile(title: "Effort", value: last?.event.effort ?? "—", caption: "глубина размышлений", systemImage: "dial.medium")
+                    StatTile(title: "Effort", value: last?.event.effort ?? "—", caption: L("глубина размышлений"), systemImage: "dial.medium")
                     StatTile(
-                        title: "Кэш последнего запроса",
+                        title: L("Кэш последнего запроса"),
                         value: last.map { Fmt.percent($0.event.tokens.cacheHitRate) } ?? "—",
-                        caption: (last?.event.tokens.cacheWrite1h ?? 0) > 0 ? "запись с TTL 1 ч" : "TTL 5 мин",
+                        caption: (last?.event.tokens.cacheWrite1h ?? 0) > 0 ? L("запись с TTL 1 ч") : L("TTL 5 мин"),
                         systemImage: "memorychip"
                     )
-                    StatTile(title: "Сжатий контекста", value: "\(snapshot.compactions)", caption: "/compact и автоматические", systemImage: "arrow.down.right.and.arrow.up.left")
+                    StatTile(title: L("Сжатий контекста"), value: "\(snapshot.compactions)", caption: L("/compact и автоматические"), systemImage: "arrow.down.right.and.arrow.up.left")
                 }
 
-                Card(title: "Заполнение окна контекста", subtitle: "\(Fmt.tokens(contextNow)) из \(Fmt.tokens(window))") {
+                Card(title: L("Заполнение окна контекста"), subtitle: L("\(Fmt.tokens(contextNow)) из \(Fmt.tokens(window))")) {
                     UsageBar(fraction: ratio, color: ratio >= 0.8 ? Palette.critical : ratio >= 0.6 ? Palette.warning : Palette.primary)
                     Text(ratio >= 0.6
-                         ? "Контекст заполнен больше чем на \(Fmt.percent(ratio)). Каждый следующий ход отправляет его целиком; подумайте о /compact или новой сессии."
-                         : "Каждый ход заново отправляет весь контекст; чем он меньше, тем дешевле и быстрее ответы.")
+                         ? L("Контекст заполнен больше чем на \(Fmt.percent(ratio)). Каждый следующий ход отправляет его целиком; подумайте о /compact или новой сессии.")
+                         : L("Каждый ход заново отправляет весь контекст; чем он меньше, тем дешевле и быстрее ответы."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
 
-                Card(title: "Из чего состоит контекст", subtitle: "оценка ≈ 4 символа на токен") {
+                Card(title: L("Из чего состоит контекст"), subtitle: L("оценка ≈ 4 символа на токен")) {
                     ContextCompositionView(snapshot: snapshot, total: contextNow)
                 }
 
-                Card(title: "Контекст по запросам", subtitle: "последние 80 запросов: чтение кэша, запись в кэш, свежий ввод") {
+                Card(title: L("Контекст по запросам"), subtitle: L("последние 80 запросов: чтение кэша, запись в кэш, свежий ввод")) {
                     ContextSplitChart(events: Array(main.suffix(80)))
                 }
 
-                Card(title: "Что сильнее всего раздувает контекст", subtitle: "самые большие результаты инструментов") {
+                Card(title: L("Что сильнее всего раздувает контекст"), subtitle: L("самые большие результаты инструментов")) {
                     BiggestResultsView(trace: trace)
                 }
 
                 HStack(alignment: .top, spacing: 16) {
-                    Card(title: "Окружение") {
+                    Card(title: L("Окружение")) {
                         EnvironmentGrid(snapshot: snapshot, trace: trace)
                     }
-                    Card(title: "Разрешения") {
+                    Card(title: L("Разрешения")) {
                         PermissionsView(trace: trace)
                     }
                 }
 
                 if !snapshot.editedFiles.isEmpty {
-                    Card(title: "Файлы, изменённые вне Claude", subtitle: "Claude получает об этом уведомление в контексте") {
+                    Card(title: L("Файлы, изменённые вне Claude"), subtitle: L("Claude получает об этом уведомление в контексте")) {
                         VStack(alignment: .leading, spacing: 3) {
                             ForEach(snapshot.editedFiles, id: \.self) { path in
                                 Text(path).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
@@ -95,7 +95,7 @@ struct ContextCompositionView: View {
     var body: some View {
         let known = snapshot.knownComponents.map { Part(name: $0.name, tokens: $0.tokens) }
         let knownTotal = known.reduce(0) { $0 + $1.tokens }
-        let parts = known + (total > knownTotal ? [Part(name: "Диалог, результаты инструментов, схемы", tokens: total - knownTotal)] : [])
+        let parts = known + (total > knownTotal ? [Part(name: L("Диалог, результаты инструментов, схемы"), tokens: total - knownTotal)] : [])
         let domain = parts.map(\.name)
         let range = parts.indices.map { index in
             index < known.count ? Palette.series[index % Palette.series.count] : Palette.other
@@ -103,11 +103,11 @@ struct ContextCompositionView: View {
 
         VStack(alignment: .leading, spacing: 10) {
             if parts.isEmpty {
-                Text("В транскрипте пока нет сведений о составе контекста").foregroundStyle(.secondary)
+                Text(L("В транскрипте пока нет сведений о составе контекста")).foregroundStyle(.secondary)
             } else {
                 Chart(parts) { part in
-                    BarMark(x: .value("Токены", part.tokens), y: .value("Контекст", "Контекст"))
-                        .foregroundStyle(by: .value("Часть", part.name))
+                    BarMark(x: .value(L("Токены"), part.tokens), y: .value(L("Контекст"), L("Контекст")))
+                        .foregroundStyle(by: .value(L("Часть"), part.name))
                 }
                 .chartForegroundStyleScale(domain: domain, range: range)
                 .chartYAxis(.hidden)
@@ -134,7 +134,7 @@ struct ContextCompositionView: View {
                     }
                 }
             }
-            Text("Скиллов в контексте: \(snapshot.skills.count) · отложенных инструментов: \(snapshot.deferredTools.count) · типов субагентов: \(snapshot.subagentTypes.count) · MCP с инструкциями: \(snapshot.mcpWithInstructions.count)")
+            Text(L("Скиллов в контексте: \(snapshot.skills.count) · отложенных инструментов: \(snapshot.deferredTools.count) · типов субагентов: \(snapshot.subagentTypes.count) · MCP с инструкциями: \(snapshot.mcpWithInstructions.count)"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -156,22 +156,22 @@ struct ContextSplitChart: View {
         let segments = events.enumerated().flatMap { index, priced -> [Segment] in
             let t = priced.event.tokens
             return [
-                Segment(index: index + 1, kind: "Чтение кэша", tokens: Double(t.cacheRead)),
-                Segment(index: index + 1, kind: "Запись в кэш", tokens: Double(t.cacheWrite)),
-                Segment(index: index + 1, kind: "Свежий ввод", tokens: Double(t.input)),
+                Segment(index: index + 1, kind: L("Чтение кэша"), tokens: Double(t.cacheRead)),
+                Segment(index: index + 1, kind: L("Запись в кэш"), tokens: Double(t.cacheWrite)),
+                Segment(index: index + 1, kind: L("Свежий ввод"), tokens: Double(t.input)),
             ]
         }
 
         let barWidth = CGFloat(max(2, min(14, 900 / max(events.count, 1) - 2)))
 
         if segments.isEmpty {
-            Text("Нет запросов").foregroundStyle(.secondary)
+            Text(L("Нет запросов")).foregroundStyle(.secondary)
         } else {
             Chart(segments) { segment in
-                BarMark(x: .value("Запрос", segment.index), y: .value("Токены", segment.tokens), width: .fixed(barWidth))
-                    .foregroundStyle(by: .value("Часть", segment.kind))
+                BarMark(x: .value(L("Запрос"), segment.index), y: .value(L("Токены"), segment.tokens), width: .fixed(barWidth))
+                    .foregroundStyle(by: .value(L("Часть"), segment.kind))
             }
-            .chartForegroundStyleScale(domain: ["Чтение кэша", "Запись в кэш", "Свежий ввод"], range: [Palette.component("Чтение кэша"), Palette.component("Запись в кэш"), Palette.component("Ввод")])
+            .chartForegroundStyleScale(domain: [L("Чтение кэша"), L("Запись в кэш"), L("Свежий ввод")], range: [Palette.component(L("Чтение кэша")), Palette.component(L("Запись в кэш")), Palette.component(L("Ввод"))])
             .tokenYAxis()
             .chartLegend(position: .bottom, alignment: .leading)
             .frame(height: 190)
@@ -190,15 +190,15 @@ struct BiggestResultsView: View {
             .prefix(10)
 
         if biggest.isEmpty {
-            Text("Результатов инструментов пока нет").foregroundStyle(.secondary)
+            Text(L("Результатов инструментов пока нет")).foregroundStyle(.secondary)
         } else {
             Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 5) {
                 GridRow {
-                    Text("Инструмент").foregroundStyle(.secondary)
-                    Text("Что").foregroundStyle(.secondary)
-                    Text("Размер").foregroundStyle(.secondary)
-                    Text("≈ токенов").foregroundStyle(.secondary)
-                    Text("Когда").foregroundStyle(.secondary)
+                    Text(L("Инструмент")).foregroundStyle(.secondary)
+                    Text(L("Что")).foregroundStyle(.secondary)
+                    Text(L("Размер")).foregroundStyle(.secondary)
+                    Text(L("≈ токенов")).foregroundStyle(.secondary)
+                    Text(L("Когда")).foregroundStyle(.secondary)
                 }
                 .font(.caption.weight(.medium))
                 ForEach(Array(biggest)) { tool in
@@ -208,12 +208,12 @@ struct BiggestResultsView: View {
                         Text(Snippet.truncate(tool.call.title, 70)).font(.system(.caption, design: .monospaced)).lineLimit(1)
                         Text(Fmt.bytes(bytes)).monospacedDigit()
                         Text(Fmt.tokens(bytes / 4)).monospacedDigit()
-                        Text(tool.start.formatted(date: .omitted, time: .shortened)).foregroundStyle(.secondary)
+                        Text(tool.start.localized(date: .omitted, time: .shortened)).foregroundStyle(.secondary)
                     }
                     .font(.callout)
                 }
             }
-            Text("Большие выводы (чтение целых файлов, длинные логи) остаются в контексте до /compact или конца сессии. Читайте файлы частями и фильтруйте вывод команд.")
+            Text(L("Большие выводы (чтение целых файлов, длинные логи) остаются в контексте до /compact или конца сессии. Читайте файлы частями и фильтруйте вывод команд."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -227,15 +227,15 @@ struct EnvironmentGrid: View {
     var body: some View {
         let env = snapshot.environment
         let rows: [(String, String)] = [
-            ("Рабочая папка", env["workingDirectory"] ?? trace.projectPath ?? "—"),
-            ("Ветка git", trace.gitBranch ?? "—"),
-            ("Git-репозиторий", env["isGitRepo"] ?? "—"),
+            (L("Рабочая папка"), env["workingDirectory"] ?? trace.projectPath ?? "—"),
+            (L("Ветка git"), trace.gitBranch ?? "—"),
+            (L("Git-репозиторий"), env["isGitRepo"] ?? "—"),
             ("Worktree", env["isWorktree"] ?? "—"),
-            ("Платформа", [env["platform"], env["osVersion"]].compactMap { $0 }.joined(separator: " · ")),
-            ("Оболочка", env["shell"] ?? "—"),
-            ("Доп. папки", env["additionalWorkingDirectories"].flatMap { $0.isEmpty ? nil : $0 } ?? "—"),
-            ("Задач в списке", snapshot.taskCount.map(String.init) ?? "—"),
-            ("Последнее изменение", snapshot.lastRemoteChange ?? "—"),
+            (L("Платформа"), [env["platform"], env["osVersion"]].compactMap { $0 }.joined(separator: " · ")),
+            (L("Оболочка"), env["shell"] ?? "—"),
+            (L("Доп. папки"), env["additionalWorkingDirectories"].flatMap { $0.isEmpty ? nil : $0 } ?? "—"),
+            (L("Задач в списке"), snapshot.taskCount.map(String.init) ?? "—"),
+            (L("Последнее изменение"), snapshot.lastRemoteChange ?? "—"),
         ]
         Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
@@ -255,9 +255,9 @@ struct PermissionsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if trace.permissions.isEmpty {
-                Text("Решений о разрешениях в логе нет").foregroundStyle(.secondary)
+                Text(L("Решений о разрешениях в логе нет")).foregroundStyle(.secondary)
             } else {
-                Text("Как разрешались вызовы инструментов").font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                Text(L("Как разрешались вызовы инструментов")).font(.caption.weight(.medium)).foregroundStyle(.secondary)
                 ForEach(trace.permissions) { permission in
                     HStack {
                         Image(systemName: permission.label.hasPrefix("accept") ? "checkmark.shield" : "hand.raised").foregroundStyle(Palette.primary)
@@ -279,7 +279,7 @@ struct PermissionsView: View {
             }
             if !trace.context.allowedRules.isEmpty {
                 Divider()
-                Text("Разрешённые правила").font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                Text(L("Разрешённые правила")).font(.caption.weight(.medium)).foregroundStyle(.secondary)
                 ForEach(trace.context.allowedRules, id: \.self) { rule in
                     Text(rule).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
                 }

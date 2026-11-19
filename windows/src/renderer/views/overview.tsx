@@ -9,13 +9,14 @@ import { cacheWrite } from "../../core/model";
 import { costTotal, type PricedEvent } from "../../core/pricing";
 import { axis, axisTooltip, baseOption, EChart, stackedBars, tooltipBase, tooltipHTML, usdAxisLabel, type ChartOption, type TooltipRow } from "../chart";
 import * as I from "../icons";
-import { OTHER_SERIES, PERIODS, store, useStore } from "../state";
+import { otherSeries, PERIODS, store, useStore } from "../state";
 import { COMPONENTS } from "../theme";
 import { Card, Legend, StatTile, Tiles } from "../ui";
+import { L, N, tr } from "../../core/i18n";
 
 echarts.use([PieChart]);
 
-export const unitTitle = (unit: CalendarUnit): string => (unit === "hour" ? "по часам" : unit === "week" ? "по неделям" : "по дням");
+export const unitTitle = (unit: CalendarUnit): string => (unit === "hour" ? L`по часам` : unit === "week" ? L`по неделям` : L`по дням`);
 
 export function OverviewView() {
   const s = useStore();
@@ -29,20 +30,20 @@ export function OverviewView() {
     <div class="page">
       <Tiles>
         <StatTile title={s.costLabel} value={Fmt.usd(summary.totalCost)} caption={periodTitle} icon={I.Zap} />
-        <StatTile title="Токены" value={Fmt.tokens(summary.totalTokens)} caption={`вывод ${Fmt.tokens(summary.tokens.output)}, из них размышления ${Fmt.tokens(summary.tokens.thinking)}`} icon={I.Hash} />
-        <StatTile title="Запросы" value={String(summary.requests)} caption={`${sessions} сессий · ${Fmt.usd(summary.costPerRequest)} за запрос`} icon={I.ArrowUpDown} />
-        <StatTile title="Доля кэша" value={summary.requests > 0 ? Fmt.percent(summary.cacheHitRate) : "—"} caption={`средний контекст ${Fmt.tokens(Math.trunc(summary.averageContextTokens))}`} icon={I.MemoryStick} />
+        <StatTile title={L`Токены`} value={Fmt.tokens(summary.totalTokens)} caption={L`вывод ${Fmt.tokens(summary.tokens.output)}, из них размышления ${Fmt.tokens(summary.tokens.thinking)}`} icon={I.Hash} />
+        <StatTile title={L`Запросы`} value={String(summary.requests)} caption={L`${sessions} сессий · ${Fmt.usd(summary.costPerRequest)} за запрос`} icon={I.ArrowUpDown} />
+        <StatTile title={L`Доля кэша`} value={summary.requests > 0 ? Fmt.percent(summary.cacheHitRate) : "—"} caption={L`средний контекст ${Fmt.tokens(Math.trunc(summary.averageContextTokens))}`} icon={I.MemoryStick} />
       </Tiles>
       {interval ? (
-        <Card title="Стоимость по времени" subtitle={`по моделям · ${unitTitle(unit)}`}>
+        <Card title={L`Стоимость по времени`} subtitle={L`по моделям · ${unitTitle(unit)}`}>
           <CostTimelineChart buckets={Analytics.buckets(events, unit, interval, (e) => s.seriesName(e))} unit={unit} interval={interval} />
         </Card>
       ) : null}
       <div class="row top gap-16 wrap-narrow">
-        <Card title="Из чего складывается стоимость" class="grow"><CostComposition summary={summary} /></Card>
-        <Card title="Доля моделей" style={{ flex: "0 1 420px" }}><ModelShareChart events={events} /></Card>
+        <Card title={L`Из чего складывается стоимость`} class="grow"><CostComposition summary={summary} /></Card>
+        <Card title={L`Доля моделей`} style={{ flex: "0 1 420px" }}><ModelShareChart events={events} /></Card>
       </div>
-      <Card title="Когда вы работаете" subtitle={`${s.costLabel} по дням недели и часам`}>
+      <Card title={L`Когда вы работаете`} subtitle={L`${s.costLabel} по дням недели и часам`}>
         <ActivityHeatmap cells={Analytics.heatmap(events)} />
       </Card>
     </div>
@@ -56,7 +57,7 @@ function bucketTitle(start: number, unit: CalendarUnit): string {
 function bucketLabel(start: number, unit: CalendarUnit): string {
   if (unit === "hour") return Fmt.time(start, false);
   const d = new Date(start);
-  return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return Fmt.dayMonth(d.getTime());
 }
 
 /** Stacked bars per time bucket, one segment per model, with a hover breakdown. */
@@ -72,12 +73,12 @@ export function CostTimelineChart({ buckets, unit, interval, height = 260 }: { b
     ...baseOption(p),
     tooltip: axisTooltip(p, (i) => {
       const b = buckets[i];
-      const rows: TooltipRow[] = [{ label: "Всего", value: Fmt.usd(b.summary.totalCost) }];
+      const rows: TooltipRow[] = [{ label: L`Всего`, value: Fmt.usd(b.summary.totalCost) }];
       for (const [name, sum] of [...b.bySeries.entries()].sort((x, y) => y[1].totalCost - x[1].totalCost)) {
         const index = scale.domain.indexOf(name);
         rows.push({ label: name, value: Fmt.usd(sum.totalCost), color: index >= 0 ? scale.range[index] : undefined });
       }
-      rows.push({ label: "Токены", value: Fmt.tokens(b.summary.totalTokens) });
+      rows.push({ label: L`Токены`, value: Fmt.tokens(b.summary.totalTokens) });
       return tooltipHTML(bucketTitle(b.start, unit), rows);
     }),
     xAxis: { type: "category", data: buckets.map((b) => bucketLabel(b.start, unit)), ...axis(p, false) },
@@ -91,8 +92,8 @@ export function CostTimelineChart({ buckets, unit, interval, height = 260 }: { b
   return (
     <div>
       <div class="chart-wrap">
-        <EChart option={option} height={height} label="Стоимость по времени, по моделям" />
-        {empty ? <div class="chart-overlay plain"><span>Нет данных за период</span></div> : null}
+        <EChart option={option} height={height} label={L`Стоимость по времени, по моделям`} />
+        {empty ? <div class="chart-overlay plain"><span>{L`Нет данных за период`}</span></div> : null}
       </div>
       {!empty ? <Legend items={scale.domain.map((name, i) => ({ name, color: scale.range[i] }))} /> : null}
     </div>
@@ -103,27 +104,27 @@ export function CostTimelineChart({ buckets, unit, interval, height = 260 }: { b
 export function CostComposition({ summary }: { summary: UsageSummary }) {
   const p = store.palette;
   const all = [
-    { name: COMPONENTS[0], cost: summary.cost.input, tokens: summary.tokens.input as number | undefined },
-    { name: COMPONENTS[1], cost: summary.cost.output, tokens: summary.tokens.output },
-    { name: COMPONENTS[2], cost: summary.cost.cacheRead, tokens: summary.tokens.cacheRead },
-    { name: COMPONENTS[3], cost: summary.cost.cacheWrite, tokens: cacheWrite(summary.tokens) },
-    { name: COMPONENTS[4], cost: summary.cost.webSearch, tokens: undefined },
+    { name: tr(COMPONENTS[0]), cost: summary.cost.input, tokens: summary.tokens.input as number | undefined },
+    { name: tr(COMPONENTS[1]), cost: summary.cost.output, tokens: summary.tokens.output },
+    { name: tr(COMPONENTS[2]), cost: summary.cost.cacheRead, tokens: summary.tokens.cacheRead },
+    { name: tr(COMPONENTS[3]), cost: summary.cost.cacheWrite, tokens: cacheWrite(summary.tokens) },
+    { name: tr(COMPONENTS[4]), cost: summary.cost.webSearch, tokens: undefined },
   ];
-  const colors = Object.fromEntries(COMPONENTS.map((name, i) => [name, p.series[i]]));
+  const colors = Object.fromEntries(COMPONENTS.map((name, i) => [tr(name), p.series[i]]));
   const components = all.filter((c) => c.cost > 0);
   const total = Math.max(summary.totalCost, Number.MIN_VALUE);
   return (
     <div class="stack-12">
       {components.length ? (
         <div>
-          <div class="segbar tall" role="img" aria-label="Структура стоимости">
+          <div class="segbar tall" role="img" aria-label={L`Структура стоимости`}>
             {components.map((c) => <span key={c.name} style={{ flexGrow: c.cost, background: colors[c.name] }} title={`${c.name}: ${Fmt.usd(c.cost)}`} />)}
           </div>
           <div class="segbar-scale caption2 secondary num">
             <span>$0</span><span>{Fmt.usd(summary.totalCost / 2)}</span><span>{Fmt.usd(summary.totalCost)}</span>
           </div>
         </div>
-      ) : <div class="secondary">Нет данных за период</div>}
+      ) : <div class="secondary">{L`Нет данных за период`}</div>}
       <div class="grid-5">
         {components.map((c) => (
           <>
@@ -137,7 +138,7 @@ export function CostComposition({ summary }: { summary: UsageSummary }) {
       </div>
       {summary.tokens.thinking > 0 ? (
         <div class="caption secondary">
-          Размышления — {Fmt.percent(summary.tokens.thinking / Math.max(summary.tokens.output, 1))} выходных токенов; они оплачиваются как вывод.
+          {L`Размышления — ${Fmt.percent(summary.tokens.thinking / Math.max(summary.tokens.output, 1))} выходных токенов; они оплачиваются как вывод.`}
         </div>
       ) : null}
     </div>
@@ -160,8 +161,8 @@ function ModelShareChart({ events }: { events: PricedEvent[] }) {
       formatter: (params: unknown) => {
         const x = params as { name: string; value: number; color: string };
         return tooltipHTML(x.name, [
-          { label: "API-эквивалент", value: Fmt.usd(x.value), color: x.color },
-          { label: "Доля", value: Fmt.percent(total > 0 ? x.value / total : 0) },
+          { label: L`API-эквивалент`, value: Fmt.usd(x.value), color: x.color },
+          { label: L`Доля`, value: Fmt.percent(total > 0 ? x.value / total : 0) },
         ]);
       },
     },
@@ -176,10 +177,10 @@ function ModelShareChart({ events }: { events: PricedEvent[] }) {
       data: groups.map((g) => ({ name: g.key, value: g.summary.totalCost, itemStyle: { color: colorOf(g.key) } })),
     }],
   } as unknown as ChartOption), [events, p, s.modelOrder]);
-  if (!groups.length) return <div class="secondary empty-note" style={{ minHeight: "200px" }}>Нет данных</div>;
+  if (!groups.length) return <div class="secondary empty-note" style={{ minHeight: "200px" }}>{L`Нет данных`}</div>;
   return (
     <div class="donut">
-      <div class="donut-chart"><EChart option={option} height={200} label="Доля моделей в стоимости" /></div>
+      <div class="donut-chart"><EChart option={option} height={200} label={L`Доля моделей в стоимости`} /></div>
       <div class="donut-legend">
         {groups.map((g) => (
           <div class="legend-item" key={g.key}>
@@ -193,7 +194,7 @@ function ModelShareChart({ events }: { events: PricedEvent[] }) {
   );
 }
 
-const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+const DAYS = [N("Пн"), N("Вт"), N("Ср"), N("Чт"), N("Пт"), N("Сб"), N("Вс")];
 const HOURS = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, "0"));
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -233,7 +234,7 @@ export function ActivityHeatmap({ cells, showsHint = true }: { cells: HeatCell[]
                   key={hour}
                   class="heat-cell"
                   style={{ background: color }}
-                  title={`${day}, ${hour}:00 — ${Fmt.usd(cell.cost)}, запросов: ${cell.requests}`}
+                  title={L`${day}, ${hour}:00 — ${Fmt.usd(cell.cost)}, запросов: ${cell.requests}`}
                   onMouseEnter={() => setHovered(cell)}
                 />
               );
@@ -244,13 +245,13 @@ export function ActivityHeatmap({ cells, showsHint = true }: { cells: HeatCell[]
         {HOURS.map((hour, h) => <span key={hour} class="caption2 secondary heat-hour">{h % 3 === 0 ? hour : ""}</span>)}
       </div>
       <div class="row gap-6 caption2 secondary">
-        <span>меньше</span>
+        <span>{L`меньше`}</span>
         <span class="ramp">{ramp.map((c) => <span key={c} style={{ background: c }} />)}</span>
-        <span>больше · до {Fmt.usd(max)} за час</span>
+        <span>{L`больше · до ${Fmt.usd(max)} за час`}</span>
       </div>
       {showsHint ? (
         <div class="caption secondary">
-          {hovered ? `${DAYS[hovered.weekday]}, ${HOURS[hovered.hour]}:00 — ${Fmt.usd(hovered.cost)}, запросов: ${hovered.requests}` : "Наведите курсор на ячейку, чтобы увидеть значение."}
+          {hovered ? L`${tr(DAYS[hovered.weekday])}, ${HOURS[hovered.hour]}:00 — ${Fmt.usd(hovered.cost)}, запросов: ${hovered.requests}` : L`Наведите курсор на ячейку, чтобы увидеть значение.`}
         </div>
       ) : null}
     </div>

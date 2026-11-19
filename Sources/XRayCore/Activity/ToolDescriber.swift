@@ -28,6 +28,9 @@ public enum ToolDescriber {
         case mcp = "MCP"
         case planning = "Планирование"
         case other = "Другое"
+
+        /// The name in the interface language (the raw value is the Russian catalog key).
+        public var title: String { L10n.tr(rawValue) }
     }
 
     public static func mcpServer(of toolName: String) -> String? {
@@ -77,7 +80,7 @@ public enum ToolDescriber {
                 detail = description + (detail.map { "\n" + $0 } ?? "")
             }
             if input["run_in_background"] as? Bool == true {
-                detail = (detail ?? "") + "\n(в фоне)"
+                detail = (detail ?? "") + L("\n(в фоне)")
             }
             return Description(title: "Bash: " + Snippet.firstLine(command, 110), detail: detail)
 
@@ -88,9 +91,9 @@ public enum ToolDescriber {
         case "Read":
             let path = s("file_path") ?? ""
             var parts: [String] = []
-            if let offset = input["offset"] as? Int { parts.append("с строки \(offset)") }
-            if let limit = input["limit"] as? Int { parts.append("\(limit) строк") }
-            if let pages = s("pages") { parts.append("страницы \(pages)") }
+            if let offset = input["offset"] as? Int { parts.append(L("с строки \(offset)")) }
+            if let limit = input["limit"] as? Int { parts.append(L("\(limit) строк")) }
+            if let pages = s("pages") { parts.append(L("страницы \(pages)")) }
             return Description(
                 title: "Read " + Snippet.shortPath(path) + (parts.isEmpty ? "" : " (\(parts.joined(separator: ", ")))"),
                 detail: path, target: path, fileAction: .read
@@ -101,8 +104,8 @@ public enum ToolDescriber {
             let content = input["content"] as? String ?? ""
             let lines = content.isEmpty ? 0 : content.split(separator: "\n", omittingEmptySubsequences: false).count
             return Description(
-                title: "Write \(Snippet.shortPath(path)) · \(lines) строк",
-                detail: "\(path)\n\(content.utf8.count) байт",
+                title: L("Write \(Snippet.shortPath(path)) · \(lines) строк"),
+                detail: L("\(path)\n\(content.utf8.count) байт"),
                 target: path, fileAction: .write
             )
 
@@ -110,7 +113,7 @@ public enum ToolDescriber {
             let path = s("file_path") ?? ""
             let old = input["old_string"] as? String ?? ""
             let new = input["new_string"] as? String ?? ""
-            let all = input["replace_all"] as? Bool == true ? " · все вхождения" : ""
+            let all = input["replace_all"] as? Bool == true ? L(" · все вхождения") : ""
             return Description(
                 title: "Edit \(Snippet.shortPath(path))\(all)",
                 detail: "\(path)\n− \(Snippet.truncate(old, 400))\n+ \(Snippet.truncate(new, 400))",
@@ -120,7 +123,7 @@ public enum ToolDescriber {
         case "MultiEdit":
             let path = s("file_path") ?? ""
             let count = (input["edits"] as? [Any])?.count ?? 0
-            return Description(title: "MultiEdit \(Snippet.shortPath(path)) · \(count) правок", detail: path, target: path, fileAction: .edit)
+            return Description(title: L("MultiEdit \(Snippet.shortPath(path)) · \(count) правок"), detail: path, target: path, fileAction: .edit)
 
         case "NotebookEdit":
             let path = s("notebook_path") ?? ""
@@ -130,13 +133,13 @@ public enum ToolDescriber {
             let pattern = s("pattern") ?? ""
             let scope = [s("path").map(Snippet.shortPath), s("glob"), s("type")].compactMap { $0 }.joined(separator: ", ")
             return Description(
-                title: "Grep «\(Snippet.firstLine(pattern, 60))»" + (scope.isEmpty ? "" : " в \(scope)"),
+                title: "Grep «\(Snippet.firstLine(pattern, 60))»" + (scope.isEmpty ? "" : L(" в \(scope)")),
                 detail: Snippet.compactJSON(input), target: s("path")
             )
 
         case "Glob":
             let pattern = s("pattern") ?? ""
-            return Description(title: "Glob \(pattern)" + (s("path").map { " в \(Snippet.shortPath($0))" } ?? ""), detail: Snippet.compactJSON(input), target: s("path"))
+            return Description(title: "Glob \(pattern)" + (s("path").map { L(" в \(Snippet.shortPath($0))") } ?? ""), detail: Snippet.compactJSON(input), target: s("path"))
 
         case "LS":
             return Description(title: "LS \(Snippet.shortPath(s("path") ?? ""))", target: s("path"))
@@ -151,10 +154,10 @@ public enum ToolDescriber {
             return Description(title: "WebSearch «\(Snippet.firstLine(query, 80))»", detail: query)
 
         case "Task", "Agent":
-            let description = s("description") ?? "задача"
+            let description = s("description") ?? L("задача")
             let type = s("subagent_type").map { " (\($0))" } ?? ""
             return Description(
-                title: "Субагент\(type): \(Snippet.firstLine(description, 90))",
+                title: L("Субагент\(type): \(Snippet.firstLine(description, 90))"),
                 detail: s("prompt").map { Snippet.truncate($0, 1_500) },
                 target: s("subagent_type")
             )
@@ -170,14 +173,14 @@ public enum ToolDescriber {
                 let mark = status == "completed" ? "☑" : status == "in_progress" ? "▶" : "☐"
                 return "\(mark) \(todo["content"] as? String ?? "")"
             }
-            return Description(title: "TodoWrite · \(todos.count) задач", detail: lines.joined(separator: "\n"))
+            return Description(title: L("TodoWrite · \(todos.count) задач"), detail: lines.joined(separator: "\n"))
 
         case "AskUserQuestion":
             let questions = (input["questions"] as? [[String: Any]] ?? []).compactMap { $0["question"] as? String }
-            return Description(title: "Вопрос пользователю", detail: questions.joined(separator: "\n"))
+            return Description(title: L("Вопрос пользователю"), detail: questions.joined(separator: "\n"))
 
         case "ExitPlanMode":
-            return Description(title: "План готов", detail: s("plan").map { Snippet.truncate($0, 1_500) })
+            return Description(title: L("План готов"), detail: s("plan").map { Snippet.truncate($0, 1_500) })
 
         case "ToolSearch":
             return Description(title: "ToolSearch «\(Snippet.firstLine(s("query") ?? "", 80))»", detail: Snippet.compactJSON(input))

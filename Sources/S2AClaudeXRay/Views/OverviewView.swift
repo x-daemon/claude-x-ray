@@ -16,13 +16,13 @@ struct OverviewView: View {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 12) {
                     StatTile(title: model.plan.costLabel, value: Fmt.usd(summary.cost.total), caption: model.period.title, systemImage: "dollarsign.circle")
-                    StatTile(title: "Токены", value: Fmt.tokens(summary.tokens.total), caption: "вывод \(Fmt.tokens(summary.tokens.output)), из них размышления \(Fmt.tokens(summary.tokens.thinking))", systemImage: "number")
-                    StatTile(title: "Запросы", value: "\(summary.requests)", caption: "\(sessions) сессий · \(Fmt.usd(summary.costPerRequest)) за запрос", systemImage: "arrow.up.arrow.down")
-                    StatTile(title: "Доля кэша", value: summary.requests > 0 ? Fmt.percent(summary.tokens.cacheHitRate) : "—", caption: "средний контекст \(Fmt.tokens(Int(summary.averageContextTokens)))", systemImage: "memorychip")
+                    StatTile(title: L("Токены"), value: Fmt.tokens(summary.tokens.total), caption: L("вывод \(Fmt.tokens(summary.tokens.output)), из них размышления \(Fmt.tokens(summary.tokens.thinking))"), systemImage: "number")
+                    StatTile(title: L("Запросы"), value: "\(summary.requests)", caption: L("\(sessions) сессий · \(Fmt.usd(summary.costPerRequest)) за запрос"), systemImage: "arrow.up.arrow.down")
+                    StatTile(title: L("Доля кэша"), value: summary.requests > 0 ? Fmt.percent(summary.tokens.cacheHitRate) : "—", caption: L("средний контекст \(Fmt.tokens(Int(summary.averageContextTokens)))"), systemImage: "memorychip")
                 }
 
                 if let interval = model.periodInterval {
-                    Card(title: "Стоимость по времени", subtitle: "по моделям · \(unitTitle(unit))") {
+                    Card(title: L("Стоимость по времени"), subtitle: L("по моделям · \(unitTitle(unit))")) {
                         CostTimelineChart(
                             buckets: Analytics.buckets(events, unit: unit, interval: interval) { model.seriesName(for: $0) },
                             unit: unit,
@@ -32,16 +32,16 @@ struct OverviewView: View {
                 }
 
                 HStack(alignment: .top, spacing: 16) {
-                    Card(title: "Из чего складывается стоимость") {
+                    Card(title: L("Из чего складывается стоимость")) {
                         CostCompositionView(summary: summary)
                     }
-                    Card(title: "Доля моделей") {
+                    Card(title: L("Доля моделей")) {
                         ModelShareChart(events: events)
                     }
                     .frame(maxWidth: 420)
                 }
 
-                Card(title: "Когда вы работаете", subtitle: "\(model.plan.costLabel) по дням недели и часам") {
+                Card(title: L("Когда вы работаете"), subtitle: L("\(model.plan.costLabel) по дням недели и часам")) {
                     ActivityHeatmap(cells: Analytics.heatmap(events))
                 }
             }
@@ -51,9 +51,9 @@ struct OverviewView: View {
 
     private func unitTitle(_ unit: Calendar.Component) -> String {
         switch unit {
-        case .hour: return "по часам"
-        case .weekOfYear: return "по неделям"
-        default: return "по дням"
+        case .hour: return L("по часам")
+        case .weekOfYear: return L("по неделям")
+        default: return L("по дням")
         }
     }
 }
@@ -89,14 +89,14 @@ struct CostTimelineChart: View {
         Chart {
             ForEach(points) { point in
                 BarMark(
-                    x: .value("Дата", point.date, unit: unit),
+                    x: .value(L("Дата"), point.date, unit: unit),
                     y: .value("USD", point.cost),
                     width: barWidth
                 )
-                .foregroundStyle(by: .value("Модель", point.series))
+                .foregroundStyle(by: .value(L("Модель"), point.series))
             }
             if let bucket = selectedBucket {
-                RuleMark(x: .value("Дата", bucket.start, unit: unit))
+                RuleMark(x: .value(L("Дата"), bucket.start, unit: unit))
                     .foregroundStyle(Palette.other.opacity(0.35))
                     .annotation(position: .top, spacing: 4, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
                         tooltip(for: bucket, scale: scale)
@@ -111,7 +111,7 @@ struct CostTimelineChart: View {
         .frame(height: 260)
         .overlay {
             if points.isEmpty {
-                Text("Нет данных за период").foregroundStyle(.secondary)
+                Text(L("Нет данных за период")).foregroundStyle(.secondary)
             }
         }
     }
@@ -119,15 +119,15 @@ struct CostTimelineChart: View {
     private func tooltip(for bucket: TimeBucket, scale: (domain: [String], range: [Color])) -> some View {
         let title: String
         switch unit {
-        case .hour: title = bucket.start.formatted(date: .abbreviated, time: .shortened)
-        default: title = bucket.start.formatted(date: .abbreviated, time: .omitted)
+        case .hour: title = bucket.start.localized(date: .abbreviated, time: .shortened)
+        default: title = bucket.start.localized(date: .abbreviated, time: .omitted)
         }
-        var rows: [(label: String, value: String, color: Color?)] = [("Всего", Fmt.usd(bucket.summary.cost.total), nil)]
+        var rows: [(label: String, value: String, color: Color?)] = [(L("Всего"), Fmt.usd(bucket.summary.cost.total), nil)]
         for (name, summary) in bucket.bySeries.sorted(by: { $0.value.cost.total > $1.value.cost.total }) {
             let color = scale.domain.firstIndex(of: name).map { scale.range[$0] }
             rows.append((name, Fmt.usd(summary.cost.total), color))
         }
-        rows.append(("Токены", Fmt.tokens(bucket.summary.tokens.total), nil))
+        rows.append((L("Токены"), Fmt.tokens(bucket.summary.tokens.total), nil))
         return ChartTooltip(title: title, rows: rows)
     }
 }
@@ -145,11 +145,11 @@ struct CostCompositionView: View {
 
     var body: some View {
         let components = [
-            Component(name: "Ввод", cost: summary.cost.input, tokens: summary.tokens.input),
-            Component(name: "Вывод", cost: summary.cost.output, tokens: summary.tokens.output),
-            Component(name: "Чтение кэша", cost: summary.cost.cacheRead, tokens: summary.tokens.cacheRead),
-            Component(name: "Запись в кэш", cost: summary.cost.cacheWrite, tokens: summary.tokens.cacheWrite),
-            Component(name: "Веб-поиск", cost: summary.cost.webSearch, tokens: nil),
+            Component(name: L("Ввод"), cost: summary.cost.input, tokens: summary.tokens.input),
+            Component(name: L("Вывод"), cost: summary.cost.output, tokens: summary.tokens.output),
+            Component(name: L("Чтение кэша"), cost: summary.cost.cacheRead, tokens: summary.tokens.cacheRead),
+            Component(name: L("Запись в кэш"), cost: summary.cost.cacheWrite, tokens: summary.tokens.cacheWrite),
+            Component(name: L("Веб-поиск"), cost: summary.cost.webSearch, tokens: nil),
         ].filter { $0.cost > 0 }
         let total = max(summary.cost.total, .leastNonzeroMagnitude)
         let domain = components.map(\.name)
@@ -157,8 +157,8 @@ struct CostCompositionView: View {
 
         VStack(alignment: .leading, spacing: 12) {
             Chart(components) { component in
-                BarMark(x: .value("USD", component.cost), y: .value("Итого", "Стоимость"))
-                    .foregroundStyle(by: .value("Статья", component.name))
+                BarMark(x: .value("USD", component.cost), y: .value(L("Итого"), L("Стоимость")))
+                    .foregroundStyle(by: .value(L("Статья"), component.name))
             }
             .chartForegroundStyleScale(domain: domain, range: range)
             .chartYAxis(.hidden)
@@ -188,7 +188,7 @@ struct CostCompositionView: View {
                 }
             }
             if summary.tokens.thinking > 0 {
-                Text("Размышления — \(Fmt.percent(Double(summary.tokens.thinking) / Double(max(summary.tokens.output, 1)))) выходных токенов; они оплачиваются как вывод.")
+                Text(L("Размышления — \(Fmt.percent(Double(summary.tokens.thinking) / Double(max(summary.tokens.output, 1)))) выходных токенов; они оплачиваются как вывод."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -207,7 +207,7 @@ struct ModelShareChart: View {
 
         Chart(groups) { group in
             SectorMark(angle: .value("USD", group.cost), innerRadius: .ratio(0.62), angularInset: 1.5)
-                .foregroundStyle(by: .value("Модель", group.key))
+                .foregroundStyle(by: .value(L("Модель"), group.key))
                 .cornerRadius(4)
         }
         .chartForegroundStyleScale(domain: scale.domain, range: scale.range)
@@ -215,7 +215,7 @@ struct ModelShareChart: View {
         .frame(height: 200)
         .overlay {
             if groups.isEmpty {
-                Text("Нет данных").foregroundStyle(.secondary)
+                Text(L("Нет данных")).foregroundStyle(.secondary)
             }
         }
     }
@@ -227,7 +227,7 @@ struct ActivityHeatmap: View {
     var showsHint = true
     @State private var hovered: HeatCell?
 
-    private static let days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+    private static var days: [String] { [L("Пн"), L("Вт"), L("Ср"), L("Чт"), L("Пт"), L("Сб"), L("Вс")] }
     private static let hours = (0..<24).map { String(format: "%02d", $0) }
 
     var body: some View {
@@ -236,8 +236,8 @@ struct ActivityHeatmap: View {
                 ForEach(cells) { cell in
                     if cell.cost > 0 {
                         RectangleMark(
-                            x: .value("Час", Self.hours[cell.hour]),
-                            y: .value("День", Self.days[cell.weekday]),
+                            x: .value(L("Час"), Self.hours[cell.hour]),
+                            y: .value(L("День"), Self.days[cell.weekday]),
                             width: .ratio(0.9),
                             height: .ratio(0.9)
                         )
@@ -245,8 +245,8 @@ struct ActivityHeatmap: View {
                         .cornerRadius(3)
                     } else {
                         RectangleMark(
-                            x: .value("Час", Self.hours[cell.hour]),
-                            y: .value("День", Self.days[cell.weekday]),
+                            x: .value(L("Час"), Self.hours[cell.hour]),
+                            y: .value(L("День"), Self.days[cell.weekday]),
                             width: .ratio(0.9),
                             height: .ratio(0.9)
                         )
@@ -282,13 +282,13 @@ struct ActivityHeatmap: View {
             .frame(height: 220)
 
             HStack(spacing: 6) {
-                Text("меньше")
+                Text(L("меньше"))
                 HStack(spacing: 2) {
                     ForEach(Array(Palette.sequential.enumerated()), id: \.offset) { _, color in
                         RoundedRectangle(cornerRadius: 2).fill(color).frame(width: 16, height: 9)
                     }
                 }
-                Text("больше · до \(Fmt.usd(cells.map(\.cost).max() ?? 0)) за час")
+                Text(L("больше · до \(Fmt.usd(cells.map(\.cost).max() ?? 0)) за час"))
             }
             .font(.caption2)
             .foregroundStyle(.secondary)
@@ -296,9 +296,9 @@ struct ActivityHeatmap: View {
             if showsHint {
                 Group {
                     if let hovered {
-                        Text("\(Self.days[hovered.weekday]), \(Self.hours[hovered.hour]):00 — \(Fmt.usd(hovered.cost)), запросов: \(hovered.requests)")
+                        Text(L("\(Self.days[hovered.weekday]), \(Self.hours[hovered.hour]):00 — \(Fmt.usd(hovered.cost)), запросов: \(hovered.requests)"))
                     } else {
-                        Text("Наведите курсор на ячейку, чтобы увидеть значение.")
+                        Text(L("Наведите курсор на ячейку, чтобы увидеть значение."))
                     }
                 }
                 .font(.caption)

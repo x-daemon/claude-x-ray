@@ -4,6 +4,7 @@ import type { ActivityItem } from "./activity";
 import { cacheWrite, contextTokens, normalizeModel, type RequestDetails } from "./model";
 import { costTotal, matchPrice, type PricedEvent, type PricingTable } from "./pricing";
 import type { ModelStep, SessionTrace, ToolExecution } from "./trace";
+import { L } from "./i18n";
 
 /** One request to the model: the response's blocks, the actions it took, usage and API details. */
 export interface LLMCall {
@@ -78,13 +79,13 @@ export type Tone = "good" | "info" | "warning" | "critical" | "neutral";
 /** Meaning of a stop reason and how alarming it is. */
 export function stopReasonInfo(reason: string | undefined, category?: string): { title: string; tone: Tone } {
   switch (reason) {
-    case "end_turn": return { title: "ответ готов", tone: "good" };
-    case "tool_use": return { title: "вызов инструментов", tone: "info" };
-    case "max_tokens": return { title: "обрезан лимитом вывода", tone: "warning" };
-    case "stop_sequence": return { title: "стоп-последовательность", tone: "neutral" };
-    case "pause_turn": return { title: "пауза серверного инструмента", tone: "neutral" };
-    case "refusal": return { title: category ? `отказ: ${category}` : "отказ", tone: "critical" };
-    case "model_context_window_exceeded": return { title: "окно контекста переполнено", tone: "critical" };
+    case "end_turn": return { title: L`ответ готов`, tone: "good" };
+    case "tool_use": return { title: L`вызов инструментов`, tone: "info" };
+    case "max_tokens": return { title: L`обрезан лимитом вывода`, tone: "warning" };
+    case "stop_sequence": return { title: L`стоп-последовательность`, tone: "neutral" };
+    case "pause_turn": return { title: L`пауза серверного инструмента`, tone: "neutral" };
+    case "refusal": return { title: category ? L`отказ: ${category}` : L`отказ`, tone: "critical" };
+    case "model_context_window_exceeded": return { title: L`окно контекста переполнено`, tone: "critical" };
     case undefined: case "": return { title: "—", tone: "neutral" };
     default: return { title: reason, tone: "neutral" };
   }
@@ -95,69 +96,69 @@ export const isRealMiss = (reason: string): boolean => reason !== "previous_mess
 
 export function cacheMissTitle(reason: string): string {
   switch (reason) {
-    case "system_changed": return "изменился системный промпт";
-    case "tools_changed": return "изменились инструменты (набор или описания)";
-    case "messages_changed": return "изменилась история сообщений";
-    case "model_changed": return "сменилась модель";
-    case "multiple": return "изменилось несколько частей запроса";
-    case "unrelated": return "запрос из другого разговора";
-    case "previous_message_not_found": return "не с чем сравнить: первый запрос, пауза дольше TTL или другой поток";
-    case "unavailable": return "диагностика недоступна";
+    case "system_changed": return L`изменился системный промпт`;
+    case "tools_changed": return L`изменились инструменты (набор или описания)`;
+    case "messages_changed": return L`изменилась история сообщений`;
+    case "model_changed": return L`сменилась модель`;
+    case "multiple": return L`изменилось несколько частей запроса`;
+    case "unrelated": return L`запрос из другого разговора`;
+    case "previous_message_not_found": return L`не с чем сравнить: первый запрос, пауза дольше TTL или другой поток`;
+    case "unavailable": return L`диагностика недоступна`;
     default: return reason;
   }
 }
 
 export function cacheMissAdvice(reason: string): string {
   switch (reason) {
-    case "system_changed": return "Системный промпт менялся посреди сессии: правки CLAUDE.md или памяти, смена режима, настроек или версии Claude Code. Вносите такие изменения между сессиями.";
-    case "tools_changed": return "Набор инструментов менялся по ходу: MCP-серверы подключались или отключались, менялись разрешения или описания инструментов. Подключайте нужные MCP до начала работы.";
-    case "messages_changed": return "История сообщений менялась: откат (/rewind), правка или удаление сообщений, хуки, переписывающие ввод.";
-    case "model_changed": return "Модель менялась посреди сессии (/model или резервная модель): у каждой модели свой кэш.";
-    default: return "Держите системный промпт, инструменты и модель неизменными в течение сессии.";
+    case "system_changed": return L`Системный промпт менялся посреди сессии: правки CLAUDE.md или памяти, смена режима, настроек или версии Claude Code. Вносите такие изменения между сессиями.`;
+    case "tools_changed": return L`Набор инструментов менялся по ходу: MCP-серверы подключались или отключались, менялись разрешения или описания инструментов. Подключайте нужные MCP до начала работы.`;
+    case "messages_changed": return L`История сообщений менялась: откат (/rewind), правка или удаление сообщений, хуки, переписывающие ввод.`;
+    case "model_changed": return L`Модель менялась посреди сессии (/model или резервная модель): у каждой модели свой кэш.`;
+    default: return L`Держите системный промпт, инструменты и модель неизменными в течение сессии.`;
   }
 }
 
 export function droppedReasonTitle(reason: string | undefined): string {
   switch (reason) {
-    case "prefix_binding_mismatch": return "история изменилась после размышления";
-    case "model_binding_mismatch": return "модель не читает размышления прежней модели";
-    case "organization_binding_mismatch": return "размышление из другого аккаунта";
-    case undefined: return "причина не указана";
+    case "prefix_binding_mismatch": return L`история изменилась после размышления`;
+    case "model_binding_mismatch": return L`модель не читает размышления прежней модели`;
+    case "organization_binding_mismatch": return L`размышление из другого аккаунта`;
+    case undefined: return L`причина не указана`;
     default: return reason;
   }
 }
 
 export function iterationTitle(type: string): string {
   switch (type) {
-    case "message": return "ответ модели";
-    case "fallback_message": return "ответ резервной модели";
-    case "compaction": return "сжатие контекста на сервере";
-    case "advisor_message": return "совет модели-советника";
+    case "message": return L`ответ модели`;
+    case "fallback_message": return L`ответ резервной модели`;
+    case "compaction": return L`сжатие контекста на сервере`;
+    case "advisor_message": return L`совет модели-советника`;
     default: return type;
   }
 }
 
 export function thinkingDisplayTitle(display: string | undefined): string {
   switch (display) {
-    case "summarized": return "краткое изложение";
-    case "updates": return "заметки по ходу работы";
-    case "omitted": return "текст не возвращается";
-    case "redacted": return "зашифровано";
+    case "summarized": return L`краткое изложение`;
+    case "updates": return L`заметки по ходу работы`;
+    case "omitted": return L`текст не возвращается`;
+    case "redacted": return L`зашифровано`;
     default: return display ?? "—";
   }
 }
 
 export function decisionTitle(item: ActivityItem): string | undefined {
   if (!item.decision && !item.decidedBy) return item.permission;
-  const verdict = item.decision === "accept" ? "разрешено" : item.decision === "reject" || item.decision === "deny" ? "запрещено" : item.decision ?? "решение";
+  const verdict = item.decision === "accept" ? L`разрешено` : item.decision === "reject" || item.decision === "deny" ? L`запрещено` : item.decision ?? L`решение`;
   let by: string | undefined;
   switch (item.decidedBy) {
-    case "classifier": by = "классификатор auto mode"; break;
-    case "rule": by = "правило"; break;
-    case "user": case "userApproval": by = "вы"; break;
-    case "hook": by = "хук"; break;
-    case "mode": by = "режим"; break;
-    case "config": by = "настройки"; break;
+    case "classifier": by = L`классификатор auto mode`; break;
+    case "rule": by = L`правило`; break;
+    case "user": case "userApproval": by = L`вы`; break;
+    case "hook": by = L`хук`; break;
+    case "mode": by = L`режим`; break;
+    case "config": by = L`настройки`; break;
     default: by = item.decidedBy;
   }
   const rule = item.ruleSource ? ` (${item.ruleSource})` : "";

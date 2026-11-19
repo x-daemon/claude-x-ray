@@ -1,5 +1,6 @@
 // API list prices and costing. Port of XRayCore/Pricing/Pricing.swift.
 import { familyReferencePrefix, isFastMode, modelFamily, normalizeModel, contextTokens, type UsageEvent } from "./model";
+import { N } from "./i18n";
 
 /** Per-model API list prices, USD per million tokens. */
 export interface ModelPrice {
@@ -156,12 +157,12 @@ export function defaultPricing(): PricingTable {
       modelPrice({
         modelPrefix: "claude-haiku-5-5", displayName: "Haiku 5.5", input: 0.1, output: 0.5, cacheRead: 0.01,
         longContextThreshold: 100_000, longContextMultiplier: 5,
-        note: "Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте.",
+        note: N("Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте."),
       }),
       modelPrice({ modelPrefix: "claude-haiku-4-5", displayName: "Haiku 4.5", input: 1, output: 5, cacheRead: 0.1 }),
     ],
     fastModeMultiplier: 2,
     webSearchPer1K: 10,
-    sourceNote: "Прайс-лист API на 2026-11-03",
+    sourceNote: N("Прайс-лист API на 2026-11-03"),
   };
 }

@@ -20,34 +20,34 @@ struct LiveView: View {
                     AccountLimitsCard()
                 }
 
-                Card(title: "Окно 5 часов по логам этого Mac", subtitle: model.plan.isSubscription ? "подписка \(model.plan.title)" : nil) {
+                Card(title: L("Окно 5 часов по логам этого Mac"), subtitle: model.plan.isSubscription ? L("подписка \(model.plan.title)") : nil) {
                     WindowSummaryView()
                 }
 
                 HStack(spacing: 12) {
                     StatTile(
-                        title: "Сегодня", value: Fmt.usd(today.cost.total),
-                        caption: "\(Fmt.tokens(today.tokens.total)) токенов · \(today.requests) запросов",
+                        title: L("Сегодня"), value: Fmt.usd(today.cost.total),
+                        caption: L("\(Fmt.tokens(today.tokens.total)) токенов · \(today.requests) запросов"),
                         systemImage: "sun.max"
                     )
                     StatTile(
-                        title: "7 дней", value: Fmt.usd(week.cost.total),
-                        caption: "\(Fmt.tokens(week.tokens.total)) токенов",
+                        title: L("7 дней"), value: Fmt.usd(week.cost.total),
+                        caption: L("\(Fmt.tokens(week.tokens.total)) токенов"),
                         systemImage: "calendar"
                     )
                     StatTile(
-                        title: "Темп за последний час", value: "\(Fmt.usd(burn.costPerHour))/ч",
-                        caption: "\(Fmt.tokens(Int(burn.tokensPerMinute))) токенов/мин",
+                        title: L("Темп за последний час"), value: L("\(Fmt.usd(burn.costPerHour))/ч"),
+                        caption: L("\(Fmt.tokens(Int(burn.tokensPerMinute))) токенов/мин"),
                         systemImage: "flame"
                     )
                     StatTile(
-                        title: "Кэш сегодня", value: today.requests > 0 ? Fmt.percent(today.tokens.cacheHitRate) : "—",
-                        caption: "доля контекста из кэша",
+                        title: L("Кэш сегодня"), value: today.requests > 0 ? Fmt.percent(today.tokens.cacheHitRate) : "—",
+                        caption: L("доля контекста из кэша"),
                         systemImage: "memorychip"
                     )
                 }
 
-                Card(title: "Активность за 3 часа", subtitle: "\(model.plan.costLabel), интервалы по 5 минут") {
+                Card(title: L("Активность за 3 часа"), subtitle: L("\(model.plan.costLabel), интервалы по 5 минут")) {
                     LiveActivityChart(
                         buckets: Analytics.fixedBuckets(
                             model.events(since: now.addingTimeInterval(-3 * 3600)),
@@ -64,7 +64,7 @@ struct LiveView: View {
                 }
 
                 if model.plan.isSubscription {
-                    Text("На подписке Pro/Max суммы — API-эквивалент по прайс-листу: деньги не списываются, но по ним видно, как быстро расходуется лимит. Границы окна восстанавливаются по активности; точный остаток лимита в логах не хранится.")
+                    Text(L("На подписке Pro/Max суммы — API-эквивалент по прайс-листу: деньги не списываются, но по ним видно, как быстро расходуется лимит. Границы окна восстанавливаются по активности; точный остаток лимита в логах не хранится."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -91,7 +91,7 @@ struct WindowSummaryView: View {
                     Text(model.plan.costLabel).font(.caption).foregroundStyle(.secondary)
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("до сброса").font(.caption).foregroundStyle(.secondary)
+                        Text(L("до сброса")).font(.caption).foregroundStyle(.secondary)
                         Text(Fmt.duration(window.remaining(at: now)))
                             .font(.title3.weight(.medium))
                             .monospacedDigit()
@@ -99,7 +99,7 @@ struct WindowSummaryView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Время окна: \(window.start.formatted(date: .omitted, time: .shortened)) – \(window.end.formatted(date: .omitted, time: .shortened))")
+                    Text(L("Время окна: \(window.start.localized(date: .omitted, time: .shortened)) – \(window.end.localized(date: .omitted, time: .shortened))"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     UsageBar(fraction: window.progress(at: now), color: Palette.primary, height: 6)
@@ -108,7 +108,7 @@ struct WindowSummaryView: View {
                 if let peak = model.peakWindow, peak.summary.cost.total > 0 {
                     let ratio = cost / peak.summary.cost.total
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("\(Fmt.percent(ratio)) от вашего самого загруженного окна (\(Fmt.usd(peak.summary.cost.total)), \(Fmt.dateTime(peak.start)))")
+                        Text(L("\(Fmt.percent(ratio)) от вашего самого загруженного окна (\(Fmt.usd(peak.summary.cost.total)), \(Fmt.dateTime(peak.start)))"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         UsageBar(
@@ -120,9 +120,9 @@ struct WindowSummaryView: View {
                 }
 
                 HStack(spacing: 16) {
-                    Label("\(Fmt.tokens(window.summary.tokens.total)) токенов", systemImage: "number")
-                    Label("\(window.summary.requests) запросов", systemImage: "arrow.up.arrow.down")
-                    Label("прогноз \(Fmt.usd(window.projectedCost(at: now)))", systemImage: "chart.line.uptrend.xyaxis")
+                    Label(L("\(Fmt.tokens(window.summary.tokens.total)) токенов"), systemImage: "number")
+                    Label(L("\(window.summary.requests) запросов"), systemImage: "arrow.up.arrow.down")
+                    Label(L("прогноз \(Fmt.usd(window.projectedCost(at: now)))"), systemImage: "chart.line.uptrend.xyaxis")
                     if !compact {
                         Label(window.models.map(ModelCatalog.displayName(for:)).joined(separator: ", "), systemImage: "cpu")
                     }
@@ -133,9 +133,9 @@ struct WindowSummaryView: View {
             }
         } else {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Сейчас активного окна нет").font(.headline)
+                Text(L("Сейчас активного окна нет")).font(.headline)
                 if let last = model.priced.last {
-                    Text("Последний запрос: \(Fmt.dateTime(last.event.timestamp)). Новое окно начнётся с первого запроса.")
+                    Text(L("Последний запрос: \(Fmt.dateTime(last.event.timestamp)). Новое окно начнётся с первого запроса."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -162,31 +162,31 @@ struct LiveActivityChart: View {
         Chart {
             ForEach(active) { bucket in
                 BarMark(
-                    xStart: .value("Начало", bucket.start),
-                    xEnd: .value("Конец", bucket.end.addingTimeInterval(-20)),
+                    xStart: .value(L("Начало"), bucket.start),
+                    xEnd: .value(L("Конец"), bucket.end.addingTimeInterval(-20)),
                     y: .value("USD", bucket.summary.cost.total)
                 )
                 .foregroundStyle(Palette.primary)
                 .cornerRadius(3)
             }
             if let windowStart, windowStart > (buckets.first?.start ?? now) {
-                RuleMark(x: .value("Начало окна", windowStart))
+                RuleMark(x: .value(L("Начало окна"), windowStart))
                     .foregroundStyle(Palette.other)
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
                     .annotation(position: .top, alignment: .leading) {
-                        Text("начало окна").font(.caption2).foregroundStyle(.secondary)
+                        Text(L("начало окна")).font(.caption2).foregroundStyle(.secondary)
                     }
             }
             if let hovered, let bucket = buckets.first(where: { $0.start <= hovered && hovered < $0.end }) {
-                RuleMark(x: .value("Время", bucket.start.addingTimeInterval(bucket.end.timeIntervalSince(bucket.start) / 2)))
+                RuleMark(x: .value(L("Время"), bucket.start.addingTimeInterval(bucket.end.timeIntervalSince(bucket.start) / 2)))
                     .foregroundStyle(Palette.other.opacity(0.5))
                     .annotation(position: .top, spacing: 4, overflowResolution: .init(x: .fit(to: .chart), y: .disabled)) {
                         ChartTooltip(
-                            title: "\(bucket.start.formatted(date: .omitted, time: .shortened)) – \(bucket.end.formatted(date: .omitted, time: .shortened))",
+                            title: "\(bucket.start.localized(date: .omitted, time: .shortened)) – \(bucket.end.localized(date: .omitted, time: .shortened))",
                             rows: [
-                                ("Стоимость", Fmt.usd(bucket.summary.cost.total), Palette.primary),
-                                ("Токены", Fmt.tokens(bucket.summary.tokens.total), nil),
-                                ("Запросы", "\(bucket.summary.requests)", nil),
+                                (L("Стоимость"), Fmt.usd(bucket.summary.cost.total), Palette.primary),
+                                (L("Токены"), Fmt.tokens(bucket.summary.tokens.total), nil),
+                                (L("Запросы"), "\(bucket.summary.requests)", nil),
                             ]
                         )
                     }
@@ -198,13 +198,13 @@ struct LiveActivityChart: View {
         .chartXAxis {
             AxisMarks(values: .stride(by: .minute, count: 30)) { _ in
                 AxisGridLine().foregroundStyle(Palette.hairline)
-                AxisValueLabel(format: .dateTime.hour().minute())
+                AxisValueLabel(format: .dateTime.hour().minute().locale(L10n.locale))
             }
         }
         .usdYAxis()
         .overlay {
             if active.isEmpty {
-                Text("За последние 3 часа запросов не было")
+                Text(L("За последние 3 часа запросов не было"))
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 10)
@@ -222,20 +222,20 @@ struct CurrentSessionCard: View {
     let lastEvents: [PricedEvent]
 
     var body: some View {
-        Card(title: "Текущая сессия", subtitle: session.gitBranch.map { "\(session.projectName) · \($0)" } ?? session.projectName) {
+        Card(title: L("Текущая сессия"), subtitle: session.gitBranch.map { "\(session.projectName) · \($0)" } ?? session.projectName) {
             HStack(spacing: 12) {
-                StatTile(title: "Стоимость", value: Fmt.usd(session.cost))
-                StatTile(title: "Запросы", value: "\(session.requests)")
-                StatTile(title: "Контекст сейчас", value: Fmt.tokens(lastEvents.first?.event.tokens.contextTokens ?? 0), caption: "пик \(Fmt.tokens(session.peakContextTokens))")
-                StatTile(title: "Кэш", value: Fmt.percent(session.cacheHitRate))
+                StatTile(title: L("Стоимость"), value: Fmt.usd(session.cost))
+                StatTile(title: L("Запросы"), value: "\(session.requests)")
+                StatTile(title: L("Контекст сейчас"), value: Fmt.tokens(lastEvents.first?.event.tokens.contextTokens ?? 0), caption: L("пик \(Fmt.tokens(session.peakContextTokens))"))
+                StatTile(title: L("Кэш"), value: Fmt.percent(session.cacheHitRate))
             }
             Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 4) {
                 GridRow {
-                    Text("Время").foregroundStyle(.secondary)
-                    Text("Модель").foregroundStyle(.secondary)
-                    Text("Контекст").foregroundStyle(.secondary)
-                    Text("Вывод").foregroundStyle(.secondary)
-                    Text("Кэш").foregroundStyle(.secondary)
+                    Text(L("Время")).foregroundStyle(.secondary)
+                    Text(L("Модель")).foregroundStyle(.secondary)
+                    Text(L("Контекст")).foregroundStyle(.secondary)
+                    Text(L("Вывод")).foregroundStyle(.secondary)
+                    Text(L("Кэш")).foregroundStyle(.secondary)
                     Text("USD").foregroundStyle(.secondary)
                 }
                 .font(.caption.weight(.medium))
@@ -243,8 +243,8 @@ struct CurrentSessionCard: View {
                 ForEach(lastEvents) { priced in
                     let e = priced.event
                     GridRow {
-                        Text(e.timestamp.formatted(date: .omitted, time: .standard))
-                        Text(ModelCatalog.displayName(for: e.model) + (e.isSidechain ? " · субагент" : ""))
+                        Text(e.timestamp.localized(date: .omitted, time: .standard))
+                        Text(ModelCatalog.displayName(for: e.model) + (e.isSidechain ? L(" · субагент") : ""))
                         Text(Fmt.tokens(e.tokens.contextTokens))
                         Text(Fmt.tokens(e.tokens.output))
                         Text(Fmt.percent(e.tokens.cacheHitRate))
@@ -271,7 +271,7 @@ struct LiveActivityCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(Array(trace.items.filter { $0.kind != .context && $0.kind != .toolResult }.suffix(6).reversed())) { item in
                         HStack(spacing: 8) {
-                            Text(item.timestamp.formatted(date: .omitted, time: .standard))
+                            Text(item.timestamp.localized(date: .omitted, time: .standard))
                                 .font(.caption.monospacedDigit())
                                 .foregroundStyle(.secondary)
                                 .frame(width: 66, alignment: .leading)
@@ -291,9 +291,9 @@ struct LiveActivityCard: View {
                     Button {
                         model.selection = .trace
                     } label: {
-                        Label("Открыть Live-трассу", systemImage: "point.3.connected.trianglepath.dotted")
+                        Label(L("Открыть Live-трассу"), systemImage: "point.3.connected.trianglepath.dotted")
                     }
-                    Text("промпты, размышления, инструменты, MCP, скиллы, контекст и поток — подробно и в реальном времени")
+                    Text(L("промпты, размышления, инструменты, MCP, скиллы, контекст и поток — подробно и в реальном времени"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -316,17 +316,17 @@ struct NoRecentActivityBanner: View {
                 .foregroundStyle(Palette.accent)
                 .frame(width: 28)
             VStack(alignment: .leading, spacing: 4) {
-                Text("На этом Mac Claude Code не работал последние 3 дня")
+                Text(L("На этом Mac Claude Code не работал последние 3 дня"))
                     .font(.headline)
                 Text(lastWriteLine)
                     .foregroundStyle(.secondary)
-                Text("Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray не видит: их логи остаются на серверах Anthropic.")
+                Text(L("Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray не видит: их логи остаются на серверах Anthropic."))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .font(.callout)
             Spacer(minLength: 12)
-            Button("Как увидеть сессию") {
+            Button(L("Как увидеть сессию")) {
                 model.selection = .trace
             }
         }
@@ -338,8 +338,8 @@ struct NoRecentActivityBanner: View {
 
     private var lastWriteLine: String {
         guard let newest = model.newestTranscript else {
-            return "Логов Claude Code на этом Mac пока нет."
+            return L("Логов Claude Code на этом Mac пока нет.")
         }
-        return "Последняя запись в логах: \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest)))."
+        return L("Последняя запись в логах: \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest))).")
     }
 }

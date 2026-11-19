@@ -14,33 +14,33 @@ struct TraceToolsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 12) {
-                    StatTile(title: "Вызовов инструментов", value: "\(trace.tools.count)", caption: "ошибок \(trace.tools.filter(\.isError).count), сейчас \(trace.tools.filter(\.isRunning).count)", systemImage: "wrench.and.screwdriver")
-                    StatTile(title: "MCP-серверы", value: "\(trace.mcpServers.count)", caption: "подключено \(connected), вызывались \(trace.mcpServers.filter { $0.calls > 0 }.count)", systemImage: "puzzlepiece.extension")
-                    StatTile(title: "Скиллы", value: "\(invokedSkills) / \(trace.skills.count)", caption: "вызваны / доступны", systemImage: "sparkles")
-                    StatTile(title: "Субагенты", value: "\(agentRuns)", caption: "запусков, типов \(trace.subagents.count)", systemImage: "person.2")
-                    StatTile(title: "Файлы", value: "\(trace.files.count)", caption: "прочитано, записано, изменено", systemImage: "doc.on.doc")
+                    StatTile(title: L("Вызовов инструментов"), value: "\(trace.tools.count)", caption: L("ошибок \(trace.tools.filter(\.isError).count), сейчас \(trace.tools.filter(\.isRunning).count)"), systemImage: "wrench.and.screwdriver")
+                    StatTile(title: L("MCP-серверы"), value: "\(trace.mcpServers.count)", caption: L("подключено \(connected), вызывались \(trace.mcpServers.filter { $0.calls > 0 }.count)"), systemImage: "puzzlepiece.extension")
+                    StatTile(title: L("Скиллы"), value: "\(invokedSkills) / \(trace.skills.count)", caption: L("вызваны / доступны"), systemImage: "sparkles")
+                    StatTile(title: L("Субагенты"), value: "\(agentRuns)", caption: L("запусков, типов \(trace.subagents.count)"), systemImage: "person.2")
+                    StatTile(title: L("Файлы"), value: "\(trace.files.count)", caption: L("прочитано, записано, изменено"), systemImage: "doc.on.doc")
                 }
 
-                Card(title: "Инструменты", subtitle: "число вызовов, ошибки, время работы и объём вывода") {
+                Card(title: L("Инструменты"), subtitle: L("число вызовов, ошибки, время работы и объём вывода")) {
                     ToolStatsChart(stats: Array(trace.toolStats.prefix(15)))
                     ToolStatsGrid(stats: trace.toolStats)
                 }
 
-                Card(title: "MCP-серверы и коннекторы", subtitle: "из списка инструментов сессии и фактических вызовов") {
+                Card(title: L("MCP-серверы и коннекторы"), subtitle: L("из списка инструментов сессии и фактических вызовов")) {
                     MCPServersView(servers: trace.mcpServers)
                 }
 
                 HStack(alignment: .top, spacing: 16) {
-                    Card(title: "Скиллы", subtitle: "подсвечены вызванные") {
+                    Card(title: L("Скиллы"), subtitle: L("подсвечены вызванные")) {
                         SkillsView(skills: trace.skills)
                     }
-                    Card(title: "Субагенты") {
+                    Card(title: L("Субагенты")) {
                         SubagentsView(agents: trace.subagents)
                     }
                     .frame(maxWidth: 420)
                 }
 
-                Card(title: "Файлы", subtitle: "последние 60 по времени обращения") {
+                Card(title: L("Файлы"), subtitle: L("последние 60 по времени обращения")) {
                     FilesGrid(files: Array(trace.files.prefix(60)))
                 }
             }
@@ -54,7 +54,7 @@ struct ToolStatsChart: View {
 
     var body: some View {
         if stats.isEmpty {
-            Text("Инструменты ещё не вызывались").foregroundStyle(.secondary)
+            Text(L("Инструменты ещё не вызывались")).foregroundStyle(.secondary)
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 RankedBarList(rows: stats.map { stat in
@@ -67,17 +67,17 @@ struct ToolStatsChart: View {
                     return RankedBarRow(
                         id: stat.name,
                         label: ToolDescriber.displayName(for: stat.name),
-                        detail: stat.category.rawValue,
+                        detail: stat.category.title,
                         value: Double(stat.calls),
-                        valueText: "\(stat.calls) · ср. \(Fmt.shortDuration(stat.averageDuration))",
+                        valueText: L("\(stat.calls) · ср. \(Fmt.shortDuration(stat.averageDuration))"),
                         segments: segments,
-                        help: "успешно \(Int(ok)), ошибок \(stat.errors), выполняется \(stat.running)"
+                        help: L("успешно \(Int(ok)), ошибок \(stat.errors), выполняется \(stat.running)")
                     )
                 })
                 HStack(spacing: 14) {
-                    Label("успех", systemImage: "square.fill").foregroundStyle(Palette.tool)
-                    Label("ошибка", systemImage: "square.fill").foregroundStyle(Palette.critical)
-                    Label("выполняется", systemImage: "square.fill").foregroundStyle(Palette.warning)
+                    Label(L("успех"), systemImage: "square.fill").foregroundStyle(Palette.tool)
+                    Label(L("ошибка"), systemImage: "square.fill").foregroundStyle(Palette.critical)
+                    Label(L("выполняется"), systemImage: "square.fill").foregroundStyle(Palette.warning)
                 }
                 .font(.caption)
                 .labelStyle(LegendLabelStyle())
@@ -92,7 +92,7 @@ struct ToolStatsGrid: View {
     var body: some View {
         Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 5) {
             GridRow {
-                ForEach(["Инструмент", "Категория", "Вызовы", "Ошибки", "Среднее", "Максимум", "Всего", "Генерация ввода", "Вывод"], id: \.self) { title in
+                ForEach([L("Инструмент"), L("Категория"), L("Вызовы"), L("Ошибки"), L("Среднее"), L("Максимум"), L("Всего"), L("Генерация ввода"), L("Вывод")], id: \.self) { title in
                     Text(title).foregroundStyle(.secondary)
                 }
             }
@@ -100,8 +100,8 @@ struct ToolStatsGrid: View {
             ForEach(stats) { stat in
                 GridRow {
                     Label(ToolDescriber.displayName(for: stat.name), systemImage: TraceStyle.icon(for: stat.category)).lineLimit(1)
-                    Text(stat.category.rawValue).foregroundStyle(.secondary)
-                    Text("\(stat.calls)" + (stat.running > 0 ? " (\(stat.running) идёт)" : "")).monospacedDigit()
+                    Text(stat.category.title).foregroundStyle(.secondary)
+                    Text("\(stat.calls)" + (stat.running > 0 ? L(" (\(stat.running) идёт)") : "")).monospacedDigit()
                     Text("\(stat.errors)").monospacedDigit().foregroundStyle(stat.errors > 0 ? Palette.critical : Color.primary)
                     Text(Fmt.shortDuration(stat.averageDuration)).monospacedDigit()
                     Text(Fmt.shortDuration(stat.maxDuration)).monospacedDigit()
@@ -120,7 +120,7 @@ struct MCPServersView: View {
 
     var body: some View {
         if servers.isEmpty {
-            Text("MCP-серверы в этой сессии не встречались").foregroundStyle(.secondary)
+            Text(L("MCP-серверы в этой сессии не встречались")).foregroundStyle(.secondary)
         } else {
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(servers) { server in
@@ -130,10 +130,10 @@ struct MCPServersView: View {
                             Text(server.name).font(.callout.weight(.semibold))
                             Chip(text: server.status.title, systemImage: TraceStyle.icon(for: server.status), tint: TraceStyle.color(for: server.status))
                             if server.hasInstructions {
-                                Chip(text: "есть инструкции", systemImage: "text.book.closed", tint: Palette.other)
+                                Chip(text: L("есть инструкции"), systemImage: "text.book.closed", tint: Palette.other)
                             }
                             Spacer()
-                            Text("инструментов \(server.toolsAvailable) · вызовов \(server.calls) · ошибок \(server.errors) · \(Fmt.shortDuration(server.totalDuration))")
+                            Text(L("инструментов \(server.toolsAvailable) · вызовов \(server.calls) · ошибок \(server.errors) · \(Fmt.shortDuration(server.totalDuration))"))
                                 .font(.caption.monospacedDigit())
                                 .foregroundStyle(.secondary)
                         }
@@ -158,7 +158,7 @@ struct SkillsView: View {
 
     var body: some View {
         if skills.isEmpty {
-            Text("Список скиллов в логе не найден").foregroundStyle(.secondary)
+            Text(L("Список скиллов в логе не найден")).foregroundStyle(.secondary)
         } else {
             FlowLayout(spacing: 6) {
                 ForEach(skills) { skill in
@@ -167,7 +167,7 @@ struct SkillsView: View {
                         systemImage: skill.invocations > 0 ? "sparkles" : nil,
                         tint: skill.invocations > 0 ? Palette.skill : Palette.other
                     )
-                    .help(skill.lastUsed.map { "последний вызов \($0.formatted(date: .omitted, time: .standard))" } ?? (skill.available ? "доступен, не вызывался" : "вызван, но не в списке"))
+                    .help(skill.lastUsed.map { L("последний вызов \($0.localized(date: .omitted, time: .standard))") } ?? (skill.available ? L("доступен, не вызывался") : L("вызван, но не в списке")))
                 }
             }
         }
@@ -179,19 +179,19 @@ struct SubagentsView: View {
 
     var body: some View {
         if agents.isEmpty {
-            Text("Субагенты не встречались").foregroundStyle(.secondary)
+            Text(L("Субагенты не встречались")).foregroundStyle(.secondary)
         } else {
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 5) {
                 ForEach(agents) { agent in
                     GridRow {
                         Image(systemName: agent.calls > 0 ? "person.2.fill" : "person.2").foregroundStyle(agent.calls > 0 ? Palette.subagent : Palette.other)
                         Text(agent.type)
-                        Text(agent.calls > 0 ? "\(agent.calls) запуск. · \(Fmt.shortDuration(agent.totalDuration))" : "доступен")
+                        Text(agent.calls > 0 ? L("\(agent.calls) запуск. · \(Fmt.shortDuration(agent.totalDuration))") : L("доступен"))
                             .foregroundStyle(.secondary)
                         if agent.running > 0 {
-                            Chip(text: "работает", systemImage: "hourglass", tint: Palette.warning)
+                            Chip(text: L("работает"), systemImage: "hourglass", tint: Palette.warning)
                         } else if agent.errors > 0 {
-                            Chip(text: "ошибок \(agent.errors)", systemImage: "xmark.circle.fill", tint: Palette.critical)
+                            Chip(text: L("ошибок \(agent.errors)"), systemImage: "xmark.circle.fill", tint: Palette.critical)
                         } else {
                             Text("")
                         }
@@ -208,11 +208,11 @@ struct FilesGrid: View {
 
     var body: some View {
         if files.isEmpty {
-            Text("Файлы не читались и не менялись").foregroundStyle(.secondary)
+            Text(L("Файлы не читались и не менялись")).foregroundStyle(.secondary)
         } else {
             Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 4) {
                 GridRow {
-                    ForEach(["Файл", "Чтение", "Запись", "Правки", "Строки", "Ошибки", "Последнее"], id: \.self) { title in
+                    ForEach([L("Файл"), L("Чтение"), L("Запись"), L("Правки"), L("Строки"), L("Ошибки"), L("Последнее")], id: \.self) { title in
                         Text(title).foregroundStyle(.secondary)
                     }
                 }
@@ -228,7 +228,7 @@ struct FilesGrid: View {
                         Text(file.edits > 0 ? "\(file.edits)" : "—").monospacedDigit()
                         Text(file.linesAdded + file.linesRemoved > 0 ? "+\(file.linesAdded) −\(file.linesRemoved)" : "—").monospacedDigit()
                         Text(file.errors > 0 ? "\(file.errors)" : "—").foregroundStyle(file.errors > 0 ? Palette.critical : Color.secondary)
-                        Text(file.last.formatted(date: .omitted, time: .standard)).foregroundStyle(.secondary)
+                        Text(file.last.localized(date: .omitted, time: .standard)).foregroundStyle(.secondary)
                     }
                     .font(.callout)
                 }

@@ -1,6 +1,7 @@
 // Types shared by the main process, the preload bridge and the renderer.
 import type { ActivityItem } from "../core/activity";
 import type { SourceStat } from "../core/ingest";
+import type { Language, LanguageSetting } from "../core/i18n";
 import type { UsageEvent } from "../core/model";
 import type { PlanUsage } from "../core/plan";
 import type { PricingTable } from "../core/pricing";
@@ -15,6 +16,8 @@ export interface Settings {
   plan: SubscriptionPlan;
   theme: ThemeName;
   appearance: Appearance;
+  /** Interface language; "system" follows Windows. */
+  language: LanguageSetting;
   receiverEnabled: boolean;
   receiverPort: number;
   hideContent: boolean;
@@ -65,6 +68,8 @@ export interface InitialState {
   supportDir: string;
   homeDir: string;
   isPopup: boolean;
+  /** The interface language in effect ("system" resolved). */
+  language: Language;
 }
 
 /** Pushed to every window after each scan. */
@@ -82,7 +87,7 @@ export interface XRayBridge {
   onDelta(callback: (delta: Delta) => void): void;
   onPlanUsage(callback: (usage: PlanUsage | undefined) => void): void;
   onReceiver(callback: (status: ReceiverStatus) => void): void;
-  onSettings(callback: (settings: Settings, directories: string[]) => void): void;
+  onSettings(callback: (settings: Settings, directories: string[], language: Language) => void): void;
   onNavigate(callback: (target: { screen?: string; tab?: string; period?: string }) => void): void;
   rescan(): Promise<void>;
   fullRescan(): Promise<void>;

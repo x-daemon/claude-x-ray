@@ -8,6 +8,7 @@ import { store, useStore } from "../state";
 import { C } from "../traceStyle";
 import { Button, Card, Icon, Md } from "../ui";
 import { openSettings } from "./live";
+import { L, N, tr } from "../../core/i18n";
 
 export function SourcesHelp({ title, icon, message }: { title: string; icon: LucideIcon; message?: string }) {
   const s = useStore();
@@ -18,7 +19,7 @@ export function SourcesHelp({ title, icon, message }: { title: string; icon: Luc
         <Icon icon={icon} size={40} class="secondary light" />
         <h2>{title}</h2>
         <div class="secondary">
-          {newest ? `Последняя запись в логах на этом компьютере: ${Fmt.dateTime(newest)}, ${Fmt.ago((s.now - newest) / 1000)}.` : "На этом компьютере пока нет ни одного лога Claude Code."}
+          {newest ? L`Последняя запись в логах на этом компьютере: ${Fmt.dateTime(newest)}, ${Fmt.ago((s.now - newest) / 1000)}.` : L`На этом компьютере пока нет ни одного лога Claude Code.`}
         </div>
         {message ? <div class="callout secondary help-message">{message}</div> : null}
       </div>
@@ -36,11 +37,11 @@ export function tildePath(path: string): string {
 }
 
 export function sourceStatus(source: SourceStat, now: number): string {
-  if (!source.exists) return "папки нет";
-  if (source.files === 0) return "логов нет";
+  if (!source.exists) return L`папки нет`;
+  if (source.files === 0) return L`логов нет`;
   let text = Fmt.plural(source.files, "лог", "лога", "логов");
   if (source.newestModification !== undefined) {
-    text += ` · последний изменён ${Fmt.dateTime(source.newestModification)}, ${Fmt.ago((now - source.newestModification) / 1000)}`;
+    text += L` · последний изменён ${Fmt.dateTime(source.newestModification)}, ${Fmt.ago((now - source.newestModification) / 1000)}`;
   }
   return text;
 }
@@ -50,7 +51,7 @@ export function SourceFoldersCard() {
   const s = useStore();
   const sources = s.scan?.sources ?? [];
   return (
-    <Card title="Где X-Ray ищет логи" subtitle="транскрипты сессий, *.jsonl">
+    <Card title={L`Где X-Ray ищет логи`} subtitle={L`транскрипты сессий, *.jsonl`}>
       <div class="stack-10">
         {sources.map((source) => (
           <div class="row gap-10" key={source.directory}>
@@ -59,14 +60,14 @@ export function SourceFoldersCard() {
               <div class="mono callout selectable ellipsis" title={source.directory}>{tildePath(source.directory)}</div>
               <div class="caption secondary">{sourceStatus(source, s.now)}</div>
             </div>
-            {source.exists ? <Button small onClick={() => void s.bridge.openPath(source.directory)}>Показать в проводнике</Button> : null}
+            {source.exists ? <Button small onClick={() => void s.bridge.openPath(source.directory)}>{L`Показать в проводнике`}</Button> : null}
           </div>
         ))}
         <hr />
         <div class="row gap-8">
-          <Button small onClick={() => openSettings("sources")}>Изменить папки…</Button>
-          <Button small onClick={() => void s.bridge.importDialog()}>Импортировать лог…</Button>
-          <Button small onClick={() => void s.bridge.fullRescan()}>Пересканировать</Button>
+          <Button small onClick={() => openSettings("sources")}>{L`Изменить папки…`}</Button>
+          <Button small onClick={() => void s.bridge.importDialog()}>{L`Импортировать лог…`}</Button>
+          <Button small onClick={() => void s.bridge.fullRescan()}>{L`Пересканировать`}</Button>
         </div>
       </div>
     </Card>
@@ -74,26 +75,26 @@ export function SourceFoldersCard() {
 }
 
 const WAYS: [LucideIcon, string][] = [
-  [I.Terminal, "**Терминал:** `claude` в папке проекта (PowerShell, Windows Terminal или WSL с папкой логов из «Настройки → Источники»)."],
-  [I.AppWindow, "**Claude Desktop:** сессия Code в локальной среде, а не в облачной."],
-  [I.RadioTower, "**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом компьютере, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую."],
-  [I.CloudDownload, "**Облачные сессии вживую:** «Настройки → Облако». Каждая облачная сессия сама присылает сюда свой лог после каждого шага через туннель к этому компьютеру."],
-  [I.Download, "**Разово:** попросите облачную сессию прислать свой лог («пришли лог сессии для X-Ray») и перетащите файл в окно X-Ray."],
-  [I.Gauge, "**Лимиты всего аккаунта**, включая облако и чаты, X-Ray берёт из строки статуса Claude Code: «Настройки → Лимиты аккаунта»."],
+  [I.Terminal, N("**Терминал:** `claude` в папке проекта (PowerShell, Windows Terminal или WSL с папкой логов из «Настройки → Источники»).")],
+  [I.AppWindow, N("**Claude Desktop:** сессия Code в локальной среде, а не в облачной.")],
+  [I.RadioTower, N("**Remote Control:** `claude remote-control` в папке проекта. Сессия идёт на этом компьютере, управлять ею можно из приложения Claude на телефоне или в браузере, а X-Ray показывает её вживую.")],
+  [I.CloudDownload, N("**Облачные сессии вживую:** «Настройки → Облако». Каждая облачная сессия сама присылает сюда свой лог после каждого шага через туннель к этому компьютеру.")],
+  [I.Download, N("**Разово:** попросите облачную сессию прислать свой лог («пришли лог сессии для X-Ray») и перетащите файл в окно X-Ray.")],
+  [I.Gauge, N("**Лимиты всего аккаунта**, включая облако и чаты, X-Ray берёт из строки статуса Claude Code: «Настройки → Лимиты аккаунта».")],
 ];
 
 /** Why cloud sessions are missing, and how to run Claude Code so that X-Ray sees it live. */
 export function CloudSessionsCard() {
   return (
-    <Card title="Облачные сессии сюда сами не попадают">
+    <Card title={L`Облачные сессии сюда сами не попадают`}>
       <div class="stack-10 callout">
         <div>
-          Сессии Claude Code в облаке (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) выполняются на серверах Anthropic, и их логи остаются там. Без настройки X-Ray видит только сессии, которые идут на этом компьютере:
+          {L`Сессии Claude Code в облаке (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) выполняются на серверах Anthropic, и их логи остаются там. Без настройки X-Ray видит только сессии, которые идут на этом компьютере:`}
         </div>
         {WAYS.map(([icon, text]) => (
           <div class="row top gap-10" key={text}>
             <Icon icon={icon} size={16} color={C.accent} />
-            <span><Md text={text} /></span>
+            <span><Md text={tr(text)} /></span>
           </div>
         ))}
       </div>

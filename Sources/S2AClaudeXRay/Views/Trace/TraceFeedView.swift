@@ -17,12 +17,12 @@ enum FeedFilter: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .all: return "Всё"
-        case .user: return "Вы"
-        case .model: return "Модель"
-        case .tools: return "Инструменты"
-        case .context: return "Контекст и система"
-        case .errors: return "Ошибки"
+        case .all: return L("Всё")
+        case .user: return L("Вы")
+        case .model: return L("Модель")
+        case .tools: return L("Инструменты")
+        case .context: return L("Контекст и система")
+        case .errors: return L("Ошибки")
         }
     }
 
@@ -54,7 +54,7 @@ struct TraceFeedView: View {
 
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Picker("Фильтр", selection: $filter) {
+                Picker(L("Фильтр"), selection: $filter) {
                     ForEach(FeedFilter.allCases) { filter in
                         Text(filter.title).tag(filter)
                     }
@@ -62,11 +62,11 @@ struct TraceFeedView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 .frame(maxWidth: 560)
-                TextField("Поиск по командам, файлам, текстам", text: $query)
+                TextField(L("Поиск по командам, файлам, текстам"), text: $query)
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 280)
                 Spacer()
-                Text("\(rows.count) событий").font(.caption).foregroundStyle(.secondary)
+                Text(L("\(rows.count) событий")).font(.caption).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 8)
@@ -83,7 +83,7 @@ struct TraceFeedView: View {
                         Divider()
                     }
                     if rows.count > limit {
-                        Button("Показать ещё \(min(250, rows.count - limit))") { limit += 250 }
+                        Button(L("Показать ещё \(min(250, rows.count - limit))")) { limit += 250 }
                             .padding(.vertical, 12)
                     }
                 }
@@ -137,7 +137,7 @@ struct FeedRowView: View {
 
         VStack(alignment: .leading, spacing: 5) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(item.timestamp.formatted(date: .omitted, time: .standard))
+                Text(item.timestamp.localized(date: .omitted, time: .standard))
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .frame(width: 66, alignment: .leading)
@@ -157,7 +157,7 @@ struct FeedRowView: View {
                         Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                     }
                     .buttonStyle(.borderless)
-                    .help(isExpanded ? "Свернуть" : "Подробнее")
+                    .help(isExpanded ? L("Свернуть") : L("Подробнее"))
                 }
             }
 
@@ -179,13 +179,13 @@ struct FeedRowView: View {
                         DetailBlock(text: detail)
                     }
                     if let result = row.tool?.result {
-                        Text(result.isError ? "Результат (ошибка)" : "Результат")
+                        Text(result.isError ? L("Результат (ошибка)") : L("Результат"))
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(result.isError ? Palette.critical : .secondary)
-                        DetailBlock(text: hideContent ? "\(Fmt.bytes(result.outputBytes ?? 0)) скрыто" : (result.detail ?? result.title))
+                        DetailBlock(text: hideContent ? L("\(Fmt.bytes(result.outputBytes ?? 0)) скрыто") : (result.detail ?? result.title))
                     }
                     if hideContent {
-                        Text("Содержимое скрыто переключателем «Скрыть содержимое».").font(.caption).foregroundStyle(.secondary)
+                        Text(L("Содержимое скрыто переключателем «Скрыть содержимое».")).font(.caption).foregroundStyle(.secondary)
                     }
                 }
                 .padding(.leading, 92)
@@ -208,10 +208,10 @@ struct ToolStatusChip: View {
     var body: some View {
         if tool.isRunning {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
-                Chip(text: "выполняется \(Fmt.shortDuration(tool.duration(now: timeline.date)))", systemImage: "hourglass", tint: Palette.warning)
+                Chip(text: L("выполняется \(Fmt.shortDuration(tool.duration(now: timeline.date)))"), systemImage: "hourglass", tint: Palette.warning)
             }
         } else if tool.isError {
-            Chip(text: "ошибка · \(Fmt.shortDuration(tool.duration(now: Date())))", systemImage: "xmark.circle.fill", tint: Palette.critical)
+            Chip(text: L("ошибка · \(Fmt.shortDuration(tool.duration(now: Date())))"), systemImage: "xmark.circle.fill", tint: Palette.critical)
         } else {
             Chip(text: Fmt.shortDuration(tool.duration(now: Date())), systemImage: "checkmark.circle.fill", tint: Palette.good)
         }
@@ -226,13 +226,13 @@ struct UsageLine: View {
         let t = priced.event.tokens
         let window = ModelCatalog.contextWindow(for: priced.event.model)
         var parts = [
-            "контекст \(Fmt.tokens(t.contextTokens)) (\(Fmt.percent(Double(t.contextTokens) / Double(window))) окна)",
-            "из кэша \(Fmt.percent(t.cacheHitRate))",
+            L("контекст \(Fmt.tokens(t.contextTokens)) (\(Fmt.percent(Double(t.contextTokens) / Double(window))) окна)"),
+            L("из кэша \(Fmt.percent(t.cacheHitRate))"),
         ]
-        if t.cacheWrite > 0 { parts.append("запись в кэш \(Fmt.tokens(t.cacheWrite))\(t.cacheWrite1h > 0 ? " (1 ч)" : "")") }
-        parts.append("ввод \(Fmt.tokens(t.input))")
-        parts.append("вывод \(Fmt.tokens(t.output))" + (t.thinking > 0 ? " (размышления \(Fmt.tokens(t.thinking)))" : ""))
-        if priced.event.webSearchRequests > 0 { parts.append("веб-поиск \(priced.event.webSearchRequests)") }
+        if t.cacheWrite > 0 { parts.append(L("запись в кэш \(Fmt.tokens(t.cacheWrite))\(t.cacheWrite1h > 0 ? L(" (1 ч)") : "")")) }
+        parts.append(L("ввод \(Fmt.tokens(t.input))"))
+        parts.append(L("вывод \(Fmt.tokens(t.output))") + (t.thinking > 0 ? L(" (размышления \(Fmt.tokens(t.thinking)))") : ""))
+        if priced.event.webSearchRequests > 0 { parts.append(L("веб-поиск \(priced.event.webSearchRequests)")) }
         parts.append(Fmt.usd(priced.cost.total))
 
         return HStack(spacing: 6) {
@@ -255,46 +255,46 @@ enum TraceText {
     static func title(for item: ActivityItem, hideContent: Bool) -> String {
         guard hideContent else { return item.title }
         switch item.kind {
-        case .prompt, .queued: return "\(TraceStyle.label(for: item.kind)) · \(item.detail?.count ?? item.title.count) символов"
-        case .reply: return "Ответ · \(item.detail?.count ?? item.title.count) символов"
-        case .thinking: return "Размышление"
-        case .toolCall: return item.toolName.map { ToolDescriber.mcpServer(of: $0).map { "MCP \($0)" } ?? $0 } ?? "Инструмент"
-        case .toolResult: return "Результат · \(Fmt.bytes(item.outputBytes ?? 0))"
+        case .prompt, .queued: return L("\(TraceStyle.label(for: item.kind)) · \(item.detail?.count ?? item.title.count) символов")
+        case .reply: return L("Ответ · \(item.detail?.count ?? item.title.count) символов")
+        case .thinking: return L("Размышление")
+        case .toolCall: return item.toolName.map { ToolDescriber.mcpServer(of: $0).map { "MCP \($0)" } ?? $0 } ?? L("Инструмент")
+        case .toolResult: return L("Результат · \(Fmt.bytes(item.outputBytes ?? 0))")
         default: return item.title
         }
     }
 
     static func chips(for item: ActivityItem, tool: ToolExecution?) -> [ChipSpec] {
         var chips: [ChipSpec] = [ChipSpec(text: TraceStyle.label(for: item.kind), icon: nil, tint: TraceStyle.color(for: item.kind))]
-        if item.isSidechain { chips.append(ChipSpec(text: "субагент", icon: "person.2", tint: Palette.subagent)) }
+        if item.isSidechain { chips.append(ChipSpec(text: L("субагент"), icon: "person.2", tint: Palette.subagent)) }
         if let model = item.model, item.kind == .thinking || item.kind == .reply || item.kind == .toolCall {
             chips.append(ChipSpec(text: ModelCatalog.displayName(for: model), icon: "cpu", tint: Palette.model))
         }
         if let requested = item.requestedModel, let model = item.model, PricingTable.normalize(requested) != PricingTable.normalize(model) {
-            chips.append(ChipSpec(text: "запрошена \(ModelCatalog.displayName(for: requested))", icon: "arrow.triangle.swap", tint: Palette.warning))
+            chips.append(ChipSpec(text: L("запрошена \(ModelCatalog.displayName(for: requested))"), icon: "arrow.triangle.swap", tint: Palette.warning))
         }
         if let effort = item.effort, item.kind == .thinking || item.kind == .reply { chips.append(ChipSpec(text: "effort \(effort)", icon: "dial.medium", tint: Palette.other)) }
-        if let ms = item.thinkingMs, ms > 0 { chips.append(ChipSpec(text: "думал \(Fmt.ms(ms))", icon: "brain", tint: Palette.model)) }
-        if let ms = item.inputStreamMs, ms > 0 { chips.append(ChipSpec(text: "ввод генерировался \(Fmt.ms(ms))", icon: "keyboard", tint: Palette.other)) }
+        if let ms = item.thinkingMs, ms > 0 { chips.append(ChipSpec(text: L("думал \(Fmt.ms(ms))"), icon: "brain", tint: Palette.model)) }
+        if let ms = item.inputStreamMs, ms > 0 { chips.append(ChipSpec(text: L("ввод генерировался \(Fmt.ms(ms))"), icon: "keyboard", tint: Palette.other)) }
         if let server = item.mcpServer { chips.append(ChipSpec(text: "MCP \(server)", icon: "puzzlepiece.extension", tint: Palette.mcp)) }
-        if let skill = item.attributionSkill { chips.append(ChipSpec(text: "скилл \(skill)", icon: "sparkles", tint: Palette.skill)) }
+        if let skill = item.attributionSkill { chips.append(ChipSpec(text: L("скилл \(skill)"), icon: "sparkles", tint: Palette.skill)) }
         if let action = item.fileAction, let path = item.target {
             let verb: String
             switch action {
-            case .read: verb = "чтение"
-            case .write: verb = "запись"
-            case .edit: verb = "правка"
+            case .read: verb = L("чтение")
+            case .write: verb = L("запись")
+            case .edit: verb = L("правка")
             }
             chips.append(ChipSpec(text: "\(verb) \(Snippet.shortPath(path))", icon: "doc", tint: Palette.other))
         }
         if let result = tool?.result {
             if let added = result.linesAdded, let removed = result.linesRemoved {
-                chips.append(ChipSpec(text: "+\(added) −\(removed) строк", icon: "plusminus", tint: Palette.other))
+                chips.append(ChipSpec(text: L("+\(added) −\(removed) строк"), icon: "plusminus", tint: Palette.other))
             } else if let added = result.linesAdded {
-                chips.append(ChipSpec(text: "+\(added) строк", icon: "plus", tint: Palette.other))
+                chips.append(ChipSpec(text: L("+\(added) строк"), icon: "plus", tint: Palette.other))
             }
             if let bytes = result.outputBytes, bytes > 0 {
-                chips.append(ChipSpec(text: "вывод \(Fmt.bytes(bytes)) ≈\(Fmt.tokens(bytes / 4)) ток.", icon: "arrow.turn.down.left", tint: Palette.other))
+                chips.append(ChipSpec(text: L("вывод \(Fmt.bytes(bytes)) ≈\(Fmt.tokens(bytes / 4)) ток."), icon: "arrow.turn.down.left", tint: Palette.other))
             }
             if let permission = result.permission {
                 chips.append(ChipSpec(text: permission, icon: "lock.open", tint: Palette.other))

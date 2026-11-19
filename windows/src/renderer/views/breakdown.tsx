@@ -4,9 +4,10 @@ import { useState } from "preact/hooks";
 import { Analytics } from "../../core/analytics";
 import { Fmt } from "../../core/fmt";
 import { displayModelName, type UsageEvent } from "../../core/model";
-import { OTHER_SERIES, PERIODS, useStore } from "../state";
+import { otherSeries, PERIODS, useStore } from "../state";
 import { C } from "../traceStyle";
 import { Card, RankedBarList } from "../ui";
+import { L } from "../../core/i18n";
 
 export type Dimension = "project" | "model";
 
@@ -68,7 +69,7 @@ export function BreakdownView({ dimension }: { dimension: Dimension }) {
     };
   });
   const top = [...rows].sort((a, b) => b.cost - a.cost).slice(0, 10);
-  const scale = s.colorScale([...top.map((r) => r.name), OTHER_SERIES]);
+  const scale = s.colorScale([...top.map((r) => r.name), otherSeries()]);
   const color = (name: string) => {
     if (dimension !== "model") return C.model;
     const index = scale.domain.indexOf(name);
@@ -81,20 +82,20 @@ export function BreakdownView({ dimension }: { dimension: Dimension }) {
     return sort.desc ? -order : order;
   });
   const columns: { title: string; key: SortKey; numeric?: boolean }[] = [
-    { title: dimension === "project" ? "Проект" : "Модель", key: "name" },
-    { title: "Запросы", key: "requests", numeric: true },
-    { title: "Токены", key: "tokens", numeric: true },
-    { title: "Кэш", key: "cacheHitRate", numeric: true },
-    { title: "Размышления", key: "thinkingShare", numeric: true },
+    { title: dimension === "project" ? L`Проект` : L`Модель`, key: "name" },
+    { title: L`Запросы`, key: "requests", numeric: true },
+    { title: L`Токены`, key: "tokens", numeric: true },
+    { title: L`Кэш`, key: "cacheHitRate", numeric: true },
+    { title: L`Размышления`, key: "thinkingShare", numeric: true },
     { title: "USD", key: "cost", numeric: true },
-    { title: "Доля", key: "share", numeric: true },
+    { title: L`Доля`, key: "share", numeric: true },
   ];
   const periodTitle = PERIODS.find((p) => p.id === s.period)!.title;
 
   return (
     <div class="page">
-      <Card title={dimension === "project" ? "Самые дорогие проекты" : "Стоимость по моделям"} subtitle={`${s.costLabel} · ${periodTitle}`}>
-        {top.length === 0 ? <div class="secondary empty-note" style={{ minHeight: "120px" }}>Нет данных за период</div> : (
+      <Card title={dimension === "project" ? L`Самые дорогие проекты` : L`Стоимость по моделям`} subtitle={`${s.costLabel} · ${periodTitle}`}>
+        {top.length === 0 ? <div class="secondary empty-note" style={{ minHeight: "120px" }}>{L`Нет данных за период`}</div> : (
           <RankedBarList rows={top.map((row) => ({
             id: row.id,
             label: row.name,

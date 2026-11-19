@@ -15,19 +15,19 @@ struct RequestHealthCard: View {
     var body: some View {
         if Self.hasDetails(events) {
             let issues = RequestIssues.of(events, pricing: model.pricing)
-            Card(title: "Запросы к модели", subtitle: subtitle(issues)) {
+            Card(title: L("Запросы к модели"), subtitle: subtitle(issues)) {
                 HStack(alignment: .top, spacing: 16) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Почему не срабатывал кэш").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                        Text(L("Почему не срабатывал кэш")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                         if issues.misses.isEmpty {
-                            Text("Промахов кэша API не сообщало.").font(.caption).foregroundStyle(.secondary)
+                            Text(L("Промахов кэша API не сообщало.")).font(.caption).foregroundStyle(.secondary)
                         } else {
                             RankedBarList(rows: missRows(issues), labelWidth: 250)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Чем заканчивались ответы").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                        Text(L("Чем заканчивались ответы")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                         RankedBarList(rows: stopRows(issues), labelWidth: 180)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -44,7 +44,7 @@ struct RequestHealthCard: View {
                         }
                     }
                 }
-                Text("Причины промахов кэша и потерянные размышления сообщает сам API (диагностика кэша, input_transformations); «не с чем сравнить» — первый запрос, пауза дольше TTL кэша или другой поток. Подробности по каждому запросу — в Live-трассе, вкладка «LLM-запросы».")
+                Text(L("Причины промахов кэша и потерянные размышления сообщает сам API (диагностика кэша, input_transformations); «не с чем сравнить» — первый запрос, пауза дольше TTL кэша или другой поток. Подробности по каждому запросу — в Live-трассе, вкладка «LLM-запросы»."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -54,18 +54,18 @@ struct RequestHealthCard: View {
 
     private func subtitle(_ issues: RequestIssues) -> String {
         issues.realMisses > 0
-            ? "промахов кэша с причиной: \(issues.realMisses) · лишняя запись ≈\(Fmt.usd(issues.realExtraCost))"
-            : "по данным API в логах Claude Code"
+            ? L("промахов кэша с причиной: \(issues.realMisses) · лишняя запись ≈\(Fmt.usd(issues.realExtraCost))")
+            : L("по данным API в логах Claude Code")
     }
 
     private func missRows(_ issues: RequestIssues) -> [RankedBarRow] {
         issues.misses.map { group in
             let real = LLMCalls.isRealMiss(group.reason)
-            let written = group.exact ? "" : " записано"
+            let written = group.exact ? "" : L(" записано")
             return RankedBarRow(
                 id: group.reason,
                 label: LLMCalls.cacheMissTitle(group.reason),
-                detail: "\(Fmt.plural(group.count, "запрос", "запроса", "запросов")) · \(Fmt.tokens(group.missedTokens)) токенов\(written)",
+                detail: L("\(Fmt.plural(group.count, "запрос", "запроса", "запросов")) · \(Fmt.tokens(group.missedTokens)) токенов\(written)"),
                 value: real ? max(group.extraCost, 0.0001) : 0.0001,
                 valueText: real ? "≈\(Fmt.usd(group.extraCost))" : "—",
                 color: real ? Palette.warning : Palette.other
@@ -97,23 +97,23 @@ struct RequestHealthCard: View {
         var facts: [(icon: String, color: Color, text: String)] = []
         if issues.droppedRequests > 0 {
             let reasons = issues.dropped.map { "\(LLMCalls.droppedReasonTitle($0.reason)) (\($0.blocks))" }.joined(separator: ", ")
-            facts.append(("brain", Palette.warning, "API убирало размышления из истории в \(Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")): \(reasons)"))
+            facts.append(("brain", Palette.warning, L("API убирало размышления из истории в \(Fmt.plural(issues.droppedRequests, "запросе", "запросах", "запросах")): \(reasons)")))
         }
         if issues.truncated > 0 {
-            facts.append(("exclamationmark.triangle.fill", Palette.warning, "Обрезано лимитом вывода: \(Fmt.plural(issues.truncated, "ответ", "ответа", "ответов"))"))
+            facts.append(("exclamationmark.triangle.fill", Palette.warning, L("Обрезано лимитом вывода: \(Fmt.plural(issues.truncated, "ответ", "ответа", "ответов"))")))
         }
         if !issues.refusals.isEmpty {
             let list = issues.refusals.sorted { $0.key < $1.key }.map { "\($0.key) \($0.value)" }.joined(separator: ", ")
-            facts.append(("xmark.octagon.fill", Palette.critical, "Отказы: \(list)"))
+            facts.append(("xmark.octagon.fill", Palette.critical, L("Отказы: \(list)")))
         }
         if issues.fallbacks > 0 {
-            facts.append(("square.stack.3d.up", Palette.other, "Ответов резервной модели: \(issues.fallbacks)"))
+            facts.append(("square.stack.3d.up", Palette.other, L("Ответов резервной модели: \(issues.fallbacks)")))
         }
         if issues.modelSwitches > 0 {
-            facts.append(("arrow.triangle.swap", Palette.other, "Ответила не та модель, что запрошена: \(Fmt.plural(issues.modelSwitches, "раз", "раза", "раз"))"))
+            facts.append(("arrow.triangle.swap", Palette.other, L("Ответила не та модель, что запрошена: \(Fmt.plural(issues.modelSwitches, "раз", "раза", "раз"))")))
         }
         if issues.contextEdits > 0 {
-            facts.append(("arrow.down.right.and.arrow.up.left", Palette.context, "Сервер очищал контекст в \(Fmt.plural(issues.contextEdits, "запросе", "запросах", "запросах"))"))
+            facts.append(("arrow.down.right.and.arrow.up.left", Palette.context, L("Сервер очищал контекст в \(Fmt.plural(issues.contextEdits, "запросе", "запросах", "запросах"))")))
         }
         return facts
     }

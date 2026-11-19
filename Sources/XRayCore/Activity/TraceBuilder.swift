@@ -359,8 +359,8 @@ public enum TraceBuilder {
     static func flowNode(for tool: ToolExecution) -> String {
         if let server = tool.mcpServer { return "MCP: \(server)" }
         switch tool.category {
-        case .agent: return "Субагент"
-        case .skill: return "Скилл"
+        case .agent: return L("Субагент")
+        case .skill: return L("Скилл")
         default: return tool.name
         }
     }
@@ -371,21 +371,21 @@ public enum TraceBuilder {
         var lastMessage: String?
         for item in items where !item.isSidechain {
             switch item.kind {
-            case .prompt: sequence.append("Промпт"); lastMessage = nil
-            case .queued where item.title.hasPrefix("Передано"): sequence.append("Сообщение во время работы")
-            case .interrupted: sequence.append("Прерывание")
-            case .compact: sequence.append("Сжатие контекста")
-            case .apiError: sequence.append("Ошибка API")
+            case .prompt: sequence.append(L("Промпт")); lastMessage = nil
+            case .queued where item.title.hasPrefix(L("Передано модели: ")): sequence.append(L("Сообщение во время работы"))
+            case .interrupted: sequence.append(L("Прерывание"))
+            case .compact: sequence.append(L("Сжатие контекста"))
+            case .apiError: sequence.append(L("Ошибка API"))
             case .thinking, .reply, .toolCall:
                 if let id = item.messageID, id != lastMessage {
-                    sequence.append("Модель")
+                    sequence.append(L("Модель"))
                     lastMessage = id
                 }
                 if item.kind == .toolCall, let tool = toolByCall[item.id] {
                     sequence.append(flowNode(for: tool))
-                    if tool.isError { sequence.append("Ошибка инструмента") }
+                    if tool.isError { sequence.append(L("Ошибка инструмента")) }
                 }
-                if item.kind == .reply, item.stopReason == "end_turn" { sequence.append("Ответ") }
+                if item.kind == .reply, item.stopReason == "end_turn" { sequence.append(L("Ответ")) }
             default:
                 continue
             }

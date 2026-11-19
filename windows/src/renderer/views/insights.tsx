@@ -7,6 +7,7 @@ import { PERIODS, useStore } from "../state";
 import { severityColor, severityIcon } from "../traceStyle";
 import { Icon, Label, StatTile, Tiles } from "../ui";
 import { RequestHealthCard } from "./requestHealth";
+import { L } from "../../core/i18n";
 
 export function InsightsView() {
   const s = useStore();
@@ -21,27 +22,27 @@ export function InsightsView() {
     <div class="page">
       <Tiles>
         <StatTile title={s.costLabel} value={Fmt.usd(summary.totalCost)} caption={periodTitle} />
-        <StatTile title="Доля кэша" value={summary.requests > 0 ? Fmt.percent(summary.cacheHitRate) : "—"} caption="чем выше, тем дешевле каждый ход" />
+        <StatTile title={L`Доля кэша`} value={summary.requests > 0 ? Fmt.percent(summary.cacheHitRate) : "—"} caption={L`чем выше, тем дешевле каждый ход`} />
         <StatTile
-          title="Без потери качества"
-          value={free > 0 ? `до ${Fmt.usd(free)}` : "—"}
-          caption={tradeoff > 0 ? `ещё до ${Fmt.usd(tradeoff)} через компромиссы; оценки пересекаются` : "кэш и гигиена контекста"}
+          title={L`Без потери качества`}
+          value={free > 0 ? L`до ${Fmt.usd(free)}` : "—"}
+          caption={tradeoff > 0 ? L`ещё до ${Fmt.usd(tradeoff)} через компромиссы; оценки пересекаются` : L`кэш и гигиена контекста`}
         />
         <StatTile
-          title="Замечаний"
+          title={L`Замечаний`}
           value={String(insights.filter((i) => severityRank[i.severity] >= severityRank.info).length)}
-          caption={`${insights.filter((i) => severityRank[i.severity] >= severityRank.warning).length} требуют внимания`}
+          caption={L`${insights.filter((i) => severityRank[i.severity] >= severityRank.warning).length} требуют внимания`}
         />
       </Tiles>
       {s.isSubscription ? (
-        <Label icon={I.Info} class="callout secondary" text="На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита." />
+        <Label icon={I.Info} class="callout secondary" text={L`На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита.`} />
       ) : null}
       <RequestHealthCard events={events} />
       {insights.length === 0 ? (
         <div class="unavailable tall">
           <Icon icon={I.Lightbulb} size={32} class="secondary light" />
-          <h3>Нет данных для анализа</h3>
-          <div class="secondary">Выберите период, в котором были сессии Claude Code.</div>
+          <h3>{L`Нет данных для анализа`}</h3>
+          <div class="secondary">{L`Выберите период, в котором были сессии Claude Code.`}</div>
         </div>
       ) : insights.map((insight) => <InsightCard key={insight.id} insight={insight} />)}
     </div>
@@ -64,7 +65,7 @@ export function InsightCard({ insight }: { insight: Insight }) {
         <div>{insight.detail}</div>
         {insight.recommendation ? <div class="secondary">{insight.recommendation}</div> : null}
         {insight.potentialSavings && insight.potentialSavings > 0 ? (
-          <Label icon={I.CircleArrowDown} class="callout strong good-text" text={`Потенциальная экономия: до ${Fmt.usd(insight.potentialSavings)} за период`} />
+          <Label icon={I.CircleArrowDown} class="callout strong good-text" text={L`Потенциальная экономия: до ${Fmt.usd(insight.potentialSavings)} за период`} />
         ) : null}
       </div>
     </div>

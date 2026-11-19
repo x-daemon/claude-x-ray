@@ -11,14 +11,15 @@ import * as I from "../icons";
 import { store, useNow } from "../state";
 import { C } from "../traceStyle";
 import { Card, Legend, Segmented, StatTile, Tiles } from "../ui";
+import { L, N, titled, tr } from "../../core/i18n";
 
 type Range = "tenMinutes" | "thirtyMinutes" | "twoHours" | "session";
-const RANGES: { id: Range; title: string; ms?: number }[] = [
-  { id: "tenMinutes", title: "10 мин", ms: 600_000 },
-  { id: "thirtyMinutes", title: "30 мин", ms: 1_800_000 },
-  { id: "twoHours", title: "2 часа", ms: 7_200_000 },
-  { id: "session", title: "Вся сессия" },
-];
+const RANGES: { id: Range; title: string; ms?: number }[] = titled([
+  { id: "tenMinutes", title: N("10 мин"), ms: 600_000 },
+  { id: "thirtyMinutes", title: N("30 мин"), ms: 1_800_000 },
+  { id: "twoHours", title: N("2 часа"), ms: 7_200_000 },
+  { id: "session", title: N("Вся сессия") },
+]);
 
 type Status = "Модель" | "Успех" | "Ошибка" | "Выполняется";
 const STATUS_COLOR: Record<Status, string> = { "Модель": C.model, "Успех": C.tool, "Ошибка": C.critical, "Выполняется": C.warning };
@@ -50,18 +51,18 @@ export function TraceTimelineView({ trace, usage }: { trace: SessionTrace; usage
   return (
     <div class="page">
       <div class="row gap-12">
-        <Segmented value={range} options={RANGES} onChange={setRange} label="Окно" />
+        <Segmented value={range} options={RANGES} onChange={setRange} label={L`Окно`} />
         <span class="spacer" />
-        <span class="caption secondary">{isLive ? "обновляется в реальном времени" : "сессия неактивна, показан её конец"}</span>
+        <span class="caption secondary">{isLive ? L`обновляется в реальном времени` : L`сессия неактивна, показан её конец`}</span>
       </div>
-      <Card title="Что происходило" subtitle="ответы модели и инструменты; пунктир — ваши промпты">
-        {bars.length === 0 ? <div class="secondary empty-note" style={{ minHeight: "80px" }}>В этом окне ничего не происходило</div>
+      <Card title={L`Что происходило`} subtitle={L`ответы модели и инструменты; пунктир — ваши промпты`}>
+        {bars.length === 0 ? <div class="secondary empty-note" style={{ minHeight: "80px" }}>{L`В этом окне ничего не происходило`}</div>
           : <Gantt bars={bars.filter((b) => lanes.includes(b.lane))} lanes={lanes} prompts={prompts.map((p) => p.timestamp)} start={start} end={reference} />}
       </Card>
-      <Card title="Контекст на каждом запросе" subtitle="токенов в промпте">
+      <Card title={L`Контекст на каждом запросе`} subtitle={L`токенов в промпте`}>
         <ContextLineChart usage={usage} start={start} end={reference} />
       </Card>
-      <Card title="Куда ушло время сессии">
+      <Card title={L`Куда ушло время сессии`}>
         <TimeSplit trace={trace} now={now} />
       </Card>
     </div>
@@ -79,19 +80,19 @@ function makeBars(trace: SessionTrace, start: number, end: number, minWidth: num
   for (const step of trace.steps) {
     const range = clamp(step.start, step.end);
     if (!range) continue;
-    const model = step.model ? displayModelName(step.model) : "модель";
-    const thinking = step.thinkingMs > 0 ? `, думал ${Fmt.ms(step.thinkingMs)}` : "";
+    const model = step.model ? displayModelName(step.model) : L`модель`;
+    const thinking = step.thinkingMs > 0 ? L`, думал ${Fmt.ms(step.thinkingMs)}` : "";
     bars.push({
       id: `step|${step.messageID}|${step.start}`,
-      lane: step.isSidechain ? "Модель · субагент" : "Модель",
-      start: range[0], end: range[1], status: "Модель",
+      lane: step.isSidechain ? L`Модель · субагент` : L`Модель`,
+      start: range[0], end: range[1], status: N("Модель"),
       label: `${model} · ${Fmt.shortDuration(stepDuration(step))}${thinking}`,
     });
   }
   for (const tool of trace.tools) {
     const range = clamp(tool.call.timestamp, tool.result?.timestamp ?? now);
     if (!range) continue;
-    const status: Status = toolIsRunning(tool) ? "Выполняется" : toolIsError(tool) ? "Ошибка" : "Успех";
+    const status: Status = toolIsRunning(tool) ? N("Выполняется") : toolIsError(tool) ? N("Ошибка") : N("Успех");
     const server = toolMcpServer(tool);
     const lane = (tool.call.isSidechain ? "↳ " : "") + (server ? `MCP ${server}` : tool.call.toolName ?? "tool");
     bars.push({
@@ -107,7 +108,7 @@ function makeBars(trace: SessionTrace, start: number, end: number, minWidth: num
 /** Model lanes first, then tools by first appearance; at most 14 lanes. */
 function laneOrder(bars: Bar[]): string[] {
   const lanes: string[] = [];
-  for (const fixed of ["Модель", "Модель · субагент"]) if (bars.some((b) => b.lane === fixed)) lanes.push(fixed);
+  for (const fixed of [L`Модель`, L`Модель · субагент`]) if (bars.some((b) => b.lane === fixed)) lanes.push(fixed);
   for (const bar of [...bars].sort((a, b) => a.start - b.start)) if (!lanes.includes(bar.lane)) lanes.push(bar.lane);
   return lanes.slice(0, 14);
 }
@@ -167,7 +168,7 @@ function Gantt({ bars, lanes, prompts, start, end }: { bars: Bar[]; lanes: strin
                     <span class="tt-value">{b.label}</span>
                   </div>
                 )) : (
-                  <div class="tt-row"><span class="tt-label">Ожидание</span><span class="tt-value">—</span></div>
+                  <div class="tt-row"><span class="tt-label">{L`Ожидание`}</span><span class="tt-value">—</span></div>
                 )}
               </div>
             </>
@@ -177,7 +178,7 @@ function Gantt({ bars, lanes, prompts, start, end }: { bars: Bar[]; lanes: strin
           {ticks(start, end).map((t) => <span key={t} class="caption2 secondary" style={{ left: x(t) }}>{Fmt.time(t)}</span>)}
         </div>
       </div>
-      <Legend items={(["Модель", "Успех", "Ошибка", "Выполняется"] as Status[]).map((s) => ({ name: s, color: STATUS_COLOR[s] }))} />
+      <Legend items={([N("Модель"), N("Успех"), N("Ошибка"), N("Выполняется")] as Status[]).map((s) => ({ name: tr(s), color: STATUS_COLOR[s] }))} />
     </div>
   );
 }
@@ -216,16 +217,16 @@ function ContextLineChart({ usage, start, end }: { usage: Map<string, PricedEven
       },
       xAxis: { type: "time", min: start, max: end, ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: (v: number) => Fmt.time(v, false) } },
       yAxis: { type: "value", ...axis(p), axisLabel: { ...axis(p).axisLabel, formatter: tokenAxisLabel } },
-      series: [line("Основная сессия", p.roles.model, main), ...(side.length ? [line("Субагент", p.roles.subagent, side)] : [])],
+      series: [line(L`Основная сессия`, p.roles.model, main), ...(side.length ? [line(L`Субагент`, p.roles.subagent, side)] : [])],
       textStyle: { fontFamily: FONT },
     };
   }, [points.length, start, end, p, points[points.length - 1]?.event.messageID]);
 
-  if (!points.length) return <div class="secondary empty-note" style={{ minHeight: "60px" }}>Нет запросов в этом окне</div>;
+  if (!points.length) return <div class="secondary empty-note" style={{ minHeight: "60px" }}>{L`Нет запросов в этом окне`}</div>;
   return (
     <div>
-      <EChart option={option} height={170} label="Контекст на каждом запросе" />
-      {side.length ? <Legend items={[{ name: "Основная сессия", color: C.model }, { name: "Субагент", color: C.subagent }]} /> : null}
+      <EChart option={option} height={170} label={L`Контекст на каждом запросе`} />
+      {side.length ? <Legend items={[{ name: L`Основная сессия`, color: C.model }, { name: L`Субагент`, color: C.subagent }]} /> : null}
     </div>
   );
 }
@@ -242,10 +243,10 @@ function TimeSplit({ trace, now }: { trace: SessionTrace; now: number }) {
   const thinking = trace.steps.reduce((a, s) => a + s.thinkingMs, 0) / 1000;
   return (
     <Tiles>
-      <StatTile title="Модель отвечала" value={Fmt.shortDuration(model)} caption={`из них размышления ${Fmt.shortDuration(thinking)}`} icon={I.Brain} />
-      <StatTile title="Инструменты работали" value={Fmt.shortDuration(tools)} caption={`${trace.tools.length} вызовов`} icon={I.Wrench} />
-      <StatTile title="Субагенты" value={Fmt.shortDuration(agents)} caption={`${trace.subagents.reduce((a, s) => a + s.calls, 0)} запусков`} icon={I.Users} />
-      <StatTile title="Ожидание вас" value={Fmt.shortDuration(waiting)} caption="между ответом и следующим промптом" icon={I.User} />
+      <StatTile title={L`Модель отвечала`} value={Fmt.shortDuration(model)} caption={L`из них размышления ${Fmt.shortDuration(thinking)}`} icon={I.Brain} />
+      <StatTile title={L`Инструменты работали`} value={Fmt.shortDuration(tools)} caption={L`${trace.tools.length} вызовов`} icon={I.Wrench} />
+      <StatTile title={L`Субагенты`} value={Fmt.shortDuration(agents)} caption={L`${trace.subagents.reduce((a, s) => a + s.calls, 0)} запусков`} icon={I.Users} />
+      <StatTile title={L`Ожидание вас`} value={Fmt.shortDuration(waiting)} caption={L`между ответом и следующим промптом`} icon={I.User} />
     </Tiles>
   );
 }

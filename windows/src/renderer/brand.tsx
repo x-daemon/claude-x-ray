@@ -1,5 +1,6 @@
 // App mark and the "S2A Claude X-Ray" header. Port of BrandMark and BrandHeader in Views/Theme.swift.
 import * as I from "./icons";
+import { L } from "../core/i18n";
 
 export function BrandMark({ size = 32 }: { size?: number }) {
   return (
@@ -15,7 +16,7 @@ export function BrandHeader() {
       <BrandMark size={34} />
       <div class="stack-1 min0">
         <div class="headline ellipsis">S2A Claude X-Ray</div>
-        <div class="caption secondary">мониторинг Claude Code</div>
+        <div class="caption secondary">{L`мониторинг Claude Code`}</div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 // Bridge for the browser dev harness (scripts/dev-server.ts): the renderer runs outside Electron,
 // reads its initial state over HTTP and keeps settings in memory. Not used by the app itself.
+import { LANGUAGES, resolveLanguage, type Language } from "../core/i18n";
 import { defaultPricing, type PricingTable } from "../core/pricing";
 import type { InitialState, Settings, StatusLineState, XRayBridge } from "../shared/api";
 
@@ -8,11 +9,15 @@ export function mockBridge(): XRayBridge {
   let state: InitialState | undefined;
   let settings: Settings | undefined;
   let statusLine: StatusLineState = { type: "notInstalled" };
+  let settingsListener: ((settings: Settings, directories: string[], language: Language) => void) | undefined;
   const noop = () => undefined;
+  const lang = params.get("lang");
+  const resolved = (setting: Settings["language"]): Language =>
+    lang && (LANGUAGES as readonly string[]).includes(lang) ? (lang as Language) : resolveLanguage(setting, navigator.languages);
 
   return {
     async init() {
-      const response = await fetch("/api/init");
+      const response = await fetch(lang ? `/api/init?lang=${lang}` : "/api/init");
       state = (await response.json()) as InitialState;
       settings = {
         ...state.settings,
@@ -21,17 +26,21 @@ export function mockBridge(): XRayBridge {
         hideContent: params.get("hide") === "1",
       };
       statusLine = state.statusLine;
-      return { ...state, settings, isPopup: params.get("popup") === "1" };
+      return { ...state, settings, isPopup: params.get("popup") === "1", language: resolved(settings.language) };
     },
     onDelta: noop,
     onPlanUsage: noop,
     onReceiver: noop,
-    onSettings: noop,
+    onSettings: (callback) => { settingsListener = callback; },
     onNavigate: noop,
     async rescan() {},
     async fullRescan() {},
     async updateSettings(patch) {
       settings = { ...settings!, ...patch };
+      if (patch.language !== undefined) {
+        params.delete("lang");
+        settingsListener?.(settings, state?.directories ?? [], resolveLanguage(settings.language, navigator.languages));
+      }
       return settings;
     },
     async setDirectories(directories) {

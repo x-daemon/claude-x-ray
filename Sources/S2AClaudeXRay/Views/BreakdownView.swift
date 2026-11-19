@@ -7,15 +7,15 @@ enum BreakdownDimension {
 
     var title: String {
         switch self {
-        case .project: return "Проект"
-        case .model: return "Модель"
+        case .project: return L("Проект")
+        case .model: return L("Модель")
         }
     }
 
     var chartTitle: String {
         switch self {
-        case .project: return "Самые дорогие проекты"
-        case .model: return "Стоимость по моделям"
+        case .project: return L("Самые дорогие проекты")
+        case .model: return L("Стоимость по моделям")
         }
     }
 
@@ -83,12 +83,12 @@ struct BreakdownView: View {
                     }
                 }
                 .width(min: 180, ideal: 260)
-                TableColumn("Запросы", value: \.requests) { row in Text("\(row.requests)").monospacedDigit() }
-                TableColumn("Токены", value: \.tokens) { row in Text(Fmt.tokens(row.tokens)).monospacedDigit() }
-                TableColumn("Кэш", value: \.cacheHitRate) { row in Text(Fmt.percent(row.cacheHitRate)).monospacedDigit() }
-                TableColumn("Размышления", value: \.thinkingShare) { row in Text(Fmt.percent(row.thinkingShare)).monospacedDigit() }
+                TableColumn(L("Запросы"), value: \.requests) { row in Text("\(row.requests)").monospacedDigit() }
+                TableColumn(L("Токены"), value: \.tokens) { row in Text(Fmt.tokens(row.tokens)).monospacedDigit() }
+                TableColumn(L("Кэш"), value: \.cacheHitRate) { row in Text(Fmt.percent(row.cacheHitRate)).monospacedDigit() }
+                TableColumn(L("Размышления"), value: \.thinkingShare) { row in Text(Fmt.percent(row.thinkingShare)).monospacedDigit() }
                 TableColumn("USD", value: \.cost) { row in Text(Fmt.usd(row.cost)).monospacedDigit() }
-                TableColumn("Доля", value: \.share) { row in Text(Fmt.percent(row.share)).monospacedDigit() }
+                TableColumn(L("Доля"), value: \.share) { row in Text(Fmt.percent(row.share)).monospacedDigit() }
             }
         }
     }
@@ -96,7 +96,7 @@ struct BreakdownView: View {
     @ViewBuilder
     private func rankedChart(_ top: [BreakdownRow]) -> some View {
         if top.isEmpty {
-            Text("Нет данных за период").foregroundStyle(.secondary).frame(height: 120)
+            Text(L("Нет данных за период")).foregroundStyle(.secondary).frame(height: 120)
         } else {
             let scale = modelScale(for: top.map(\.name))
             RankedBarList(rows: top.map { row in

@@ -9,6 +9,7 @@ import { useNow, useStore } from "../state";
 import { stateColor, stateIcon } from "../traceStyle";
 import { Button, Icon } from "../ui";
 import { limitColor, WindowSummary } from "./live";
+import { L } from "../../core/i18n";
 
 export function Popup() {
   const s = useStore();
@@ -22,31 +23,31 @@ export function Popup() {
         <BrandMark size={22} />
         <span class="headline">S2A Claude X-Ray</span>
         <span class="spacer" />
-        {s.scan?.scanning ? <span class="spinner" aria-label="Чтение логов" /> : null}
+        {s.scan?.scanning ? <span class="spinner" aria-label={L`Чтение логов`} /> : null}
       </div>
       {status ? <StatusLine status={status} /> : null}
       <WindowSummary compact />
       <hr />
       <div class="popup-grid callout">
-        {usage?.fiveHour ? <PlanRow title="Лимит 5 ч" window={usage.fiveHour} now={s.now} /> : null}
-        {usage?.sevenDay ? <PlanRow title="Неделя" window={usage.sevenDay} now={s.now} /> : null}
-        <span class="secondary">Сегодня</span>
+        {usage?.fiveHour ? <PlanRow title={L`Лимит 5 ч`} window={usage.fiveHour} now={s.now} /> : null}
+        {usage?.sevenDay ? <PlanRow title={L`Неделя`} window={usage.sevenDay} now={s.now} /> : null}
+        <span class="secondary">{L`Сегодня`}</span>
         <span class="num">{Fmt.usd(today.totalCost)}</span>
-        <span class="secondary">{Fmt.tokens(today.totalTokens)} ток.</span>
-        <span class="secondary">Темп за час</span>
-        <span class="num">{Fmt.usd(burn.costPerHour)}/ч</span>
-        <span class="secondary">{burn.requests} запр.</span>
-        <span class="secondary">Кэш сегодня</span>
+        <span class="secondary">{L`${Fmt.tokens(today.totalTokens)} ток.`}</span>
+        <span class="secondary">{L`Темп за час`}</span>
+        <span class="num">{L`${Fmt.usd(burn.costPerHour)}/ч`}</span>
+        <span class="secondary">{L`${burn.requests} запр.`}</span>
+        <span class="secondary">{L`Кэш сегодня`}</span>
         <span class="num">{today.requests > 0 ? Fmt.percent(today.cacheHitRate) : "—"}</span>
         <span />
       </div>
       <hr />
       <div class="row gap-8">
-        <Button primary onClick={() => void s.bridge.openMain()}>Открыть X-Ray</Button>
-        <Button title="Обновить" onClick={() => void s.bridge.rescan()} icon={I.RotateCw}>{""}</Button>
-        <Button title="Настройки" onClick={() => void s.bridge.openMain("settings")} icon={I.Settings}>{""}</Button>
+        <Button primary onClick={() => void s.bridge.openMain()}>{L`Открыть X-Ray`}</Button>
+        <Button title={L`Обновить`} onClick={() => void s.bridge.rescan()} icon={I.RotateCw}>{""}</Button>
+        <Button title={L`Настройки`} onClick={() => void s.bridge.openMain("settings")} icon={I.Settings}>{""}</Button>
         <span class="spacer" />
-        <Button onClick={() => void s.bridge.quit()}>Выйти</Button>
+        <Button onClick={() => void s.bridge.quit()}>{L`Выйти`}</Button>
       </div>
     </div>
   );
@@ -58,7 +59,7 @@ function PlanRow({ title, window, now }: { title: string; window: PlanWindow; no
     <>
       <span class="secondary">{title}</span>
       <span class="num" style={fraction >= 0.7 ? { color: limitColor(fraction) } : undefined}>{Fmt.percent(fraction)}</span>
-      <span class="secondary">{windowHasReset(window, now) ? "сброшен" : `сброс через ${Fmt.span((window.resetsAt - now) / 1000)}`}</span>
+      <span class="secondary">{windowHasReset(window, now) ? L`сброшен` : L`сброс через ${Fmt.span((window.resetsAt - now) / 1000)}`}</span>
     </>
   );
 }
@@ -74,7 +75,7 @@ function StatusLine({ status }: { status: LiveStatus }) {
       <div class="stack-2 min0">
         <div class="callout strong">{stateTitle(status.state)} · {Fmt.shortDuration(Math.max(0, now - status.since) / 1000)}</div>
         {detail ? <div class="mono caption clamp2">{detail}</div> : null}
-        <div class="caption secondary">ответов модели {status.stepsInTurn} · инструментов {status.toolsInTurn}</div>
+        <div class="caption secondary">{L`ответов модели ${status.stepsInTurn} · инструментов ${status.toolsInTurn}`}</div>
       </div>
     </div>
   );

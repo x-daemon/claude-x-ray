@@ -16,10 +16,10 @@ struct TraceFlowView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(alignment: .top, spacing: 16) {
-                    Card(title: "Карта переходов", subtitle: "что за чем следует в основном потоке") {
+                    Card(title: L("Карта переходов"), subtitle: L("что за чем следует в основном потоке")) {
                         TransitionsChart(transitions: Array(trace.transitions.prefix(16)))
                     }
-                    Card(title: "Ходы сессии") {
+                    Card(title: L("Ходы сессии")) {
                         TurnSummaryGrid(trace: trace, usage: usage)
                     }
                     .frame(maxWidth: 380)
@@ -42,7 +42,7 @@ struct TransitionsChart: View {
 
     var body: some View {
         if transitions.isEmpty {
-            Text("Переходов пока нет").foregroundStyle(.secondary)
+            Text(L("Переходов пока нет")).foregroundStyle(.secondary)
         } else {
             RankedBarList(rows: transitions.map { transition in
                 RankedBarRow(id: transition.id, label: transition.id, value: Double(transition.count), valueText: Fmt.plural(transition.count, "раз", "раза", "раз"))
@@ -63,14 +63,14 @@ struct TurnSummaryGrid: View {
         let streaming = trace.steps.reduce(0) { $0 + $1.inputStreamMs }
 
         Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
-            row("Ходов", "\(trace.turns.filter { $0.prompt != nil }.count)")
-            row("Завершено / прервано", "\(outcomes[.completed] ?? 0) / \(outcomes[.interrupted] ?? 0)")
-            row("Ответов модели", "\(mainSteps.count) + \(trace.steps.count - mainSteps.count) у субагентов")
-            row("Вызовов инструментов", "\(trace.tools.count), ошибок \(trace.tools.filter(\.isError).count)")
-            row("Время размышлений", Fmt.ms(thinking))
-            row("Генерация ввода инструментов", Fmt.ms(streaming))
-            row("Сообщений во время работы", "\(trace.items.filter { $0.kind == .queued && $0.title.hasPrefix("В очереди") }.count)")
-            row("API-эквивалент", Fmt.usd(usage.values.reduce(0) { $0 + $1.cost.total }))
+            row(L("Ходов"), "\(trace.turns.filter { $0.prompt != nil }.count)")
+            row(L("Завершено / прервано"), "\(outcomes[.completed] ?? 0) / \(outcomes[.interrupted] ?? 0)")
+            row(L("Ответов модели"), L("\(mainSteps.count) + \(trace.steps.count - mainSteps.count) у субагентов"))
+            row(L("Вызовов инструментов"), L("\(trace.tools.count), ошибок \(trace.tools.filter(\.isError).count)"))
+            row(L("Время размышлений"), Fmt.ms(thinking))
+            row(L("Генерация ввода инструментов"), Fmt.ms(streaming))
+            row(L("Сообщений во время работы"), "\(trace.items.filter { $0.kind == .queued && $0.title.hasPrefix(L("В очереди")) }.count)")
+            row(L("API-эквивалент"), Fmt.usd(usage.values.reduce(0) { $0 + $1.cost.total }))
         }
         .font(.callout)
     }
@@ -99,17 +99,17 @@ struct TurnCard: View {
             Button(action: toggle) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Image(systemName: expanded ? "chevron.down" : "chevron.right").foregroundStyle(.secondary)
-                    Text(turn.prompt == nil ? "Начало сессии" : "Ход \(turn.index)").font(.headline)
+                    Text(turn.prompt == nil ? L("Начало сессии") : L("Ход \(turn.index)")).font(.headline)
                     Chip(text: TraceStyle.title(for: turn.outcome), tint: TraceStyle.color(for: turn.outcome))
                     if let prompt = turn.prompt {
                         Text(TraceText.title(for: prompt, hideContent: hideContent)).lineLimit(1)
                     }
                     Spacer(minLength: 12)
-                    Text("\(Fmt.dateTime(turn.start)) · \(Fmt.shortDuration(turn.duration)) · \(turn.stepIDs.count) отв. · \(turn.toolCalls) инстр. · \(Fmt.tokens(tokens)) ток. · \(Fmt.usd(cost))")
+                    Text(L("\(Fmt.dateTime(turn.start)) · \(Fmt.shortDuration(turn.duration)) · \(turn.stepIDs.count) отв. · \(turn.toolCalls) инстр. · \(Fmt.tokens(tokens)) ток. · \(Fmt.usd(cost))"))
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(.secondary)
                     if turn.errors > 0 {
-                        Chip(text: "ошибок \(turn.errors)", systemImage: "xmark.circle.fill", tint: Palette.critical)
+                        Chip(text: L("ошибок \(turn.errors)"), systemImage: "xmark.circle.fill", tint: Palette.critical)
                     }
                 }
                 .contentShape(Rectangle())
@@ -169,15 +169,15 @@ struct FlowStepView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Image(systemName: "brain").foregroundStyle(Palette.model)
-                Text(step.model.map(ModelCatalog.displayName(for:)) ?? "Модель").font(.callout.weight(.semibold))
-                if step.isSidechain { Chip(text: "субагент", systemImage: "person.2", tint: Palette.subagent) }
+                Text(step.model.map(ModelCatalog.displayName(for:)) ?? L("Модель")).font(.callout.weight(.semibold))
+                if step.isSidechain { Chip(text: L("субагент"), systemImage: "person.2", tint: Palette.subagent) }
                 if let effort = step.effort { Chip(text: "effort \(effort)", tint: Palette.other) }
-                Chip(text: "шаг \(Fmt.shortDuration(step.duration))", systemImage: "timer", tint: Palette.other)
-                if step.thinkingMs > 0 { Chip(text: "думал \(Fmt.ms(step.thinkingMs))", systemImage: "brain", tint: Palette.model) }
-                if step.inputStreamMs > 0 { Chip(text: "ввод \(Fmt.ms(step.inputStreamMs))", systemImage: "keyboard", tint: Palette.other) }
-                if let skill = step.attributionSkill { Chip(text: "скилл \(skill)", systemImage: "sparkles", tint: Palette.skill) }
+                Chip(text: L("шаг \(Fmt.shortDuration(step.duration))"), systemImage: "timer", tint: Palette.other)
+                if step.thinkingMs > 0 { Chip(text: L("думал \(Fmt.ms(step.thinkingMs))"), systemImage: "brain", tint: Palette.model) }
+                if step.inputStreamMs > 0 { Chip(text: L("ввод \(Fmt.ms(step.inputStreamMs))"), systemImage: "keyboard", tint: Palette.other) }
+                if let skill = step.attributionSkill { Chip(text: L("скилл \(skill)"), systemImage: "sparkles", tint: Palette.skill) }
                 Spacer()
-                Text(step.start.formatted(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                Text(step.start.localized(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
             }
             if let usage {
                 UsageLine(priced: usage)
@@ -244,7 +244,7 @@ struct FlowItemRow: View {
                 Chip(text: Fmt.ms(ms), systemImage: "brain", tint: Palette.model)
             }
             Spacer(minLength: 8)
-            Text(item.timestamp.formatted(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            Text(item.timestamp.localized(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
         }
     }
 }

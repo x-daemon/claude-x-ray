@@ -16,27 +16,27 @@ struct SessionsView: View {
 
         VSplitView {
             Table(rows, selection: $model.selectedSessionID, sortOrder: $sortOrder) {
-                TableColumn("Начало", value: \.start) { session in
+                TableColumn(L("Начало"), value: \.start) { session in
                     Text(Fmt.dateTime(session.start)).monospacedDigit()
                 }
                 .width(min: 90, ideal: 100)
-                TableColumn("Проект", value: \.projectName)
-                TableColumn("Ветка") { session in
+                TableColumn(L("Проект"), value: \.projectName)
+                TableColumn(L("Ветка")) { session in
                     Text(session.gitBranch ?? "—").foregroundStyle(.secondary)
                 }
-                TableColumn("Модели") { session in
+                TableColumn(L("Модели")) { session in
                     Text(session.modelsLabel)
                 }
-                TableColumn("Длительность", value: \.duration) { session in
+                TableColumn(L("Длительность"), value: \.duration) { session in
                     Text(Fmt.duration(session.duration)).monospacedDigit()
                 }
-                TableColumn("Запросы", value: \.requests) { session in
+                TableColumn(L("Запросы"), value: \.requests) { session in
                     Text("\(session.requests)").monospacedDigit()
                 }
-                TableColumn("Пик контекста", value: \.peakContextTokens) { session in
+                TableColumn(L("Пик контекста"), value: \.peakContextTokens) { session in
                     Text(Fmt.tokens(session.peakContextTokens)).monospacedDigit()
                 }
-                TableColumn("Кэш", value: \.cacheHitRate) { session in
+                TableColumn(L("Кэш"), value: \.cacheHitRate) { session in
                     Text(Fmt.percent(session.cacheHitRate)).monospacedDigit()
                 }
                 TableColumn("USD", value: \.cost) { session in
@@ -49,13 +49,13 @@ struct SessionsView: View {
                 if let id = model.selectedSessionID, let session = sessions.first(where: { $0.id == id }) {
                     SessionDetailView(session: session, events: events.filter { $0.event.sessionID == id })
                 } else {
-                    ContentUnavailableView("Выберите сессию", systemImage: "cursorarrow.click", description: Text("Детали, рост контекста и стоимость каждого запроса."))
+                    ContentUnavailableView(L("Выберите сессию"), systemImage: "cursorarrow.click", description: Text(L("Детали, рост контекста и стоимость каждого запроса.")))
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 240, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .searchable(text: $query, prompt: "Проект, ветка или модель")
+        .searchable(text: $query, prompt: L("Проект, ветка или модель"))
     }
 
     private func filter(_ sessions: [SessionSummary]) -> [SessionSummary] {
@@ -82,43 +82,43 @@ struct SessionDetailView: View {
                     Text("\(Fmt.dateTime(session.start)) – \(Fmt.dateTime(session.end))").foregroundStyle(.secondary)
                 }
                 HStack(spacing: 12) {
-                    StatTile(title: "Стоимость", value: Fmt.usd(session.cost), caption: "\(Fmt.usd(session.summary.costPerRequest)) за запрос")
-                    StatTile(title: "Токены", value: Fmt.tokens(session.totalTokens), caption: "вывод \(Fmt.tokens(session.summary.tokens.output))")
-                    StatTile(title: "Пик контекста", value: Fmt.tokens(session.peakContextTokens), caption: "средний \(Fmt.tokens(Int(session.summary.averageContextTokens)))")
-                    StatTile(title: "Кэш", value: Fmt.percent(session.cacheHitRate), caption: "запись \(Fmt.usd(session.summary.cost.cacheWrite))")
-                    StatTile(title: "Субагенты", value: Fmt.usd(session.sidechainCost), caption: session.cost > 0 ? Fmt.percent(session.sidechainCost / session.cost) + " стоимости" : nil)
+                    StatTile(title: L("Стоимость"), value: Fmt.usd(session.cost), caption: L("\(Fmt.usd(session.summary.costPerRequest)) за запрос"))
+                    StatTile(title: L("Токены"), value: Fmt.tokens(session.totalTokens), caption: L("вывод \(Fmt.tokens(session.summary.tokens.output))"))
+                    StatTile(title: L("Пик контекста"), value: Fmt.tokens(session.peakContextTokens), caption: L("средний \(Fmt.tokens(Int(session.summary.averageContextTokens)))"))
+                    StatTile(title: L("Кэш"), value: Fmt.percent(session.cacheHitRate), caption: L("запись \(Fmt.usd(session.summary.cost.cacheWrite))"))
+                    StatTile(title: L("Субагенты"), value: Fmt.usd(session.sidechainCost), caption: session.cost > 0 ? Fmt.percent(session.sidechainCost / session.cost) + L(" стоимости") : nil)
                 }
 
-                Card(title: "Рост контекста", subtitle: "токенов в промпте на каждый запрос") {
+                Card(title: L("Рост контекста"), subtitle: L("токенов в промпте на каждый запрос")) {
                     Chart(events) { priced in
                         LineMark(
-                            x: .value("Время", priced.event.timestamp),
-                            y: .value("Контекст", Double(priced.event.tokens.contextTokens))
+                            x: .value(L("Время"), priced.event.timestamp),
+                            y: .value(L("Контекст"), Double(priced.event.tokens.contextTokens))
                         )
-                        .foregroundStyle(by: .value("Тип", priced.event.isSidechain ? "Субагент" : "Основная сессия"))
+                        .foregroundStyle(by: .value(L("Тип"), priced.event.isSidechain ? L("Субагент") : L("Основная сессия")))
                         .lineStyle(StrokeStyle(lineWidth: 2))
                     }
-                    .chartForegroundStyleScale(domain: ["Основная сессия", "Субагент"], range: [Palette.model, Palette.subagent])
+                    .chartForegroundStyleScale(domain: [L("Основная сессия"), L("Субагент")], range: [Palette.model, Palette.subagent])
                     .tokenYAxis()
                     .frame(height: 170)
                 }
 
-                Card(title: "Стоимость запросов", subtitle: "запись в кэш выделена отдельно") {
+                Card(title: L("Стоимость запросов"), subtitle: L("запись в кэш выделена отдельно")) {
                     Chart(events) { priced in
                         BarMark(
-                            x: .value("Время", priced.event.timestamp),
+                            x: .value(L("Время"), priced.event.timestamp),
                             y: .value("USD", priced.cost.total - priced.cost.cacheWrite),
                             width: .fixed(4)
                         )
-                        .foregroundStyle(by: .value("Статья", "Остальное"))
+                        .foregroundStyle(by: .value(L("Статья"), L("Остальное")))
                         BarMark(
-                            x: .value("Время", priced.event.timestamp),
+                            x: .value(L("Время"), priced.event.timestamp),
                             y: .value("USD", priced.cost.cacheWrite),
                             width: .fixed(4)
                         )
-                        .foregroundStyle(by: .value("Статья", "Запись в кэш"))
+                        .foregroundStyle(by: .value(L("Статья"), L("Запись в кэш")))
                     }
-                    .chartForegroundStyleScale(domain: ["Остальное", "Запись в кэш"], range: [Palette.primary, Palette.component("Запись в кэш")])
+                    .chartForegroundStyleScale(domain: [L("Остальное"), L("Запись в кэш")], range: [Palette.primary, Palette.component(L("Запись в кэш"))])
                     .usdYAxis()
                     .frame(height: 150)
                 }

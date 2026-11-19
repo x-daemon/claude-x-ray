@@ -133,13 +133,13 @@ public enum StatusLineInput {
             parts.append(model)
         }
         if let context = root["context_window"] as? [String: Any], let used = number(context["used_percentage"]) {
-            parts.append("контекст \(Int(used.rounded()))%")
+            parts.append(L("контекст \(Int(used.rounded()))%"))
         }
         if let window = usage?.fiveHour, !window.hasReset(at: now) {
-            parts.append("5 ч \(Int(window.usedPercentage.rounded()))%")
+            parts.append(L("5 ч \(Int(window.usedPercentage.rounded()))%"))
         }
         if let window = usage?.sevenDay, !window.hasReset(at: now) {
-            parts.append("неделя \(Int(window.usedPercentage.rounded()))%")
+            parts.append(L("неделя \(Int(window.usedPercentage.rounded()))%"))
         }
         return parts.isEmpty ? "S2A X-Ray" : parts.joined(separator: " · ")
     }

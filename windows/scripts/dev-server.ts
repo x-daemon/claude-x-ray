@@ -7,6 +7,7 @@ import { createServer } from "node:http";
 import { existsSync, readFileSync } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
+import { LANGUAGES, setLanguage, type Language } from "../src/core/i18n";
 import { TranscriptIngestor } from "../src/core/ingest";
 import type { PlanUsage } from "../src/core/plan";
 import { defaultPricing } from "../src/core/pricing";
@@ -16,7 +17,9 @@ const [dataDir = path.join(os.homedir(), ".claude"), portText = "5173"] = proces
 const root = path.join(__dirname, "..", "dist", "renderer");
 const projects = path.join(dataDir, "projects");
 
-async function state(): Promise<InitialState> {
+async function state(language: Language): Promise<InitialState> {
+  // Activity titles and default price notes are written in the language they are read in.
+  setLanguage(language);
   const now = Date.now();
   const result = await new TranscriptIngestor().scan([projects], now - 3 * 86_400_000);
   const planUsage: PlanUsage = {
@@ -27,7 +30,7 @@ async function state(): Promise<InitialState> {
     version: "2.1.325",
   };
   return {
-    settings: { plan: "max5x", theme: "s2a", appearance: "light", receiverEnabled: true, receiverPort: 47318, hideContent: false },
+    settings: { plan: "max5x", theme: "s2a", appearance: "light", language, receiverEnabled: true, receiverPort: 47318, hideContent: false },
     directories: [projects],
     pricing: defaultPricing(),
     planUsage,
@@ -43,6 +46,7 @@ async function state(): Promise<InitialState> {
     supportDir: path.join(os.homedir(), "AppData", "Roaming", "S2AClaudeXRay"),
     homeDir: os.homedir(),
     isPopup: false,
+    language,
   };
 }
 
@@ -52,7 +56,8 @@ createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   if (url.pathname === "/api/init") {
     res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify(await state()));
+    const lang = url.searchParams.get("lang") as Language | null;
+    res.end(JSON.stringify(await state(lang && LANGUAGES.includes(lang) ? lang : "ru")));
     return;
   }
   const file = path.join(root, url.pathname === "/" ? "index.html" : path.normalize(url.pathname).replace(/^([\\/])+/, ""));

@@ -38,7 +38,7 @@ final class TranscriptReceiver: @unchecked Sendable {
             status.port = port
             status.error = nil
             guard let nwPort = NWEndpoint.Port(rawValue: port) else {
-                status.error = "Недопустимый порт \(port)"
+                status.error = L("Недопустимый порт \(port)")
                 publish()
                 return
             }

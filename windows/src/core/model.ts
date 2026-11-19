@@ -1,5 +1,6 @@
 // Core data model: token counters, usage events and the model catalog.
 // Port of XRayCore/Model and Pricing/ModelCatalog.swift. Dates are epoch milliseconds.
+import { labels, N } from "./i18n";
 
 /** Token counters for one request (or a sum of requests), as in the transcript `usage` object. */
 export interface Tokens {
@@ -139,14 +140,14 @@ export const isFastMode = (e: UsageEvent): boolean => (e.speed ?? "").toLowerCas
 
 export type ModelFamily = "opus" | "sonnet" | "haiku" | "fable" | "mythos" | "other";
 
-export const familyTitle: Record<ModelFamily, string> = {
+export const familyTitle: Record<ModelFamily, string> = labels({
   opus: "Opus",
   sonnet: "Sonnet",
   haiku: "Haiku",
   fable: "Fable",
   mythos: "Mythos",
-  other: "Другие",
-};
+  other: N("Другие"),
+});
 
 /** Price entry used when a model id of this family has no exact entry. */
 export const familyReferencePrefix: Record<ModelFamily, string | undefined> = {

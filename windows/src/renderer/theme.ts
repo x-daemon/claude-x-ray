@@ -1,6 +1,7 @@
 // Colors of the S2A and system themes, light and dark (same values as the macOS app's Theme.swift).
 // The categorical orders were validated for protan/deutan separation with the dataviz validator.
 import type { ThemeName } from "../shared/api";
+import { N } from "../core/i18n";
 
 export interface Palette {
   series: string[];
@@ -82,7 +83,7 @@ export function palette(theme: ThemeName, dark: boolean): Palette {
 }
 
 /** Cost components in stacking order and their colors (the first five series). */
-export const COMPONENTS = ["Ввод", "Вывод", "Чтение кэша", "Запись в кэш", "Веб-поиск"] as const;
+export const COMPONENTS = [N("Ввод"), N("Вывод"), N("Чтение кэша"), N("Запись в кэш"), N("Веб-поиск")] as const;
 
 /** Applies the palette as CSS variables on <html>. */
 export function applyPalette(theme: ThemeName, dark: boolean): Palette {

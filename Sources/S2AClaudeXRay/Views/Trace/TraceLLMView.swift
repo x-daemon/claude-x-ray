@@ -32,7 +32,7 @@ struct TraceLLMView: View {
     enum Mode: String, CaseIterable, Identifiable {
         case calls, loop
         var id: Self { self }
-        var title: String { self == .calls ? "Запросы" : "Цикл агента" }
+        var title: String { self == .calls ? L("Запросы") : L("Цикл агента") }
     }
 
     @State private var mode: Mode = .calls
@@ -43,19 +43,19 @@ struct TraceLLMView: View {
             VStack(alignment: .leading, spacing: 16) {
                 CallTiles(calls: calls)
                 HStack(spacing: 12) {
-                    Picker("Вид", selection: $mode) {
+                    Picker(L("Вид"), selection: $mode) {
                         ForEach(Mode.allCases) { mode in Text(mode.title).tag(mode) }
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
                     .frame(width: 260)
-                    Text(mode == .calls ? "каждый вызов модели: токены, кэш, причина остановки, размышления и действия" : "мысль → действие → результат для каждого запроса хода")
+                    Text(mode == .calls ? L("каждый вызов модели: токены, кэш, причина остановки, размышления и действия") : L("мысль → действие → результат для каждого запроса хода"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
                 }
                 if calls.isEmpty {
-                    Text("Запросов к модели в этой сессии пока нет").foregroundStyle(.secondary).frame(height: 80)
+                    Text(L("Запросов к модели в этой сессии пока нет")).foregroundStyle(.secondary).frame(height: 80)
                 } else if mode == .calls {
                     CallList(calls: calls, hideContent: hideContent)
                 } else {
@@ -77,25 +77,25 @@ private struct CallTiles: View {
         let stats = Stats(calls: calls, pricing: model.pricing)
         HStack(spacing: 12) {
             StatTile(
-                title: "Запросов к модели", value: "\(calls.count)",
-                caption: "основной поток \(stats.main) · субагенты \(calls.count - stats.main)", systemImage: "brain"
+                title: L("Запросов к модели"), value: "\(calls.count)",
+                caption: L("основной поток \(stats.main) · субагенты \(calls.count - stats.main)"), systemImage: "brain"
             )
             StatTile(
-                title: "Чтение из кэша", value: stats.context > 0 ? Fmt.percent(Double(stats.read) / Double(stats.context)) : "—",
-                caption: "доля контекста всех запросов", systemImage: "memorychip"
+                title: L("Чтение из кэша"), value: stats.context > 0 ? Fmt.percent(Double(stats.read) / Double(stats.context)) : "—",
+                caption: L("доля контекста всех запросов"), systemImage: "memorychip"
             )
             StatTile(
-                title: "Промахи кэша", value: "\(stats.misses)",
-                caption: stats.misses > 0 ? "≈\(Fmt.usd(stats.extra)) лишней записи" : "с понятной причиной — нет",
+                title: L("Промахи кэша"), value: "\(stats.misses)",
+                caption: stats.misses > 0 ? L("≈\(Fmt.usd(stats.extra)) лишней записи") : L("с понятной причиной — нет"),
                 systemImage: "exclamationmark.triangle"
             )
             StatTile(
-                title: "Потеряно размышлений", value: "\(stats.dropped)",
-                caption: stats.dropped > 0 ? "блоков в \(Fmt.plural(stats.droppedCalls, "запросе", "запросах", "запросах"))" : "API ничего не отбрасывало",
+                title: L("Потеряно размышлений"), value: "\(stats.dropped)",
+                caption: stats.dropped > 0 ? L("блоков в \(Fmt.plural(stats.droppedCalls, "запросе", "запросах", "запросах"))") : L("API ничего не отбрасывало"),
                 systemImage: "brain.head.profile"
             )
             StatTile(
-                title: "Чем заканчивались ответы", value: stats.topStopShare,
+                title: L("Чем заканчивались ответы"), value: stats.topStopShare,
                 caption: stats.stopCaption, systemImage: "stop.circle"
             )
         }
@@ -158,10 +158,10 @@ private struct CallList: View {
 
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 14) {
-                Toggle("Только с проблемами", isOn: $onlyIssues)
+                Toggle(L("Только с проблемами"), isOn: $onlyIssues)
                     .toggleStyle(.switch)
                     .controlSize(.small)
-                    .help("промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов")
+                    .help(L("промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов"))
                 Text(Fmt.plural(shown.count, "запрос", "запроса", "запросов")).font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 SegmentLegend()
@@ -178,11 +178,11 @@ private struct CallList: View {
                 }
             }
             if shown.count > limit {
-                Button("Показать ещё \(min(40, shown.count - limit))") { limit += 40 }
+                Button(L("Показать ещё \(min(40, shown.count - limit))")) { limit += 40 }
                     .frame(maxWidth: .infinity)
             }
             if shown.isEmpty {
-                Text("Запросов с проблемами нет").foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 60)
+                Text(L("Запросов с проблемами нет")).foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 60)
             }
         }
     }
@@ -191,11 +191,11 @@ private struct CallList: View {
 struct SegmentLegend: View {
     var body: some View {
         HStack(spacing: 12) {
-            Label("чтение кэша", systemImage: "square.fill").foregroundStyle(TokenSegment.read)
-            Label("запись в кэш", systemImage: "square.fill").foregroundStyle(TokenSegment.write)
-            Label("свежий ввод", systemImage: "square.fill").foregroundStyle(TokenSegment.input)
-            Label("размышления", systemImage: "square.fill").foregroundStyle(TokenSegment.thinking)
-            Label("вывод", systemImage: "square.fill").foregroundStyle(TokenSegment.output)
+            Label(L("чтение кэша"), systemImage: "square.fill").foregroundStyle(TokenSegment.read)
+            Label(L("запись в кэш"), systemImage: "square.fill").foregroundStyle(TokenSegment.write)
+            Label(L("свежий ввод"), systemImage: "square.fill").foregroundStyle(TokenSegment.input)
+            Label(L("размышления"), systemImage: "square.fill").foregroundStyle(TokenSegment.thinking)
+            Label(L("вывод"), systemImage: "square.fill").foregroundStyle(TokenSegment.output)
         }
         .font(.caption)
         .labelStyle(LegendLabelStyle())
@@ -219,7 +219,7 @@ private struct CallCard: View {
             if call.priced != nil {
                 TokenBars(call: call, maxContext: maxContext, maxOutput: maxOutput)
             } else {
-                Text("Токены этого ответа в логе не найдены").font(.caption).foregroundStyle(.secondary)
+                Text(L("Токены этого ответа в логе не найдены")).font(.caption).foregroundStyle(.secondary)
             }
             CallNotes(call: call)
             if expanded {
@@ -252,19 +252,19 @@ private struct CallHeader: View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Image(systemName: expanded ? "chevron.down" : "chevron.right").foregroundStyle(.secondary)
             Text("#\(call.index)").font(.callout.weight(.semibold)).monospacedDigit()
-            Text(call.step.start.formatted(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+            Text(call.step.start.localized(date: .omitted, time: .standard)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
             HStack(spacing: 6) {
                 if let model { Chip(text: ModelCatalog.displayName(for: model), systemImage: "cpu", tint: Palette.model) }
                 if call.modelSwitched, let requested {
-                    Chip(text: "запрошена \(ModelCatalog.displayName(for: requested))", systemImage: "arrow.triangle.swap", tint: Palette.warning)
+                    Chip(text: L("запрошена \(ModelCatalog.displayName(for: requested))"), systemImage: "arrow.triangle.swap", tint: Palette.warning)
                 }
                 if let effort { Chip(text: "effort \(effort)", systemImage: "dial.medium", tint: Palette.other) }
             }
             HStack(spacing: 6) {
                 if call.priced?.event.isFastMode == true { Chip(text: "fast", systemImage: "bolt", tint: Palette.warning) }
-                if call.step.isSidechain { Chip(text: "субагент", systemImage: "person.2", tint: Palette.subagent) }
+                if call.step.isSidechain { Chip(text: L("субагент"), systemImage: "person.2", tint: Palette.subagent) }
                 if let advisor = details.advisorModel {
-                    Chip(text: "советник \(ModelCatalog.displayName(for: advisor))", systemImage: "lightbulb", tint: Palette.other)
+                    Chip(text: L("советник \(ModelCatalog.displayName(for: advisor))"), systemImage: "lightbulb", tint: Palette.other)
                 }
                 Chip(text: stop.title, tint: stop.tone.color)
             }
@@ -295,7 +295,7 @@ private struct TokenBars: View {
         let visible = max(0, tokens.output - tokens.thinking)
         Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 4) {
             GridRow {
-                Text("вход").font(.caption).foregroundStyle(.secondary)
+                Text(L("вход")).font(.caption).foregroundStyle(.secondary)
                 SegmentBar(
                     parts: [(tokens.cacheRead, TokenSegment.read), (tokens.cacheWrite, TokenSegment.write), (tokens.input, TokenSegment.input)],
                     fraction: Double(tokens.contextTokens) / Double(maxContext)
@@ -303,21 +303,21 @@ private struct TokenBars: View {
                 Text(inputText(tokens, window: window)).font(.caption.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1)
             }
             GridRow {
-                Text("выход").font(.caption).foregroundStyle(.secondary)
+                Text(L("выход")).font(.caption).foregroundStyle(.secondary)
                 SegmentBar(
                     parts: [(tokens.thinking, TokenSegment.thinking), (visible, TokenSegment.output)],
                     fraction: Double(tokens.output) / Double(maxOutput)
                 )
-                Text(tokens.thinking > 0 ? "\(Fmt.tokens(tokens.output)) · размышления \(Fmt.tokens(tokens.thinking))" : Fmt.tokens(tokens.output))
+                Text(tokens.thinking > 0 ? L("\(Fmt.tokens(tokens.output)) · размышления \(Fmt.tokens(tokens.thinking))") : Fmt.tokens(tokens.output))
                     .font(.caption.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1)
             }
         }
     }
 
     private func inputText(_ tokens: TokenCounts, window: Int) -> String {
-        var text = "\(Fmt.tokens(tokens.contextTokens)) · \(Fmt.percent(Double(tokens.contextTokens) / Double(max(window, 1)))) окна · из кэша \(Fmt.percent(tokens.cacheHitRate))"
+        var text = L("\(Fmt.tokens(tokens.contextTokens)) · \(Fmt.percent(Double(tokens.contextTokens) / Double(max(window, 1)))) окна · из кэша \(Fmt.percent(tokens.cacheHitRate))")
         if tokens.cacheWrite > 0 {
-            text += " · запись \(Fmt.tokens(tokens.cacheWrite))" + (tokens.cacheWrite1h > 0 ? " (1 ч)" : " (5 мин)")
+            text += L(" · запись \(Fmt.tokens(tokens.cacheWrite))") + (tokens.cacheWrite1h > 0 ? L(" (1 ч)") : L(" (5 мин)"))
         }
         return text
     }
@@ -385,38 +385,38 @@ private struct CallNotes: View {
                 let extra = call.priced.map { RequestIssues.missExtraCost(pricing: model.pricing, priced: $0, tokens: tokens) } ?? 0
                 let cost = extra > 0 ? " (≈\(Fmt.usd(extra)))" : ""
                 notes.append(Note(icon: "exclamationmark.triangle.fill", color: Palette.warning,
-                                  text: "Промах кэша: \(LLMCalls.cacheMissTitle(miss.reason)) — \(Fmt.tokens(tokens)) токенов записаны заново\(cost)"))
+                                  text: L("Промах кэша: \(LLMCalls.cacheMissTitle(miss.reason)) — \(Fmt.tokens(tokens)) токенов записаны заново\(cost)")))
             } else {
-                notes.append(Note(icon: "info.circle", color: Palette.other, text: "Кэш: \(LLMCalls.cacheMissTitle(miss.reason))"))
+                notes.append(Note(icon: "info.circle", color: Palette.other, text: L("Кэш: \(LLMCalls.cacheMissTitle(miss.reason))")))
             }
         }
         for transformation in details.transformations {
             if transformation.type == "thinking_dropped" {
                 let path = transformation.path.map { " (\($0))" } ?? ""
                 notes.append(Note(icon: "brain", color: Palette.warning,
-                                  text: "API убрало размышление из истории: \(LLMCalls.droppedReasonTitle(transformation.reason))\(path)"))
+                                  text: L("API убрало размышление из истории: \(LLMCalls.droppedReasonTitle(transformation.reason))\(path)")))
             } else {
-                notes.append(Note(icon: "info.circle", color: Palette.other, text: "Изменение запроса API: \(transformation.type)"))
+                notes.append(Note(icon: "info.circle", color: Palette.other, text: L("Изменение запроса API: \(transformation.type)")))
             }
         }
         for edit in details.contextEdits {
             var parts: [String] = []
-            if let tokens = edit.clearedTokens { parts.append("\(Fmt.tokens(tokens)) токенов") }
-            if let uses = edit.clearedToolUses { parts.append("\(uses) вызовов") }
+            if let tokens = edit.clearedTokens { parts.append(L("\(Fmt.tokens(tokens)) токенов")) }
+            if let uses = edit.clearedToolUses { parts.append(L("\(uses) вызовов")) }
             let suffix = parts.isEmpty ? "" : ": " + parts.joined(separator: ", ")
-            notes.append(Note(icon: "arrow.down.right.and.arrow.up.left", color: Palette.context, text: "Сервер очистил контекст (\(edit.type))\(suffix)"))
+            notes.append(Note(icon: "arrow.down.right.and.arrow.up.left", color: Palette.context, text: L("Сервер очистил контекст (\(edit.type))\(suffix)")))
         }
         if !details.iterations.isEmpty {
             let steps = details.iterations.map { step -> String in
                 let model = step.model.map { " (\(ModelCatalog.displayName(for: $0)))" } ?? ""
-                return "\(LLMCalls.iterationTitle(step.type))\(model): вывод \(Fmt.tokens(step.output))"
+                return L("\(LLMCalls.iterationTitle(step.type))\(model): вывод \(Fmt.tokens(step.output))")
             }
-            notes.append(Note(icon: "square.stack.3d.up", color: Palette.other, text: "Шаги запроса: " + steps.joined(separator: " → ")))
+            notes.append(Note(icon: "square.stack.3d.up", color: Palette.other, text: L("Шаги запроса: ") + steps.joined(separator: " → ")))
         }
         if call.modelSwitched {
             let requested = ModelCatalog.displayName(for: call.step.requestedModel ?? details.requestedModel ?? "")
             let served = ModelCatalog.displayName(for: call.step.model ?? call.priced?.event.model ?? "")
-            notes.append(Note(icon: "arrow.triangle.swap", color: Palette.warning, text: "Запрошена \(requested), ответила \(served)"))
+            notes.append(Note(icon: "arrow.triangle.swap", color: Palette.warning, text: L("Запрошена \(requested), ответила \(served)")))
         }
         return notes
     }
@@ -429,18 +429,18 @@ private struct CallBody: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Размышления").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Text(L("Размышления")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 if call.thinking.isEmpty {
-                    Text("Без блока размышлений").font(.caption).foregroundStyle(.secondary)
+                    Text(L("Без блока размышлений")).font(.caption).foregroundStyle(.secondary)
                 }
                 ForEach(call.thinking) { item in
                     ThinkingBlock(item: item, thinkingTokens: call.priced?.event.tokens.thinking ?? 0, hideContent: hideContent)
                 }
             }
             VStack(alignment: .leading, spacing: 6) {
-                Text("Действия (\(call.tools.count))").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Text(L("Действия (\(call.tools.count))")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 if call.tools.isEmpty {
-                    Text("Инструменты не вызывались").font(.caption).foregroundStyle(.secondary)
+                    Text(L("Инструменты не вызывались")).font(.caption).foregroundStyle(.secondary)
                 }
                 ForEach(call.tools) { tool in
                     ActionView(tool: tool, hideContent: hideContent)
@@ -448,7 +448,7 @@ private struct CallBody: View {
             }
             if !call.replies.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Ответ").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(L("Ответ")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                     ForEach(call.replies) { reply in
                         if hideContent {
                             Text(TraceText.title(for: reply, hideContent: true)).font(.caption).foregroundStyle(.secondary)
@@ -471,10 +471,10 @@ private struct CallBody: View {
         var parts: [String] = [call.step.messageID]
         if let request = event?.requestID { parts.append(request) }
         if let tier = event?.serviceTier { parts.append("tier \(tier)") }
-        if let geo = details.inferenceGeo { parts.append("регион \(geo)") }
-        if let speed = event?.speed { parts.append("скорость \(speed)") }
-        if let ttl = details.cacheTTL { parts.append("TTL кэша \(ttl)") }
-        if let searches = event?.webSearchRequests, searches > 0 { parts.append("веб-поиск \(searches)") }
+        if let geo = details.inferenceGeo { parts.append(L("регион \(geo)")) }
+        if let speed = event?.speed { parts.append(L("скорость \(speed)")) }
+        if let ttl = details.cacheTTL { parts.append(L("TTL кэша \(ttl)")) }
+        if let searches = event?.webSearchRequests, searches > 0 { parts.append(L("веб-поиск \(searches)")) }
         return parts.joined(separator: " · ")
     }
 }
@@ -488,16 +488,16 @@ private struct ThinkingBlock: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
                 Image(systemName: "brain").foregroundStyle(Palette.model)
-                Text(item.thinkingMs.map { "думал \(Fmt.ms($0))" } ?? "размышление")
-                Text("· режим API: \(LLMCalls.thinkingDisplayTitle(item.thinkingDisplay))").foregroundStyle(.secondary)
+                Text(item.thinkingMs.map { L("думал \(Fmt.ms($0))") } ?? L("размышление"))
+                Text(L("· режим API: \(LLMCalls.thinkingDisplayTitle(item.thinkingDisplay))")).foregroundStyle(.secondary)
             }
             .font(.caption)
             if let text = item.detail, !hideContent {
                 DetailBlock(text: text)
             } else {
                 Text(hideContent
-                     ? "Скрыто переключателем «Скрыть содержимое»."
-                     : "Текст размышлений API не возвращает — известны только длительность и \(Fmt.tokens(thinkingTokens)) токенов размышлений.")
+                     ? L("Скрыто переключателем «Скрыть содержимое».")
+                     : L("Текст размышлений API не возвращает — известны только длительность и \(Fmt.tokens(thinkingTokens)) токенов размышлений."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -524,11 +524,11 @@ private struct ActionView: View {
             }
             Text(metaLine).font(.caption).foregroundStyle(.secondary).padding(.leading, 22)
             if !hideContent, let raw = tool.call.rawInput, !raw.isEmpty {
-                Text("Аргументы, которые сгенерировала модель").font(.caption2).foregroundStyle(.secondary)
+                Text(L("Аргументы, которые сгенерировала модель")).font(.caption2).foregroundStyle(.secondary)
                 DetailBlock(text: raw)
             }
             if !hideContent, let executed = tool.call.execInput {
-                Text("Claude Code выполнил с изменёнными аргументами").font(.caption2).foregroundStyle(Palette.warning)
+                Text(L("Claude Code выполнил с изменёнными аргументами")).font(.caption2).foregroundStyle(Palette.warning)
                 DetailBlock(text: executed)
             }
             if let result = tool.result, !hideContent {
@@ -544,13 +544,13 @@ private struct ActionView: View {
 
     private var metaLine: String {
         var parts: [String] = []
-        if let ms = tool.call.inputStreamMs, ms > 0 { parts.append("аргументы генерировались \(Fmt.ms(ms))") }
+        if let ms = tool.call.inputStreamMs, ms > 0 { parts.append(L("аргументы генерировались \(Fmt.ms(ms))")) }
         if let result = tool.result {
             if let decision = LLMCalls.decisionTitle(result) { parts.append(decision) }
-            if result.sandboxed == true { parts.append("в песочнице") }
-            parts.append("результат \(Fmt.bytes(result.outputBytes ?? 0)) за \(Fmt.shortDuration(tool.duration(now: Date())))")
+            if result.sandboxed == true { parts.append(L("в песочнице")) }
+            parts.append(L("результат \(Fmt.bytes(result.outputBytes ?? 0)) за \(Fmt.shortDuration(tool.duration(now: Date())))"))
         } else {
-            parts.append("выполняется")
+            parts.append(L("выполняется"))
         }
         return parts.joined(separator: " · ")
     }
@@ -573,7 +573,7 @@ private struct AgentLoopView: View {
 
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                Picker("Ход", selection: Binding(get: { current }, set: { selected = $0 })) {
+                Picker(L("Ход"), selection: Binding(get: { current }, set: { selected = $0 })) {
                     ForEach(turns, id: \.offset) { position, item in
                         Text(turnTitle(item, count: calls.filter { $0.turn == position }.count)).tag(position)
                     }
@@ -596,11 +596,11 @@ private struct AgentLoopView: View {
             }
             Grid(alignment: .topLeading, horizontalSpacing: 6, verticalSpacing: 8) {
                 GridRow {
-                    Text("Мысль").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(L("Мысль")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                     Color.clear.frame(width: 14, height: 1)
-                    Text("Действие").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(L("Действие")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                     Color.clear.frame(width: 14, height: 1)
-                    Text("Результат").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(L("Результат")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 }
                 ForEach(turnCalls) { call in
                     GridRow {
@@ -616,8 +616,8 @@ private struct AgentLoopView: View {
     }
 
     private func turnTitle(_ turn: TraceTurn, count: Int) -> String {
-        let head = turn.prompt == nil ? "Начало сессии" : "Ход \(turn.index)"
-        let prompt = turn.prompt.map { Snippet.truncate(TraceText.title(for: $0, hideContent: hideContent), 60) } ?? "без промпта"
+        let head = turn.prompt == nil ? L("Начало сессии") : L("Ход \(turn.index)")
+        let prompt = turn.prompt.map { Snippet.truncate(TraceText.title(for: $0, hideContent: hideContent), 60) } ?? L("без промпта")
         return "\(head) · \(prompt) · \(Fmt.plural(count, "запрос", "запроса", "запросов"))"
     }
 
@@ -668,13 +668,13 @@ private struct ThoughtCell: View {
         LoopCell(dashed: call.step.isSidechain) {
             HStack(spacing: 6) {
                 Text("#\(call.index)").font(.caption.weight(.semibold)).monospacedDigit()
-                Chip(text: ModelCatalog.displayName(for: call.step.model ?? call.priced?.event.model ?? "модель"), systemImage: "cpu", tint: Palette.model)
-                if call.step.isSidechain { Chip(text: "субагент", systemImage: "person.2", tint: Palette.subagent) }
+                Chip(text: ModelCatalog.displayName(for: call.step.model ?? call.priced?.event.model ?? L("модель")), systemImage: "cpu", tint: Palette.model)
+                if call.step.isSidechain { Chip(text: L("субагент"), systemImage: "person.2", tint: Palette.subagent) }
                 if let miss = details.cacheMiss, LLMCalls.isRealMiss(miss.reason) {
-                    Chip(text: "промах кэша", systemImage: "exclamationmark.triangle.fill", tint: Palette.warning)
+                    Chip(text: L("промах кэша"), systemImage: "exclamationmark.triangle.fill", tint: Palette.warning)
                         .help(LLMCalls.cacheMissTitle(miss.reason))
                 }
-                if details.droppedThinking > 0 { Chip(text: "размышление потеряно", systemImage: "brain", tint: Palette.warning) }
+                if details.droppedThinking > 0 { Chip(text: L("размышление потеряно"), systemImage: "brain", tint: Palette.warning) }
             }
             Text(summary(thinkingMs: thinkingMs, tokens: tokens)).font(.caption).foregroundStyle(.secondary)
             if let note, !hideContent {
@@ -685,10 +685,10 @@ private struct ThoughtCell: View {
     }
 
     private func summary(thinkingMs: Int, tokens: TokenCounts?) -> String {
-        var text = thinkingMs > 0 ? "думал \(Fmt.ms(thinkingMs))" : "без размышлений"
+        var text = thinkingMs > 0 ? L("думал \(Fmt.ms(thinkingMs))") : L("без размышлений")
         if let tokens {
-            text += " · вход \(Fmt.tokens(tokens.contextTokens)) · вывод \(Fmt.tokens(tokens.output))"
-            if tokens.thinking > 0 { text += " (размышления \(Fmt.tokens(tokens.thinking)))" }
+            text += L(" · вход \(Fmt.tokens(tokens.contextTokens)) · вывод \(Fmt.tokens(tokens.output))")
+            if tokens.thinking > 0 { text += L(" (размышления \(Fmt.tokens(tokens.thinking)))") }
         }
         return text
     }
@@ -713,7 +713,7 @@ private struct ActionCell: View {
             } else if let reply = call.replies.first {
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: TraceStyle.icon(for: .reply)).foregroundStyle(TraceStyle.color(for: .reply)).frame(width: 14)
-                    Text(hideContent ? "Ответ" : reply.title).font(.caption).lineLimit(2)
+                    Text(hideContent ? L("Ответ") : reply.title).font(.caption).lineLimit(2)
                 }
             } else {
                 Text("—").font(.caption).foregroundStyle(.secondary)
@@ -743,13 +743,13 @@ private struct ResultCell: View {
                     }
                 }
             } else {
-                Text(stop.tone == .good ? "ход завершён" : stop.title).font(.caption).foregroundStyle(.secondary)
+                Text(stop.tone == .good ? L("ход завершён") : stop.title).font(.caption).foregroundStyle(.secondary)
             }
         }
     }
 
     private func resultText(_ tool: ToolExecution) -> String {
-        guard let result = tool.result else { return "ждёт результата" }
+        guard let result = tool.result else { return L("ждёт результата") }
         return hideContent ? Fmt.bytes(result.outputBytes ?? 0) : result.title
     }
 }

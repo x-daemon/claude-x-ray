@@ -5,6 +5,7 @@
 import { describeTool, mcpServer, Snippet, type ActivityItem, type ActivityKind } from "./activity";
 import { Fmt } from "./fmt";
 import { parseDate } from "./transcript";
+import { L } from "./i18n";
 
 export const DETAIL_LIMIT = 2_000;
 /** Tool arguments are kept up to this many characters (file contents are in `detail` already). */
@@ -75,7 +76,7 @@ function parseUser(entry: Json, base: Base): ActivityItem[] {
   if (!message) return [];
   const isMeta = entry.isMeta === true;
   if (entry.isCompactSummary === true) {
-    return [item(base, 0, "compact", "Сводка после сжатия контекста", Snippet.truncate(textContent(message.content), DETAIL_LIMIT))];
+    return [item(base, 0, "compact", L`Сводка после сжатия контекста`, Snippet.truncate(textContent(message.content), DETAIL_LIMIT))];
   }
   const text = str(message.content);
   if (text !== undefined) {
@@ -96,7 +97,7 @@ function parseUser(entry: Json, base: Base): ActivityItem[] {
         return;
       }
       case "image":
-        if (!isMeta) items.push(item(base, index, "prompt", "Изображение"));
+        if (!isMeta) items.push(item(base, index, "prompt", L`Изображение`));
         return;
       case "tool_result":
         items.push(toolResult(block, entry, base, index));
@@ -110,19 +111,19 @@ function parseUser(entry: Json, base: Base): ActivityItem[] {
 function userText(text: string, base: Base, index: number): ActivityItem | undefined {
   const trimmed = text.trim();
   if (!trimmed) return undefined;
-  if (trimmed.startsWith("[Request interrupted")) return item(base, index, "interrupted", "Прервано пользователем", trimmed);
+  if (trimmed.startsWith("[Request interrupted")) return item(base, index, "interrupted", L`Прервано пользователем`, trimmed);
   const name = tag("command-name", trimmed);
   if (name !== undefined) {
     const args = tag("command-args", trimmed) ?? "";
-    return item(base, index, "prompt", `Команда ${name} ${args}`.trim(), args || undefined);
+    return item(base, index, "prompt", L`Команда ${name} ${args}`.trim(), args || undefined);
   }
   const output = tag("local-command-stdout", trimmed);
-  if (output !== undefined) return item(base, index, "note", "Вывод команды: " + Snippet.firstLine(output, 100), Snippet.truncate(output, DETAIL_LIMIT));
+  if (output !== undefined) return item(base, index, "note", L`Вывод команды: ` + Snippet.firstLine(output, 100), Snippet.truncate(output, DETAIL_LIMIT));
   const command = tag("bash-input", trimmed);
   if (command !== undefined) return item(base, index, "prompt", "! " + Snippet.firstLine(command, 100), command);
   if (trimmed.startsWith("<bash-stdout>") || trimmed.startsWith("<bash-stderr>")) {
     const out = tag("bash-stdout", trimmed) ?? tag("bash-stderr", trimmed) ?? "";
-    return item(base, index, "note", "Вывод оболочки: " + Snippet.firstLine(out, 100), Snippet.truncate(out, DETAIL_LIMIT));
+    return item(base, index, "note", L`Вывод оболочки: ` + Snippet.firstLine(out, 100), Snippet.truncate(out, DETAIL_LIMIT));
   }
   return item(base, index, "prompt", Snippet.firstLine(trimmed, 160), Snippet.truncate(trimmed, DETAIL_LIMIT));
 }
@@ -132,8 +133,8 @@ function toolResult(block: Json, entry: Json, base: Base, index: number): Activi
   const images = imageCount(block.content);
   const isError = block.is_error === true;
   const result = obj(entry.toolUseResult);
-  let title = text ? Snippet.firstLine(text, 140) : images > 0 ? "Изображение" : "Пустой результат";
-  if (result?.interrupted === true) title = "Прервано: " + title;
+  let title = text ? Snippet.firstLine(text, 140) : images > 0 ? L`Изображение` : L`Пустой результат`;
+  if (result?.interrupted === true) title = L`Прервано: ` + title;
   let detail = Snippet.truncate(text, DETAIL_LIMIT);
   const stderr = str(result?.stderr);
   if (stderr && !text.includes(stderr.slice(0, 80))) detail += "\n[stderr] " + Snippet.truncate(stderr, 600);
@@ -187,7 +188,7 @@ function parseAssistant(entry: Json, base: Base): ActivityItem[] {
     let it: ActivityItem;
     if (blockType === "thinking" || blockType === "redacted_thinking") {
       const text = str(block.thinking) ?? "";
-      it = item(base, index, "thinking", text ? Snippet.firstLine(text, 140) : "Размышление", text ? Snippet.truncate(text, DETAIL_LIMIT) : undefined);
+      it = item(base, index, "thinking", text ? Snippet.firstLine(text, 140) : L`Размышление`, text ? Snippet.truncate(text, DETAIL_LIMIT) : undefined);
       it.thinkingMs = int(entry.thinkingDurationMs);
       it.thinkingDisplay = str(entry.thinkingDisplay) ?? (blockType === "redacted_thinking" ? "redacted" : undefined);
     } else if (blockType === "text") {
@@ -249,13 +250,13 @@ function parseAttachment(entry: Json, base: Base): ActivityItem[] {
       const failed = strings("failedMcpServers");
       const needsAuth = strings("needsAuthMcpServers");
       const servers = [...new Set(added.map(mcpServer).filter((s): s is string => !!s))].sort();
-      let title = `Инструменты: +${added.length}`;
+      let title = L`Инструменты: +${added.length}`;
       if (removed.length) title += ` −${removed.length}`;
       if (servers.length) title += ` · MCP: ${servers.join(", ")}`;
       const notes: string[] = [];
-      if (failed.length) notes.push(`Не подключились: ${failed.join(", ")}`);
-      if (needsAuth.length) notes.push(`Нужна авторизация: ${needsAuth.join(", ")}`);
-      if (pending.length) notes.push(`Подключаются: ${pending.join(", ")}`);
+      if (failed.length) notes.push(L`Не подключились: ${failed.join(", ")}`);
+      if (needsAuth.length) notes.push(L`Нужна авторизация: ${needsAuth.join(", ")}`);
+      if (pending.length) notes.push(L`Подключаются: ${pending.join(", ")}`);
       it = item(base, 0, "context", title, notes.length ? notes.join("\n") : undefined, failed.length > 0);
       it.context = { type: "tools", added, removed, pendingMCP: pending, failedMCP: failed, needsAuthMCP: needsAuth, listingChars: chars("addedLines") };
       break;
@@ -263,26 +264,26 @@ function parseAttachment(entry: Json, base: Base): ActivityItem[] {
     case "skill_listing": {
       const names = strings("names");
       const count = int(attachment.skillCount) ?? names.length;
-      it = item(base, 0, "context", `Скиллы в контексте: ${count}`, names.join(", "));
+      it = item(base, 0, "context", L`Скиллы в контексте: ${count}`, names.join(", "));
       it.context = { type: "skills", names, count, listingChars: chars("content") };
       break;
     }
     case "mcp_instructions_delta": {
       const added = strings("addedNames");
-      it = item(base, 0, "context", `Инструкции MCP: ${added.join(", ")}`);
+      it = item(base, 0, "context", L`Инструкции MCP: ${added.join(", ")}`);
       it.context = { type: "mcpInstructions", added, removed: strings("removedNames"), chars: chars("addedBlocks") };
       break;
     }
     case "agent_listing_delta": {
       const added = strings("addedTypes");
-      it = item(base, 0, "context", `Типы субагентов: ${added.join(", ")}`);
+      it = item(base, 0, "context", L`Типы субагентов: ${added.join(", ")}`);
       it.context = { type: "agents", added, removed: strings("removedTypes"), chars: chars("addedLines") };
       break;
     }
     case "prompt_snapshot": {
       const parts = strings("systemPrompt");
       const total = parts.length ? parts.reduce((s, p) => s + p.length, 0) : chars("systemPrompt");
-      it = item(base, 0, "context", `Системный промпт: ${total} символов (≈${Fmt.tokens(Math.floor(total / 4))} токенов)`);
+      it = item(base, 0, "context", L`Системный промпт: ${total} символов (≈${Fmt.tokens(Math.floor(total / 4))} токенов)`);
       it.context = { type: "systemPrompt", chars: total, parts: Math.max(parts.length, 1) };
       break;
     }
@@ -291,12 +292,12 @@ function parseAttachment(entry: Json, base: Base): ActivityItem[] {
       const values: Record<string, string> = {};
       for (const [key, value] of Object.entries(snapshot)) {
         if (typeof value === "string") values[key] = value;
-        else if (typeof value === "boolean") values[key] = value ? "да" : "нет";
+        else if (typeof value === "boolean") values[key] = value ? L`да` : L`нет`;
         else if (typeof value === "number") values[key] = String(value);
         else if (Array.isArray(value)) values[key] = value.filter((v): v is string => typeof v === "string").join(", ");
       }
       const summary = [values.platform, values.shell, values.osVersion].filter(Boolean).join(" · ");
-      it = item(base, 0, "context", `Окружение: ${summary}`, values.workingDirectory);
+      it = item(base, 0, "context", L`Окружение: ${summary}`, values.workingDirectory);
       it.context = { type: "environment", values };
       break;
     }
@@ -304,7 +305,7 @@ function parseAttachment(entry: Json, base: Base): ActivityItem[] {
       const identity = obj(attachment.identity) ?? {};
       const id = str(identity.modelId) ?? "?";
       const name = str(identity.marketingName);
-      it = item(base, 0, "context", `Модель: ${name ?? id}`, id);
+      it = item(base, 0, "context", L`Модель: ${name ?? id}`, id);
       it.context = { type: "model", id, name, knowledgeCutoff: str(identity.knowledgeCutoff) };
       break;
     }
@@ -312,28 +313,28 @@ function parseAttachment(entry: Json, base: Base): ActivityItem[] {
       const flags: Record<string, string> = {};
       for (const [key, value] of Object.entries(attachment)) {
         if (key === "type") continue;
-        if (typeof value === "boolean") flags[key] = value ? "да" : "нет";
+        if (typeof value === "boolean") flags[key] = value ? L`да` : L`нет`;
         else if (typeof value === "string") flags[key] = value;
       }
-      it = item(base, 0, "context", "Auto mode включён");
+      it = item(base, 0, "context", L`Auto mode включён`);
       it.context = { type: "autoMode", values: flags };
       break;
     }
     case "command_permissions": {
       const allowed = strings("allowedTools");
-      it = item(base, 0, "context", `Разрешённые правила: ${allowed.length}`, allowed.join("\n"));
+      it = item(base, 0, "context", L`Разрешённые правила: ${allowed.length}`, allowed.join("\n"));
       it.context = { type: "permissions", allowed };
       break;
     }
     case "edited_text_file": {
       const path = str(attachment.filename) ?? "?";
-      it = item(base, 0, "context", `Файл изменён вне Claude: ${Snippet.shortPath(path)}`, path);
+      it = item(base, 0, "context", L`Файл изменён вне Claude: ${Snippet.shortPath(path)}`, path);
       it.context = { type: "editedFile", path };
       break;
     }
     case "task_reminder": {
       const count = int(attachment.itemCount) ?? 0;
-      it = item(base, 0, "context", `Список задач: ${count}`);
+      it = item(base, 0, "context", L`Список задач: ${count}`);
       it.context = { type: "tasks", count };
       break;
     }
@@ -341,21 +342,21 @@ function parseAttachment(entry: Json, base: Base): ActivityItem[] {
       const commit = str(attachment.commit);
       const pr = str(attachment.pr);
       const url = str(attachment.url);
-      const kinds = [commit ? "коммит" : undefined, pr ? "PR" : undefined].filter(Boolean);
-      it = item(base, 0, "context", "Изменения сессии: " + (kinds.length ? kinds.join(", ") : "ссылка"), [commit, pr, url].filter(Boolean).join("\n"));
+      const kinds = [commit ? L`коммит` : undefined, pr ? "PR" : undefined].filter(Boolean);
+      it = item(base, 0, "context", L`Изменения сессии: ` + (kinds.length ? kinds.join(", ") : L`ссылка`), [commit, pr, url].filter(Boolean).join("\n"));
       it.context = { type: "remoteChange", commit, pullRequest: pr, url };
       break;
     }
     case "queued_command": {
       const prompt = str(attachment.prompt) ?? "";
-      it = item(base, 0, "queued", "Передано модели: " + Snippet.firstLine(prompt, 140), Snippet.truncate(prompt, DETAIL_LIMIT));
+      it = item(base, 0, "queued", L`Передано модели: ` + Snippet.firstLine(prompt, 140), Snippet.truncate(prompt, DETAIL_LIMIT));
       break;
     }
     default: {
       if (type.startsWith("hook")) {
         const name = str(attachment.hookName) ?? type;
         const content = str(attachment.content) ?? str(attachment.stdout);
-        it = item(base, 0, "hook", `Хук: ${name}`, content !== undefined ? Snippet.truncate(content, DETAIL_LIMIT) : undefined, type.includes("error"));
+        it = item(base, 0, "hook", L`Хук: ${name}`, content !== undefined ? Snippet.truncate(content, DETAIL_LIMIT) : undefined, type.includes("error"));
         break;
       }
       // date, silent reminders, deferred tool records; session_context and credential_org hold account data.
@@ -370,18 +371,18 @@ function parseSystem(entry: Json, base: Base): ActivityItem[] {
   if (subtype === "stop_hook_summary") {
     const count = int(entry.hookCount) ?? 0;
     const errors = Array.isArray(entry.hookErrors) ? entry.hookErrors.length : 0;
-    let title = `Хуки Stop: ${count}`;
-    if (errors > 0) title += `, ошибок: ${errors}`;
-    if (entry.preventedContinuation === true) title += " · остановили продолжение";
+    let title = L`Хуки Stop: ${count}`;
+    if (errors > 0) title += L`, ошибок: ${errors}`;
+    if (entry.preventedContinuation === true) title += L` · остановили продолжение`;
     return [item(base, 0, "hook", title, undefined, errors > 0)];
   }
   if (subtype.includes("compact")) {
     const metadata = obj(entry.compactMetadata);
     const trigger = str(metadata?.trigger);
-    const triggerText = trigger === undefined ? "" : trigger === "auto" ? "автоматически" : "вручную";
+    const triggerText = trigger === undefined ? "" : trigger === "auto" ? L`автоматически` : L`вручную`;
     const preTokens = int(metadata?.preTokens);
-    const pre = preTokens !== undefined ? ` · было ${Fmt.tokens(preTokens)} токенов` : "";
-    return [item(base, 0, "compact", `Контекст сжат ${triggerText}${pre}`.replace(/ {2}/g, " "))];
+    const pre = preTokens !== undefined ? L` · было ${Fmt.tokens(preTokens)} токенов` : "";
+    return [item(base, 0, "compact", L`Контекст сжат ${triggerText}${pre}`.replace(/ {2}/g, " "))];
   }
   const content = str(entry.content);
   if (content) {
@@ -405,8 +406,8 @@ function parseQueue(entry: Json, base: Base, timestampString: string): ActivityI
     detail: content ? Snippet.truncate(content, DETAIL_LIMIT) : undefined,
     isError: false,
   });
-  if (operation === "enqueue") return content ? [make("В очереди: " + Snippet.firstLine(content, 140))] : [];
-  if (operation === "remove") return [make("Убрано из очереди" + (content ? ": " + Snippet.firstLine(content, 120) : ""))];
+  if (operation === "enqueue") return content ? [make(L`В очереди: ` + Snippet.firstLine(content, 140))] : [];
+  if (operation === "remove") return [make(L`Убрано из очереди` + (content ? ": " + Snippet.firstLine(content, 120) : ""))];
   return [];
 }
 
@@ -446,9 +447,9 @@ export function permissionLabel(value: unknown): string | undefined {
   const reasonType = str(decision.reasonType) ?? "";
   let reason: string;
   switch (reasonType) {
-    case "rule": reason = "правило"; break;
-    case "classifier": reason = "классификатор auto mode"; break;
-    case "user": case "userApproval": reason = "пользователь"; break;
+    case "rule": reason = L`правило`; break;
+    case "classifier": reason = L`классификатор auto mode`; break;
+    case "user": case "userApproval": reason = L`пользователь`; break;
     case "": reason = str(decision.source) ?? ""; break;
     default: reason = reasonType;
   }

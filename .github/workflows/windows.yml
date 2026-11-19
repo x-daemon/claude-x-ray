@@ -44,8 +44,10 @@ jobs:
           export XRAY_SUPPORT_DIR="$RUNNER_TEMP/xray-support"
           NOW=$(date +%s)
           printf '{"session_id":"demo","model":{"id":"claude-opus-5-5","display_name":"Opus 5.5"},"version":"2.1.325","context_window":{"used_percentage":42},"rate_limits":{"five_hour":{"used_percentage":37.5,"resets_at":%d},"seven_day":{"used_percentage":22,"resets_at":%d}}}' $((NOW + 7800)) $((NOW + 3 * 86400 + 5000)) > "$RUNNER_TEMP/statusline.json"
-          time ./node_modules/.bin/electron . --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline.txt"
+          XRAY_SNAPSHOT_LANGUAGE=ru ./node_modules/.bin/electron . --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline.txt"
           grep -q "5 ч 38%" "$RUNNER_TEMP/statusline.txt"
+          XRAY_SNAPSHOT_LANGUAGE=en ./node_modules/.bin/electron . --statusline < "$RUNNER_TEMP/statusline.json" | tee "$RUNNER_TEMP/statusline-en.txt"
+          grep -q "5h 38%" "$RUNNER_TEMP/statusline-en.txt"
           cat "$XRAY_SUPPORT_DIR/plan-usage.json"
 
       - name: Package
@@ -75,7 +77,7 @@ jobs:
           export XRAY_SUPPORT_DIR="$T/xray-support"
           OUT="$T/snapshots"
           mkdir -p "$OUT"
-          CLAUDE_CONFIG_DIR="$T/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" XRAY_RECEIVER_PORT=47318 XRAY_RECEIVER_TOKEN=ci-token \
+          CLAUDE_CONFIG_DIR="$T/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_LANGUAGE=ru XRAY_RECEIVER_PORT=47318 XRAY_RECEIVER_TOKEN=ci-token \
             ./node_modules/.bin/electron . > "$OUT/app-output.txt" 2>&1 &
           APP=$!
           for i in $(seq 1 60); do curl -s http://127.0.0.1:47318/health && break; sleep 1; done
@@ -98,6 +100,22 @@ jobs:
           ls -la "$OUT"
           cat "$OUT/snapshots.log" "$OUT/app-output.txt"
           test -s "$OUT/report.pdf" && test -s "$OUT/s2a-light-live.png" && test -s "$OUT/receiver.txt"
+
+      - name: Snapshots in English and German
+        if: success() || failure()
+        run: |
+          set +e
+          T="$(cygpath -m "$RUNNER_TEMP")"
+          export XRAY_SUPPORT_DIR="$T/xray-support-l10n"
+          for CODE in en de; do
+            OUT="$T/snapshots/$CODE"
+            mkdir -p "$OUT"
+            CLAUDE_CONFIG_DIR="$T/xray-demo" XRAY_SNAPSHOT_DIR="$OUT" XRAY_SNAPSHOT_LANGUAGE=$CODE \
+              XRAY_SNAPSHOT_SCREENS=live,trace,overview,sessions,insights,reports,settings \
+              timeout 600 ./node_modules/.bin/electron . > "$OUT/app-output.txt" 2>&1
+            cat "$OUT/snapshots.log"
+          done
+          test -s "$T/snapshots/en/report.pdf" && test -s "$T/snapshots/de/report.pdf" && test -s "$T/snapshots/de/s2a-light-live.png"
 
       - name: Upload snapshots
         if: always()

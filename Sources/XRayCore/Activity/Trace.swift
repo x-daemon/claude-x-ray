@@ -112,11 +112,11 @@ public enum MCPStatus: String, Sendable, CaseIterable {
 
     public var title: String {
         switch self {
-        case .connected: return "Подключён"
-        case .pending: return "Подключается"
-        case .failed: return "Ошибка подключения"
-        case .needsAuth: return "Нужна авторизация"
-        case .usedOnly: return "Вызывался"
+        case .connected: return L("Подключён")
+        case .pending: return L("Подключается")
+        case .failed: return L("Ошибка подключения")
+        case .needsAuth: return L("Нужна авторизация")
+        case .usedOnly: return L("Вызывался")
         }
     }
 }
@@ -188,11 +188,11 @@ public struct ContextSnapshot: Hashable, Sendable {
     /// Known parts of the context with estimated token counts.
     public var knownComponents: [(name: String, tokens: Int)] {
         let all: [(name: String, tokens: Int)] = [
-            (name: "Системный промпт", tokens: Self.estimatedTokens(chars: systemPromptChars ?? 0)),
-            (name: "Список скиллов", tokens: Self.estimatedTokens(chars: skillListingChars)),
-            (name: "Инструкции MCP", tokens: Self.estimatedTokens(chars: mcpInstructionChars)),
-            (name: "Типы субагентов", tokens: Self.estimatedTokens(chars: agentListingChars)),
-            (name: "Список отложенных инструментов", tokens: Self.estimatedTokens(chars: toolListingChars)),
+            (name: L("Системный промпт"), tokens: Self.estimatedTokens(chars: systemPromptChars ?? 0)),
+            (name: L("Список скиллов"), tokens: Self.estimatedTokens(chars: skillListingChars)),
+            (name: L("Инструкции MCP"), tokens: Self.estimatedTokens(chars: mcpInstructionChars)),
+            (name: L("Типы субагентов"), tokens: Self.estimatedTokens(chars: agentListingChars)),
+            (name: L("Список отложенных инструментов"), tokens: Self.estimatedTokens(chars: toolListingChars)),
         ]
         return all.filter { $0.tokens > 0 }
     }
@@ -234,14 +234,14 @@ public enum LiveState: Hashable, Sendable {
 
     public var title: String {
         switch self {
-        case .runningTool(let name, _): return "Выполняет \(name)"
-        case .runningSubagent: return "Работает субагент"
-        case .thinking: return "Думает"
-        case .writing: return "Пишет ответ"
-        case .waitingForUser: return "Ждёт вас"
-        case .interrupted: return "Прервано"
-        case .error: return "Ошибка"
-        case .idle: return "Нет активности"
+        case .runningTool(let name, _): return L("Выполняет \(name)")
+        case .runningSubagent: return L("Работает субагент")
+        case .thinking: return L("Думает")
+        case .writing: return L("Пишет ответ")
+        case .waitingForUser: return L("Ждёт вас")
+        case .interrupted: return L("Прервано")
+        case .error: return L("Ошибка")
+        case .idle: return L("Нет активности")
         }
     }
 

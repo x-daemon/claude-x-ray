@@ -8,6 +8,7 @@ import * as path from "node:path";
 import { constantTimeEquals, uploadRelativePath, validUploadLines } from "../core/plan";
 import type { ReceiverStatus } from "../shared/api";
 import { Paths } from "./store";
+import { L } from "../core/i18n";
 
 const MAX_BODY = 32 * 1024 * 1024;
 
@@ -24,7 +25,7 @@ export class TranscriptReceiver {
     this.status = { ...this.status, port, error: undefined, listening: false };
     const server = http.createServer((req, res) => this.handle(req, res));
     server.on("error", (error: NodeJS.ErrnoException) => {
-      this.status = { ...this.status, listening: false, error: error.code === "EADDRINUSE" ? `порт ${port} занят` : error.message };
+      this.status = { ...this.status, listening: false, error: error.code === "EADDRINUSE" ? L`порт ${port} занят` : error.message };
       this.onStatus(this.status);
     });
     server.listen(port, "127.0.0.1", () => {

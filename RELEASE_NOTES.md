@@ -1,15 +1,20 @@
-# S2A Claude X-Ray 0.8.0
+# S2A Claude X-Ray 0.8.1
 
 Использование Claude Code в реальном времени и по истории, API‑эквивалент для подписки Pro/Max, Live‑трасса и подсказки по оптимизации. Для macOS 14+ (Apple Silicon и Intel) и Windows 10 и 11 (x64 и ARM64).
 
 ## Что нового
 
-- **Язык интерфейса: русский, English, Deutsch.** «Настройки → Язык и оформление». Переведено всё: экраны, подсказки по оптимизации, разбор сессий в Live‑трассе, отчёты (PDF, Markdown, CSV), меню в строке меню и в трее, строка статуса Claude Code; даты, единицы и множественное число — по правилам языка. «Как в системе» берёт язык macOS или Windows. Язык меняется сразу, без перезапуска. Кто пользовался X‑Ray раньше, остаётся на русском, пока не выберет другой язык.
-- **Облачные сессии на нескольких компьютерах.** Облачная среда отправляет лог сразу на все подключённые компьютеры (Mac и Windows): выключенный компьютер не задерживает остальные и догоняет, когда снова в сети. Строка лога длиннее 4 МБ больше не останавливает отправку.
+- **Честный статус на экране «Сейчас» и в Live‑трассе.** Если после промпта или ответа модели три минуты нет новых событий, X‑Ray пишет «Нет новых событий» и сколько прошло, а не «Думает»: модель может ещё отвечать, а лог облачной сессии мог ещё не дойти. Раньше статус «Думает» держался до 10 минут.
+- **Ответы облачных сессий доходят без задержек.** Если отправка лога не удалась, хук облачной сессии сам повторяет её через 5, 15, 30 и 60 секунд, а не ждёт следующего шага сессии (после конца хода он может быть через много минут). После конца хода он ещё раз проверяет лог: Claude Code дописывает конец хода сразу после хука. Ошибки отправки пишутся в `/tmp/xray-push/errors.log` облачной сессии. Новый хук облачная среда ставит в новые сессии сама.
 
-**English.** The interface is now available in English and German as well as Russian: Settings → Language & appearance. Everything is translated: screens, optimization tips, the Live trace, reports (PDF, Markdown, CSV), the menu bar and tray menus and the Claude Code status line, with dates, units and plurals that follow the language. “System” uses the macOS or Windows language. People who used X‑Ray before keep Russian until they pick another language.
+**English.** The live status no longer claims “Thinking” after three minutes without new events: it says “No new events” and how long it has been. Cloud sessions retry a failed log upload on their own within a minute instead of waiting for the session's next step.
 
-**Deutsch.** Die Oberfläche gibt es jetzt neben Russisch auch auf Englisch und Deutsch: „Einstellungen → Sprache & Darstellung“. Übersetzt ist alles: Ansichten, Optimierungshinweise, der Live‑Trace, Berichte (PDF, Markdown, CSV), die Menüs in Menüleiste und Infobereich und die Statuszeile von Claude Code; Datum, Einheiten und Mehrzahl folgen der Sprache. „System“ nimmt die Sprache von macOS oder Windows. Wer X‑Ray schon benutzt hat, behält Russisch, bis eine andere Sprache gewählt wird.
+**Deutsch.** Der Live-Status behauptet nach drei Minuten ohne neue Ereignisse nicht mehr „Denkt nach“, sondern zeigt „Keine neuen Ereignisse“ und die vergangene Zeit. Cloud-Sitzungen wiederholen ein fehlgeschlagenes Senden des Logs selbst innerhalb einer Minute, statt auf den nächsten Schritt zu warten.
+
+### Из 0.8.0
+
+- **Язык интерфейса: русский, English, Deutsch** («Настройки → Язык и оформление»): экраны, подсказки, Live‑трасса, отчёты, меню и строка статуса; даты, единицы и множественное число по правилам языка. «Как в системе» берёт язык macOS или Windows.
+- **Облачные сессии на нескольких компьютерах** (Mac и Windows): лог уходит сразу на все, выключенный компьютер не задерживает остальные.
 
 ### Из 0.7.0
 

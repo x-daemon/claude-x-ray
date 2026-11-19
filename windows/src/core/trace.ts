@@ -297,6 +297,9 @@ export type LiveState =
   | { type: "thinking" }
   | { type: "writing" }
   | { type: "waitingForUser" }
+  /** Thinking or writing, but nothing new has reached the log for minutes: the model may still be
+   * answering, or a cloud session's next lines have not arrived yet. */
+  | { type: "quiet" }
   | { type: "interrupted" }
   | { type: "error"; message: string }
   | { type: "idle" };
@@ -311,6 +314,7 @@ export function stateTitle(s: LiveState): string {
     case "thinking": return L`Думает`;
     case "writing": return L`Пишет ответ`;
     case "waitingForUser": return L`Ждёт вас`;
+    case "quiet": return L`Нет новых событий`;
     case "interrupted": return L`Прервано`;
     case "error": return L`Ошибка`;
     case "idle": return L`Нет активности`;
@@ -363,6 +367,8 @@ export const traceGitBranch = (t: SessionTrace): string | undefined => [...t.ite
 
 /** No activity for this long counts as idle. */
 export const DEFAULT_IDLE_AFTER = 10 * 60_000;
+/** After this long without a new event, "thinking" or "writing" would only be a guess. */
+export const QUIET_AFTER = 3 * 60_000;
 /** A tool call without a result older than this is treated as abandoned. */
 export const RUNNING_TOOL_TIMEOUT = 30 * 60_000;
 
@@ -789,6 +795,7 @@ function buildStatus(sessionID: string, items: ActivityItem[], tools: ToolExecut
       default:
         state = { type: "idle" };
     }
+    if ((state.type === "thinking" || state.type === "writing") && now - last.timestamp > QUIET_AFTER) state = { type: "quiet" };
   }
   return { state, since, lastActivity: last.timestamp, turnStart, stepsInTurn: steps, toolsInTurn, runningTools: running.length, sessionID };
 }

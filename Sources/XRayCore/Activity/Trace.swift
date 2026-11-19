@@ -221,6 +221,9 @@ public enum LiveState: Hashable, Sendable {
     /// The model is streaming a response after a thinking block.
     case writing
     case waitingForUser
+    /// The model was thinking or writing, but nothing new has reached the log for minutes: it may
+    /// still be answering, or a cloud session's next lines have not arrived yet.
+    case quiet
     case interrupted
     case error(String)
     case idle
@@ -239,6 +242,7 @@ public enum LiveState: Hashable, Sendable {
         case .thinking: return L("Думает")
         case .writing: return L("Пишет ответ")
         case .waitingForUser: return L("Ждёт вас")
+        case .quiet: return L("Нет новых событий")
         case .interrupted: return L("Прервано")
         case .error: return L("Ошибка")
         case .idle: return L("Нет активности")

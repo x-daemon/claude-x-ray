@@ -18,15 +18,11 @@ lines.insert(0, "#!/usr/bin/env python3")
 
 register = '''python3 - <<'PY' || true
 import json, os
-p = os.path.expanduser("~/.claude/settings.json")
-os.makedirs(os.path.dirname(p), exist_ok=True)
-try:
-    s = json.load(open(p))
-except Exception:
-    s = {}
-hooks = s.setdefault("hooks", {})
+p = os.path.expanduser("~/.claude/settings.json"); os.makedirs(os.path.dirname(p), exist_ok=True)
+try: s = json.load(open(p))
+except Exception: s = {}
 for event in ("UserPromptSubmit", "PostToolUse", "Stop", "SubagentStop", "PreCompact", "SessionEnd"):
-    groups = hooks.setdefault(event, [])
+    groups = s.setdefault("hooks", {}).setdefault(event, [])
     if not any("xray-push" in json.dumps(g) for g in groups):
         groups.append({"matcher": "", "hooks": [{"type": "command", "command": "/usr/local/bin/xray-push"}]})
 json.dump(s, open(p, "w"), indent=2)

@@ -1569,6 +1569,10 @@
    "en": "No requests in this window",
    "de": "Keine Anfragen in diesem Fenster"
   },
+  "Нет новых событий": {
+   "en": "No new events",
+   "de": "Keine neuen Ereignisse"
+  },
   "Низкая доля попаданий в кэш": {
    "en": "Low cache hit rate",
    "de": "Niedrige Cache-Trefferquote"

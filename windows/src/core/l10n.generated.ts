@@ -1570,6 +1570,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Keine Anfragen in diesem Fenster",
   "en": "No requests in this window"
  },
+ "Нет новых событий": {
+  "de": "Keine neuen Ereignisse",
+  "en": "No new events"
+ },
  "Низкая доля попаданий в кэш": {
   "de": "Niedrige Cache-Trefferquote",
   "en": "Low cache hit rate"

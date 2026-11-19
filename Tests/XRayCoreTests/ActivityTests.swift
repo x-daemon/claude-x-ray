@@ -258,6 +258,12 @@ final class TraceBuilderTests: XCTestCase {
         var trace = TraceBuilder.build(sessionID: "s1", items: Act.items(lines), now: Act.at(95))
         XCTAssertEqual(trace.status?.state, .thinking)
 
+        // Minutes without a new event: X-Ray no longer claims the model is thinking.
+        trace = TraceBuilder.build(sessionID: "s1", items: Act.items(lines), now: Act.at(90 + 4 * 60))
+        XCTAssertEqual(trace.status?.state, .quiet)
+        XCTAssertEqual(trace.status?.since, Act.at(90))
+        XCTAssertFalse(trace.status?.state.isActive ?? true)
+
         lines.append(Act.thinking(100, msg: "m6", ms: 4000))
         trace = TraceBuilder.build(sessionID: "s1", items: Act.items(lines), now: Act.at(101))
         XCTAssertEqual(trace.status?.state, .writing)

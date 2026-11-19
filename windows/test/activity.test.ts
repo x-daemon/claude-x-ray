@@ -136,6 +136,11 @@ test("live state: running tool, then thinking, writing, waiting, idle", () => {
   const lines = sampleLines();
   lines.push(Act.toolResult("t5", "All tests passed", 90));
   assert.equal(buildTrace("s1", Act.items(lines), at(95)).status?.state.type, "thinking");
+  // Minutes without a new event: X-Ray no longer claims the model is thinking.
+  const quiet = buildTrace("s1", Act.items(lines), at(90 + 4 * 60)).status!;
+  assert.equal(quiet.state.type, "quiet");
+  assert.equal(quiet.since, at(90));
+  assert.ok(!stateIsActive(quiet.state));
   lines.push(Act.thinking(100, "m6", 4000));
   assert.equal(buildTrace("s1", Act.items(lines), at(101)).status?.state.type, "writing");
   lines.push(Act.reply("Все тесты прошли.", 104, "m6"));

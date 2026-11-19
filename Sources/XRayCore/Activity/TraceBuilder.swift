@@ -6,6 +6,8 @@ public enum TraceBuilder {
     public static let defaultIdleAfter: TimeInterval = 10 * 60
     /// A tool call without a result older than this is treated as abandoned.
     public static let runningToolTimeout: TimeInterval = 30 * 60
+    /// After this long without a new event, "thinking" or "writing" would only be a guess.
+    public static let quietAfter: TimeInterval = 3 * 60
 
     public static func build(
         sessionID: String,
@@ -446,6 +448,9 @@ public enum TraceBuilder {
                 state = .error(last.title)
             default:
                 state = .idle
+            }
+            if state == .thinking || state == .writing, now.timeIntervalSince(last.timestamp) > quietAfter {
+                state = .quiet
             }
         }
 

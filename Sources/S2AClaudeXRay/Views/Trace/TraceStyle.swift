@@ -58,6 +58,7 @@ enum TraceStyle {
         case .thinking: return "brain"
         case .writing: return "text.cursor"
         case .waitingForUser: return "checkmark.bubble"
+        case .quiet: return "ellipsis.bubble"
         case .interrupted: return "stop.circle"
         case .error: return "exclamationmark.octagon.fill"
         case .idle: return "moon.zzz"
@@ -69,6 +70,7 @@ enum TraceStyle {
         case .runningTool, .runningSubagent: return Palette.tool
         case .thinking, .writing: return Palette.model
         case .waitingForUser: return Palette.good
+        case .quiet: return Palette.other
         case .interrupted: return Palette.warning
         case .error: return Palette.critical
         case .idle: return Palette.other

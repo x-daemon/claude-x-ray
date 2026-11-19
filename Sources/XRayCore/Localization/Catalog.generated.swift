@@ -295,6 +295,7 @@ extension L10n {
     "Нет данных за период":{"de":"Keine Daten im Zeitraum","en":"No data for the period"},
     "Нет доступа к {0}":{"de":"Kein Zugriff auf {0}","en":"No access to {0}"},"Нет запросов":{"de":"Keine Anfragen","en":"No requests"},
     "Нет запросов в этом окне":{"de":"Keine Anfragen in diesem Fenster","en":"No requests in this window"},
+    "Нет новых событий":{"de":"Keine neuen Ereignisse","en":"No new events"},
     "Низкая доля попаданий в кэш":{"de":"Niedrige Cache-Trefferquote","en":"Low cache hit rate"},
     "Новые облачные сессии начнут присылать лог сами. Они появятся в «Сессиях», «Обзоре» и Live-трассе, а их логи лежат в `{0}\\cloud`.":{"de":"Neue Cloud-Sitzungen senden ihr Log dann von selbst. Sie erscheinen unter „Sitzungen“, „Übersicht“ und im Live-Trace; ihre Logs liegen in `{0}\\cloud`.","en":"New cloud sessions then send their log on their own. They appear in Sessions, Overview and the Live trace, and their logs are kept in `{0}\\cloud`."},
     "Новые облачные сессии начнут присылать лог сами. Они появятся в «Сессиях», «Обзоре» и Live-трассе, а их логи лежат в `~/Library/Application Support/S2AClaudeXRay/cloud`.":{"de":"Neue Cloud-Sitzungen senden ihr Log dann von selbst. Sie erscheinen unter „Sitzungen“, „Übersicht“ und im Live-Trace; ihre Logs liegen in `~/Library/Application Support/S2AClaudeXRay/cloud`.","en":"New cloud sessions then send their log on their own. They appear in Sessions, Overview and the Live trace, and their logs are kept in `~/Library/Application Support/S2AClaudeXRay/cloud`."},

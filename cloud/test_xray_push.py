@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Tests for cloud/xray-push.py against small local receivers: uploads never queue up behind a
-slow or sleeping computer, a hook that fires during an upload still gets its lines sent, long
-and partial lines, several receivers at once. Run: python3 cloud/test_xray_push.py"""
+slow or sleeping computer, a hook that fires during an upload still gets its lines sent, a failed
+upload is tried again without waiting for another hook, the end of a turn written after the Stop
+hook still goes out, long and partial lines, several receivers at once.
+Run: python3 cloud/test_xray_push.py"""
 import http.server, importlib.util, json, os, shutil, socket, subprocess, sys, tempfile, threading, time, unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -11,16 +13,25 @@ class Receiver:
     """X-Ray's receiver in miniature: appends each POST body to the file named by X-Path,
     after an optional delay, and records how many requests ran at once."""
 
-    def __init__(self, delay=0.0):
+    def __init__(self, delay=0.0, fail_first=0):
         self.bodies, self.active, self.max_active, self.lock = {}, 0, 0, threading.Lock()
+        self.requests, self.fail_first = 0, fail_first
         outer = self
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_POST(self):
+                body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
                 with outer.lock:
+                    outer.requests += 1
+                    failing = outer.requests <= outer.fail_first
                     outer.active += 1
                     outer.max_active = max(outer.max_active, outer.active)
-                body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+                if failing:  # a receiver that is briefly unavailable
+                    with outer.lock:
+                        outer.active -= 1
+                    self.send_response(503)
+                    self.end_headers()
+                    return
                 time.sleep(delay)
                 with outer.lock:
                     outer.bodies.setdefault(self.headers["X-Path"], bytearray()).extend(body)
@@ -58,6 +69,9 @@ class XRayPushTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.base = tempfile.mkdtemp(prefix="xray-push-test-")
+        # Own state folder and short pauses, so the test neither touches the real hook's state
+        # nor waits a minute for retries.
+        os.environ.update(XRAY_PUSH_STATE=os.path.join(cls.base, "state"), XRAY_PUSH_RETRIES="0.3,0.6", XRAY_PUSH_SETTLE="0.5")
         # A copy under a unique name, so the test can count the uploader processes it started.
         cls.hook_path = os.path.join(cls.base, "xray-push-under-test.py")
         shutil.copy(os.path.join(HERE, "xray-push.py"), cls.hook_path)
@@ -69,10 +83,8 @@ class XRayPushTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.base, ignore_errors=True)
-        prefix = cls.base.strip("/").replace("/", "_")
-        for name in os.listdir(cls.hook.STATE):
-            if name.startswith(prefix):
-                os.remove(os.path.join(cls.hook.STATE, name))
+        for name in ("XRAY_PUSH_STATE", "XRAY_PUSH_RETRIES", "XRAY_PUSH_SETTLE"):
+            os.environ.pop(name, None)
 
     def setUp(self):
         self.receivers = []
@@ -84,8 +96,8 @@ class XRayPushTest(unittest.TestCase):
 
     # Helpers
 
-    def receiver(self, delay=0.0):
-        receiver = Receiver(delay)
+    def receiver(self, delay=0.0, fail_first=0):
+        receiver = Receiver(delay, fail_first)
         self.receivers.append(receiver)
         return receiver
 
@@ -105,10 +117,10 @@ class XRayPushTest(unittest.TestCase):
         with open(path, "rb") as f:
             return f.read()
 
-    def fire(self, path, urls, separator=" "):
+    def fire(self, path, urls, separator=" ", event="PostToolUse"):
         """Runs the hook the way Claude Code does: hook JSON on stdin, returns at once."""
         env = dict(os.environ, XRAY_PUSH_URL=separator.join(urls))
-        hook_input = json.dumps({"session_id": "test", "transcript_path": path}).encode()
+        hook_input = json.dumps({"session_id": "test", "transcript_path": path, "hook_event_name": event}).encode()
         subprocess.run([sys.executable, self.hook_path], input=hook_input, env=env, check=True, timeout=10)
 
     def uploaders(self):
@@ -158,15 +170,38 @@ class XRayPushTest(unittest.TestCase):
             if not injected[0]:
                 injected[0] = True
                 self.append(path, 1)
-                self.hook.push(fast.url, path, "test")
+                self.hook.push(fast.url, path, "test", False)
             return seen
 
         self.hook.upload = upload_then_late_hook
         try:
-            self.hook.push(fast.url, path, "test")
+            self.hook.push(fast.url, path, "test", False)
         finally:
             self.hook.upload = original
         self.assertTrue(injected[0])
+        self.assertEqual(fast.received(relative), self.contents(path))
+
+    def test_a_failed_upload_is_tried_again_without_another_hook(self):
+        flaky = self.receiver(fail_first=2)
+        path, relative = self.transcript("flaky")
+        for n in range(3):
+            self.append(path, n)
+        self.fire(path, [flaky.url], event="Stop")
+        self.settle()
+        self.assertEqual(flaky.received(relative), self.contents(path), "sent once the receiver answers")
+        self.assertEqual(flaky.requests, 3, "two refused attempts, then the upload")
+        with open(os.path.join(self.hook.STATE, "errors.log")) as f:
+            errors = f.read().splitlines()
+        self.assertEqual(len([e for e in errors if "127.0.0.1:%d" % flaky.server.server_port in e]), 2, errors)
+
+    def test_the_end_of_a_turn_written_after_the_stop_hook_is_sent(self):
+        fast = self.receiver()
+        path, relative = self.transcript("stop")
+        self.append(path, 0)
+        self.fire(path, [fast.url], event="Stop")
+        time.sleep(0.2)
+        self.append(path, 1)  # Claude Code writes this right after the hook
+        self.settle()
         self.assertEqual(fast.received(relative), self.contents(path))
 
     def test_a_line_longer_than_a_chunk_is_sent_whole(self):

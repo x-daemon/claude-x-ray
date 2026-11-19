@@ -1,0 +1,13 @@
+events: 1187, activity items: 0, trace sessions: 0
+receiver: listening false, uploads 0, lines 0, rejected 0
+plan usage: 5h 37.5%, 7d 22.0%, captured 2026-11-19 08:15:30 +0000
+window 48 (0.0, 60.0, 1440.0, 677.0)
+s2a-light-live: window server, 137686 bytes
+s2a-light-live-bottom: window server, 136889 bytes
+s2a-light-trace-feed: window server, 160313 bytes
+s2a-dark-live: window server, 150163 bytes
+s2a-dark-live-bottom: window server, 149451 bytes
+s2a-dark-trace-feed: window server, 174272 bytes
+system-light-live: window server, 135288 bytes
+system-light-live-bottom: window server, 132247 bytes
+system-light-trace-feed: window server, 153368 bytes

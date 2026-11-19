@@ -1,0 +1,26 @@
+events: 15, activity items: 53, trace sessions: 1
+receiver: listening true, uploads 1, lines 53, rejected 1
+live state: Выполняет Bash — Bash: swift build -c release && ./scripts/build-app.sh
+plan usage: 5h 37.5%, 7d 22.0%, captured 2026-11-19 08:15:30 +0000
+window 76 (0.0, 60.0, 1440.0, 677.0)
+s2a-light-live: window server, 154297 bytes
+s2a-light-live-bottom: window server, 137233 bytes
+s2a-light-trace-feed: window server, 206361 bytes
+s2a-light-trace-flow: window server, 167677 bytes
+s2a-light-trace-llm: window server, 180750 bytes
+s2a-light-trace-timeline: window server, 132399 bytes
+s2a-light-trace-context: window server, 152675 bytes
+s2a-light-trace-tools: window server, 146807 bytes
+s2a-light-sessions: window server, 108865 bytes
+s2a-dark-live: window server, 167358 bytes
+s2a-dark-live-bottom: window server, 148471 bytes
+s2a-dark-trace-feed: window server, 218401 bytes
+s2a-dark-trace-flow: window server, 179187 bytes
+s2a-dark-trace-llm: window server, 189868 bytes
+s2a-dark-trace-timeline: window server, 140166 bytes
+s2a-dark-trace-context: window server, 162740 bytes
+s2a-dark-trace-tools: window server, 156075 bytes
+s2a-dark-sessions: window server, 117257 bytes
+system-light-live: window server, 146986 bytes
+system-light-live-bottom: window server, 132924 bytes
+system-light-trace-feed: window server, 189819 bytes

@@ -1,0 +1,34 @@
+events: 1187, activity items: 667, trace sessions: 7
+receiver: listening false, uploads 0, lines 0, rejected 0
+live state: Running Bash — Bash: swift build -c release && ./scripts/build-app.sh
+plan usage: 5h 37.5%, 7d 22.0%, captured 2026-11-19 08:15:30 +0000
+window 62 (0.0, 60.0, 1440.0, 677.0)
+s2a-light-live: window server, 149598 bytes
+s2a-light-live-bottom: window server, 136573 bytes
+s2a-light-trace-feed: window server, 195949 bytes
+s2a-light-trace-flow: window server, 157257 bytes
+s2a-light-trace-llm: window server, 169784 bytes
+s2a-light-trace-timeline: window server, 126346 bytes
+s2a-light-trace-context: window server, 149204 bytes
+s2a-light-trace-tools: window server, 137446 bytes
+s2a-light-overview: window server, 115131 bytes
+s2a-light-sessions: window server, 175221 bytes
+s2a-light-insights: window server, 178694 bytes
+s2a-light-reports: window server, 322499 bytes
+s2a-dark-live: window server, 162453 bytes
+s2a-dark-live-bottom: window server, 149475 bytes
+s2a-dark-trace-feed: window server, 207894 bytes
+s2a-dark-trace-flow: window server, 168250 bytes
+s2a-dark-trace-llm: window server, 178504 bytes
+s2a-dark-trace-timeline: window server, 133529 bytes
+s2a-dark-trace-context: window server, 158186 bytes
+s2a-dark-trace-tools: window server, 145148 bytes
+s2a-dark-overview: window server, 123735 bytes
+s2a-dark-sessions: window server, 184917 bytes
+s2a-dark-insights: window server, 195917 bytes
+s2a-dark-reports: window server, 329677 bytes
+system-light-live: window server, 142919 bytes
+system-light-live-bottom: window server, 133174 bytes
+system-light-trace-feed: window server, 180676 bytes
+system-light-overview: window server, 112937 bytes
+report.pdf: 271077 bytes

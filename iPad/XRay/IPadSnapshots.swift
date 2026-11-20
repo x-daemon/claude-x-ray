@@ -143,7 +143,7 @@ enum IPadSnapshots {
     private static func capture(_ name: String) async -> Bool {
         let request = directory.appendingPathComponent("next.txt")
         try? Data(name.utf8).write(to: request, options: .atomic)
-        for _ in 0..<300 {
+        for _ in 0..<600 {
             if !FileManager.default.fileExists(atPath: request.path) { return true }
             try? await Task.sleep(nanoseconds: 100_000_000)
         }

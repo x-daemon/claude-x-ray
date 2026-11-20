@@ -49,24 +49,45 @@ struct TraceFeedView: View {
     @State private var limit = 250
     @State private var expanded: Set<String> = []
 
+    private var filterPicker: some View {
+        Picker(L("Фильтр"), selection: $filter) {
+            ForEach(FeedFilter.allCases) { filter in
+                Text(filter.title).tag(filter)
+            }
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+    }
+
+    private var searchField: some View {
+        TextField(L("Поиск по командам, файлам, текстам"), text: $query)
+            .textFieldStyle(.roundedBorder)
+    }
+
+    private func eventCount(_ count: Int) -> some View {
+        Text(L("\(count) событий")).font(.caption).foregroundStyle(.secondary).fixedSize()
+    }
+
     var body: some View {
         let rows = makeRows()
 
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Picker(L("Фильтр"), selection: $filter) {
-                    ForEach(FeedFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
+            // One row when the filters keep their full titles; on a narrow screen (an iPad in
+            // portrait) the search goes below them.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    filterPicker.frame(maxWidth: 560)
+                    searchField.frame(maxWidth: 280)
+                    Spacer()
+                    eventCount(rows.count)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    filterPicker
+                    HStack(spacing: 12) {
+                        searchField
+                        eventCount(rows.count)
                     }
                 }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .frame(maxWidth: 560)
-                TextField(L("Поиск по командам, файлам, текстам"), text: $query)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(maxWidth: 280)
-                Spacer()
-                Text(L("\(rows.count) событий")).font(.caption).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 8)

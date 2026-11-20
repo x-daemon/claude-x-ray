@@ -19,12 +19,12 @@ jobs:
     env:
       BUNDLE: com.s2a.claude-xray.ipad
       VIEWER_TOKEN: xrayv_ci0123456789abcdef0123456789abcdef
-      OUT: ${{ runner.temp }}/ipad-snapshots
     steps:
       - uses: actions/checkout@v4
 
       - name: Toolchain
         run: |
+          echo "OUT=$RUNNER_TEMP/ipad-snapshots" >> "$GITHUB_ENV"
           sw_vers
           xcodebuild -version
           xcrun simctl list runtimes | grep -i ios || true

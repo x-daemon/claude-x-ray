@@ -25,6 +25,7 @@
     "esbuild": "^0.28.2",
     "lucide-preact": "^1.73.0",
     "preact": "^11.2.0",
+    "qrcode-generator": "^2.0.4",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   },

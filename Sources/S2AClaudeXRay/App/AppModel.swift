@@ -1,13 +1,28 @@
-import AppKit
 import Foundation
 import Observation
 import SwiftUI
 import XRayCore
+#if os(macOS)
+import SystemConfiguration
+#endif
 
 enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
     case live, trace, overview, sessions, projects, models, insights, reports
+    #if os(iOS)
+    /// The iPad has no settings window: settings are a screen of their own.
+    case settings
+    #endif
 
     var id: Self { self }
+
+    /// The screens with data, without the iPad's settings.
+    static var screens: [SidebarItem] {
+        #if os(iOS)
+        return allCases.filter { $0 != .settings }
+        #else
+        return allCases
+        #endif
+    }
 
     var title: String {
         switch self {
@@ -19,6 +34,9 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         case .models: return L("Модели")
         case .insights: return L("Оптимизация")
         case .reports: return L("Отчёты")
+        #if os(iOS)
+        case .settings: return L("Настройки")
+        #endif
         }
     }
 
@@ -32,6 +50,9 @@ enum SidebarItem: String, CaseIterable, Identifiable, Hashable {
         case .models: return "cpu"
         case .insights: return "lightbulb"
         case .reports: return "doc.text"
+        #if os(iOS)
+        case .settings: return "gearshape"
+        #endif
         }
     }
 }
@@ -88,9 +109,10 @@ final class AppModel {
     private(set) var activity = ActivityStore()
     /// Plan usage of the whole account, as Claude Code last reported it to its status line.
     private(set) var planUsage: PlanUsage?
+    #if os(macOS)
     /// Whether X-Ray is connected to Claude Code's status line.
     private(set) var statusLineState: StatusLineInstaller.State = .notInstalled
-    /// The receiver for transcripts pushed by cloud sessions.
+    /// The receiver for transcripts pushed by cloud sessions; it also serves the iPad app.
     private(set) var receiverStatus = TranscriptReceiver.Status()
     private(set) var receiverEnabled = UserDefaults.standard.bool(forKey: "receiver.enabled")
     private(set) var receiverPort: UInt16 = {
@@ -98,6 +120,14 @@ final class AppModel {
         return (1024...65535).contains(stored) ? UInt16(stored) : TranscriptReceiver.defaultPort
     }()
     private(set) var receiverToken = ""
+    /// Read-only access for X-Ray on the iPad, with its own token.
+    private(set) var viewerEnabled = UserDefaults.standard.bool(forKey: "viewer.enabled")
+    private(set) var viewerToken = ""
+    /// The address the iPad reaches this Mac at, as typed; empty uses the detected one.
+    private(set) var viewerAddress = UserDefaults.standard.string(forKey: "viewer.address") ?? ""
+    /// This Mac's Tailscale address, when Tailscale is installed.
+    private(set) var detectedAddress: String?
+    #endif
 
     // MARK: Settings
 
@@ -114,11 +144,17 @@ final class AppModel {
     var traceTab: TraceTab = .feed
     /// Selected row of the sessions table.
     var selectedSessionID: String?
+    #if os(iOS)
+    /// Views pushed in the iPad's detail column (a session's details, settings pages).
+    var detailPath = NavigationPath()
+    #endif
 
     @ObservationIgnored private var store = UsageStore()
-    @ObservationIgnored private var receiver: TranscriptReceiver?
     private let ingestor = TranscriptIngestor()
+    #if os(macOS)
+    @ObservationIgnored private var receiver: TranscriptReceiver?
     @ObservationIgnored private var watcher: DirectoryWatcher?
+    #endif
     @ObservationIgnored private var ticker: Timer?
     @ObservationIgnored private var rescanQueued = false
     @ObservationIgnored private var started = false
@@ -133,7 +169,12 @@ final class AppModel {
     init() {
         let settings = SettingsStore()
         pricing = settings.loadPricing()
+        #if os(iOS)
+        // The iPad reads its copies of the computers' logs.
+        directories = [XRayPaths.mirror]
+        #else
         directories = settings.directories ?? ClaudeDataLocator.defaultProjectDirectories()
+        #endif
         plan = settings.plan
         Task { @MainActor [weak self] in self?.start() }
     }
@@ -143,15 +184,19 @@ final class AppModel {
     func start() {
         guard !started else { return }
         started = true
+        #if os(macOS)
         startReceiverIfNeeded()
         restartWatching()
-        reloadPlanUsage()
         refreshStatusLineState()
+        #endif
+        reloadPlanUsage()
         ticker = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
         }
         Task { await rescan() }
+        #if os(macOS)
         SnapshotRunner.runIfRequested(model: self)
+        #endif
     }
 
     private func tick() {
@@ -167,7 +212,11 @@ final class AppModel {
         }
     }
 
+    /// Watches the scanned folders (FSEvents) and tells the receiver what the iPad may read. On the
+    /// iPad, new data arrives through DesktopSync, which starts a rescan itself.
     private func restartWatching() {
+        #if os(macOS)
+        receiver?.update(receiverConfiguration())
         watcher?.stop()
         let existing = scanDirectories.filter { FileManager.default.fileExists(atPath: $0.path) }.map(\.path)
         guard !existing.isEmpty else {
@@ -179,6 +228,7 @@ final class AppModel {
         }
         watcher.start()
         self.watcher = watcher
+        #endif
     }
 
     // MARK: Scanning
@@ -231,8 +281,11 @@ final class AppModel {
     }
 
     /// The configured folders plus X-Ray's own folders (imported logs, logs pushed by cloud
-    /// sessions) once they exist.
+    /// sessions) once they exist. On the iPad: the copies of the computers' logs.
     var scanDirectories: [URL] {
+        #if os(iOS)
+        return [XRayPaths.mirror]
+        #else
         var result = directories
         for folder in [XRayPaths.imported, XRayPaths.cloud]
         where FileManager.default.fileExists(atPath: folder.path)
@@ -240,63 +293,126 @@ final class AppModel {
             result.append(folder)
         }
         return result
+        #endif
     }
 
-    // MARK: Cloud receiver
+    #if os(macOS)
+    // MARK: Cloud receiver and iPad access
 
-    /// Starts the receiver when it is switched on, or when `XRAY_RECEIVER_PORT` /
-    /// `XRAY_RECEIVER_TOKEN` are set (used by CI).
+    /// Starts the receiver when it is switched on, or when `XRAY_RECEIVER_TOKEN` (cloud uploads) or
+    /// `XRAY_VIEWER_TOKEN` (iPad access) are set; `XRAY_RECEIVER_PORT` sets the port (used by CI).
     private func startReceiverIfNeeded() {
         let environment = ProcessInfo.processInfo.environment
-        if let port = environment["XRAY_RECEIVER_PORT"].flatMap(UInt16.init), let token = environment["XRAY_RECEIVER_TOKEN"], !token.isEmpty {
+        if let port = environment["XRAY_RECEIVER_PORT"].flatMap(UInt16.init) {
             receiverPort = port
+        }
+        if let token = environment["XRAY_RECEIVER_TOKEN"], !token.isEmpty {
             receiverToken = token
             receiverEnabled = true
         } else {
             receiverToken = TranscriptReceiver.loadOrCreateToken()
         }
-        if receiverEnabled {
-            startReceiver()
+        if let token = environment["XRAY_VIEWER_TOKEN"], !token.isEmpty {
+            viewerToken = token
+            viewerEnabled = true
+        } else {
+            viewerToken = TranscriptReceiver.loadOrCreateViewerToken()
+        }
+        applyReceiverConfiguration()
+        if viewerEnabled && viewerAddress.isEmpty {
+            detectAddress()
         }
     }
 
-    private func startReceiver() {
-        try? FileManager.default.createDirectory(at: XRayPaths.cloud, withIntermediateDirectories: true)
-        if receiver == nil {
+    private func receiverConfiguration() -> TranscriptReceiver.Configuration {
+        TranscriptReceiver.Configuration(
+            port: receiverPort,
+            acceptsUploads: receiverEnabled,
+            uploadToken: receiverToken,
+            servesViewer: viewerEnabled,
+            viewerToken: viewerToken,
+            roots: TranscriptCatalog.roots(directories: scanDirectories, cloud: XRayPaths.cloud, imported: XRayPaths.imported),
+            name: Self.computerName
+        )
+    }
+
+    /// Starts, updates or stops the listener; it runs while cloud uploads or iPad access are on.
+    private func applyReceiverConfiguration() {
+        if receiverEnabled {
+            try? FileManager.default.createDirectory(at: XRayPaths.cloud, withIntermediateDirectories: true)
+        }
+        if receiver == nil && (receiverEnabled || viewerEnabled) {
             receiver = TranscriptReceiver { [weak self] status in
                 Task { @MainActor in self?.receiverStatus = status }
             }
         }
-        receiver?.start(port: receiverPort, token: receiverToken)
+        // Also hands the receiver the folders, which include the cloud folder once it exists.
         restartWatching()
     }
 
     func setReceiverEnabled(_ enabled: Bool) {
         receiverEnabled = enabled
         UserDefaults.standard.set(enabled, forKey: "receiver.enabled")
-        if enabled {
-            startReceiver()
-        } else {
-            receiver?.stop()
-        }
+        applyReceiverConfiguration()
     }
 
     func setReceiverPort(_ port: UInt16) {
         guard port != receiverPort, port >= 1024 else { return }
         receiverPort = port
         UserDefaults.standard.set(Int(port), forKey: "receiver.port")
-        if receiverEnabled {
-            startReceiver()
-        }
+        applyReceiverConfiguration()
     }
 
     /// Replaces the access token; cloud sessions need the new one (re-enter it in the cloud environment).
     func regenerateReceiverToken() {
         receiverToken = TranscriptReceiver.createToken()
-        if receiverEnabled {
-            startReceiver()
+        applyReceiverConfiguration()
+    }
+
+    func setViewerEnabled(_ enabled: Bool) {
+        viewerEnabled = enabled
+        UserDefaults.standard.set(enabled, forKey: "viewer.enabled")
+        applyReceiverConfiguration()
+        if enabled && viewerAddress.isEmpty && detectedAddress == nil {
+            detectAddress()
         }
     }
+
+    /// Replaces the iPad token; the iPad has to be connected again.
+    func regenerateViewerToken() {
+        viewerToken = TranscriptReceiver.createViewerToken()
+        applyReceiverConfiguration()
+    }
+
+    func setViewerAddress(_ address: String) {
+        viewerAddress = address.trimmingCharacters(in: .whitespacesAndNewlines)
+        UserDefaults.standard.set(viewerAddress, forKey: "viewer.address")
+    }
+
+    /// Looks up this Mac's Tailscale name in the background.
+    func detectAddress() {
+        Task.detached { [weak self] in
+            let address = TailscaleAddress.detect()
+            await MainActor.run { self?.detectedAddress = address }
+        }
+    }
+
+    /// The link that connects the iPad: the typed or detected address and the iPad token.
+    var viewerLink: ViewerLink? {
+        let address = viewerAddress.isEmpty ? (detectedAddress ?? "") : viewerAddress
+        guard let server = ViewerLink.normalize(text: address) else { return nil }
+        return ViewerLink(server: server, token: viewerToken, name: Self.computerName)
+    }
+
+    /// The name of this Mac, as in System Settings → General → Sharing.
+    static let computerName: String = {
+        if let name = SCDynamicStoreCopyComputerName(nil, nil) {
+            let text = name as String
+            if !text.isEmpty { return text }
+        }
+        return ProcessInfo.processInfo.hostName
+    }()
+    #endif
 
     // MARK: Account plan usage
 
@@ -307,6 +423,7 @@ final class AppModel {
         }
     }
 
+    #if os(macOS)
     func refreshStatusLineState() {
         statusLineState = StatusLineInstaller.state()
     }
@@ -384,6 +501,7 @@ final class AppModel {
         settings.directories = nil
         setDirectories(ClaudeDataLocator.defaultProjectDirectories())
     }
+    #endif
 
     func setPlan(_ plan: SubscriptionPlan) {
         self.plan = plan

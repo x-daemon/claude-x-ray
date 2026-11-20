@@ -21,6 +21,10 @@ export interface Settings {
   receiverEnabled: boolean;
   receiverPort: number;
   hideContent: boolean;
+  /** Read-only access for X-Ray on the iPad, with its own token. */
+  viewerEnabled: boolean;
+  /** The address the iPad reaches this computer at, as typed; empty uses the detected one. */
+  viewerAddress: string;
 }
 
 export type StatusLineState =
@@ -38,6 +42,10 @@ export interface ReceiverStatus {
   lastUpload?: number;
   lastPath?: string;
   rejectedAuth: number;
+  /** Requests of the iPad app. */
+  viewerRequests: number;
+  lastViewerRequest?: number;
+  viewerRejected: number;
 }
 
 export interface ScanInfo {
@@ -60,6 +68,11 @@ export interface InitialState {
   statusLineSettingsPath: string;
   receiver: ReceiverStatus;
   receiverToken: string;
+  viewerToken: string;
+  /** This computer's name, which the iPad shows. */
+  computerName: string;
+  /** This computer's Tailscale address, when Tailscale is installed. */
+  detectedAddress?: string;
   events: UsageEvent[];
   activities: ActivityItem[];
   scan: ScanInfo;
@@ -102,6 +115,9 @@ export interface XRayBridge {
   importPaths(paths: string[]): Promise<number>;
   pathForFile(file: File): string;
   regenerateToken(): Promise<string>;
+  regenerateViewerToken(): Promise<string>;
+  /** Looks up this computer's Tailscale address. */
+  detectAddress(): Promise<string | undefined>;
   /** Prints the current page to a PDF; `size` (CSS px) makes it one page of that size. */
   savePDF(name: string, size?: { width: number; height: number }): Promise<string | undefined>;
   saveText(name: string, text: string, kind: "md" | "csv"): Promise<string | undefined>;
@@ -133,6 +149,8 @@ export const CHANNELS = {
   importDialog: "xray:import-dialog",
   importPaths: "xray:import-paths",
   regenerateToken: "xray:regenerate-token",
+  regenerateViewerToken: "xray:regenerate-viewer-token",
+  detectAddress: "xray:detect-address",
   savePDF: "xray:save-pdf",
   saveText: "xray:save-text",
   copyText: "xray:copy-text",

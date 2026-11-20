@@ -1,7 +1,9 @@
-import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 import XRayCore
+#if os(macOS)
+import AppKit
+#endif
 
 /// The account's real plan limits, as Claude Code reports them to its status line. They count
 /// everything that draws on the subscription: chats, cloud sessions, Cowork and this Mac.
@@ -24,12 +26,12 @@ struct AccountLimitsCard: View {
                             SpendGauge(spend: spend)
                         }
                     }
-                    Text(L("Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на этом Mac. Claude Code обновляет эти цифры после каждого своего ответа в Терминале на этом Mac."))
+                    Text(coverageNote)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                     if now.timeIntervalSince(usage.capturedAt) > 3600 {
-                        Label(L("Цифры на \(Fmt.dateTime(usage.capturedAt)). Обновятся после следующего ответа Claude Code на этом Mac."), systemImage: "clock.arrow.circlepath")
+                        Label(staleNote(usage.capturedAt), systemImage: "clock.arrow.circlepath")
                             .font(.caption)
                             .foregroundStyle(Palette.warning)
                     }
@@ -38,6 +40,22 @@ struct AccountLimitsCard: View {
                 AccountLimitsSetup()
             }
         }
+    }
+
+    private var coverageNote: String {
+        #if os(macOS)
+        return L("Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на этом Mac. Claude Code обновляет эти цифры после каждого своего ответа в Терминале на этом Mac.")
+        #else
+        return L("Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на компьютерах. Цифры приходят с компьютера, где X-Ray подключён к строке статуса Claude Code.")
+        #endif
+    }
+
+    private func staleNote(_ captured: Date) -> String {
+        #if os(macOS)
+        return L("Цифры на \(Fmt.dateTime(captured)). Обновятся после следующего ответа Claude Code на этом Mac.")
+        #else
+        return L("Цифры на \(Fmt.dateTime(captured)). Обновятся после следующего ответа Claude Code на компьютере.")
+        #endif
     }
 
     private func subtitle(now: Date) -> String? {
@@ -104,6 +122,7 @@ struct SpendGauge: View {
     }
 }
 
+#if os(macOS)
 /// Shown until Claude Code has reported plan usage: how to connect, or that it is connected.
 struct AccountLimitsSetup: View {
     @Environment(AppModel.self) private var model
@@ -259,3 +278,4 @@ enum TranscriptImportPanel {
         model.importTranscripts(panel.urls)
     }
 }
+#endif

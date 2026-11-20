@@ -7,10 +7,18 @@ final class HTTPRequestParserTests: XCTestCase {
     func testContentLengthBody() {
         let raw = request("POST /v1/transcript?x=1 HTTP/1.1\r\nHost: a\r\nAuthorization: Bearer t\r\nContent-Length: 5\r\n\r\nhello")
         XCTAssertEqual(HTTPRequestParser.parse(raw), .complete(HTTPRequest(
-            method: "POST", path: "/v1/transcript",
+            method: "POST", path: "/v1/transcript", query: ["x": "1"],
             headers: ["host": "a", "authorization": "Bearer t", "content-length": "5"],
             body: Data("hello".utf8)
         )))
+    }
+
+    func testQueryParameters() {
+        guard case .complete(let parsed) = HTTPRequestParser.parse(request("GET /v1/file?id=local-1a/-p/a.jsonl&from=10&max=&id=second&path=a%2Fb+c HTTP/1.1\r\n\r\n")) else {
+            return XCTFail("not complete")
+        }
+        XCTAssertEqual(parsed.path, "/v1/file")
+        XCTAssertEqual(parsed.query, ["id": "local-1a/-p/a.jsonl", "from": "10", "max": "", "path": "a/b+c"])
     }
 
     func testIncompleteUntilTheWholeBodyArrives() {

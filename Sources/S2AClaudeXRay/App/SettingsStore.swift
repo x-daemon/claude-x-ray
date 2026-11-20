@@ -45,9 +45,7 @@ struct SettingsStore {
     }
 
     var pricingURL: URL {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-            ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
-        return base.appendingPathComponent("S2AClaudeXRay", isDirectory: true).appendingPathComponent("pricing.json")
+        XRayPaths.support.appendingPathComponent("pricing.json")
     }
 
     func loadPricing() -> PricingTable {

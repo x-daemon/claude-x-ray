@@ -67,10 +67,18 @@ struct TraceView: View {
                 SourcesHelpView(
                     title: L("Нет активности за последние 3 дня"),
                     systemImage: "point.3.connected.trianglepath.dotted",
-                    message: L("Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.")
+                    message: emptyMessage
                 )
             }
         }
+    }
+
+    private var emptyMessage: String {
+        #if os(macOS)
+        return L("Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.")
+        #else
+        return L("Как только Claude Code начнёт работать на одном из ваших компьютеров, здесь почти в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.")
+        #endif
     }
 }
 

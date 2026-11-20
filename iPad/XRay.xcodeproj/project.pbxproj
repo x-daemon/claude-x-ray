@@ -1,0 +1,445 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		010FFDA6B9885017F15406D2 /* TraceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4646D3AF5219675DB072CD /* TraceView.swift */; };
+		02ACA0E5484E4D92CE1ADCD2 /* TraceLLMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C644A662885E63C55A01C090 /* TraceLLMView.swift */; };
+		0B13606A64E7A85ECCD228B0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552E4101AED35AACC001A2EC /* Theme.swift */; };
+		108AFF5C9CB0BD95892D94D5 /* TraceFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2969B418B82E87DC6362C1 /* TraceFlowView.swift */; };
+		1C4EC0A4479242797180B91B /* BreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F603B98DE32015033F53E980 /* BreakdownView.swift */; };
+		1F2CDFE34C9DAC6471E079FE /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D75BAA5B1CBF069470F1C16 /* AppLanguage.swift */; };
+		2D20533D3204DC569ECAC169 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCA1F873F4AB3586E0FB989 /* SettingsView.swift */; };
+		2D5CA9BA4B138A5113C30014 /* TraceFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC732ADD19B555EA1191952 /* TraceFeedView.swift */; };
+		346D6D3DEFFD1F10F3087847 /* TraceStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8165E47A0EBD838D11934C /* TraceStyle.swift */; };
+		4A8EF4AC79BEBABEBCF6F89C /* RequestHealthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 065D2D7F3101C3BED4A7E91A /* RequestHealthView.swift */; };
+		580CEDAA4E72E5ECF9E65BB9 /* TraceContextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E76FFB346809F55B235175 /* TraceContextView.swift */; };
+		70A5FE470A9D6B73C2E2EDE6 /* LiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437B507091A47BD473D44FCD /* LiveView.swift */; };
+		71193F2D1F281E0024C6C190 /* XRayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEE38761DA2AFDBD3CDC572A /* XRayApp.swift */; };
+		755873C4D3F2444EBD9FDEA3 /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B67C2188AAF082DCD9540D /* Paths.swift */; };
+		75C031C55A1A6E26BF9FA267 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F20F40F7A269E70B1AF9478 /* Components.swift */; };
+		76CEDB65D497118CCF0C501B /* TraceTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B70511F05778CFC334356 /* TraceTimelineView.swift */; };
+		784C422FA491C8D877D7D464 /* ReportDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAF55509AE9EAE457D38F4F /* ReportDocument.swift */; };
+		862077CE0682CE0D8D4589CE /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A65B4F4A25398657120D668 /* InsightsView.swift */; };
+		86E52591FEC7B84536AF71A1 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF703C4EA0A48D0DC7CAB6A /* RootView.swift */; };
+		8AAA9056F3122EB351E32C9C /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC175D10F39892992F47F6AD /* AppModel.swift */; };
+		93FCD0847D681C5B20AB442E /* AccountLimitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AD3330F14EE15D27C9BE46 /* AccountLimitsView.swift */; };
+		9C0DD1712A00CF4C0A01F093 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485232DD69EB14375CD503A8 /* OverviewView.swift */; };
+		A5D43FE91990620097BFE53B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BE540B2D6A90EF5E94F4F7D /* Assets.xcassets */; };
+		B2F826ADFD7B4C91AE989CAC /* IPadScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE02BA27B57D5C991D374041 /* IPadScreens.swift */; };
+		B97AEA78600875B7C1A68297 /* SessionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09A5A85279493A22D7D48B3 /* SessionsView.swift */; };
+		C4649A230398FABFF2136CA3 /* TraceToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B645F291948E76690ABB853 /* TraceToolsView.swift */; };
+		DB21E2680967F5BF1D8E5521 /* XRayCore in Frameworks */ = {isa = PBXBuildFile; productRef = ACCCA3E1A9B4AC090B989C5B /* XRayCore */; };
+		E166D50B795F991D5057DF3E /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A765406465AAFBF6DA41F3AA /* Keychain.swift */; };
+		EA832682C96C6DBB1347105F /* IPadSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C45D779B4D33A018C9E112 /* IPadSnapshots.swift */; };
+		F6A8E6C3491DF95931EC3BAF /* IPadSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78074AB7BD3A59CAAB5C44A2 /* IPadSettingsView.swift */; };
+		F879E3586F167D640012296D /* DesktopSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D92F0924A4F0E88C0C12771 /* DesktopSync.swift */; };
+		FB951D3742BFACBCC508C7D5 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4814337B7D933388F046B468 /* SettingsStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		065D2D7F3101C3BED4A7E91A /* RequestHealthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHealthView.swift; sourceTree = "<group>"; };
+		0A65B4F4A25398657120D668 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		2D8B70511F05778CFC334356 /* TraceTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceTimelineView.swift; sourceTree = "<group>"; };
+		2F20F40F7A269E70B1AF9478 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		3C4646D3AF5219675DB072CD /* TraceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceView.swift; sourceTree = "<group>"; };
+		437B507091A47BD473D44FCD /* LiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveView.swift; sourceTree = "<group>"; };
+		4814337B7D933388F046B468 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		485232DD69EB14375CD503A8 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
+		552E4101AED35AACC001A2EC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		5A5019196DF9ED08B3439AAF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		78074AB7BD3A59CAAB5C44A2 /* IPadSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadSettingsView.swift; sourceTree = "<group>"; };
+		7B645F291948E76690ABB853 /* TraceToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceToolsView.swift; sourceTree = "<group>"; };
+		8BAF55509AE9EAE457D38F4F /* ReportDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportDocument.swift; sourceTree = "<group>"; };
+		8BF703C4EA0A48D0DC7CAB6A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		8D92F0924A4F0E88C0C12771 /* DesktopSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSync.swift; sourceTree = "<group>"; };
+		8F8165E47A0EBD838D11934C /* TraceStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceStyle.swift; sourceTree = "<group>"; };
+		9BE540B2D6A90EF5E94F4F7D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9D75BAA5B1CBF069470F1C16 /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
+		9FCA1F873F4AB3586E0FB989 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A765406465AAFBF6DA41F3AA /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		A7B67C2188AAF082DCD9540D /* Paths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paths.swift; sourceTree = "<group>"; };
+		AEE38761DA2AFDBD3CDC572A /* XRayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRayApp.swift; sourceTree = "<group>"; };
+		AFC732ADD19B555EA1191952 /* TraceFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceFeedView.swift; sourceTree = "<group>"; };
+		B09A5A85279493A22D7D48B3 /* SessionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsView.swift; sourceTree = "<group>"; };
+		C644A662885E63C55A01C090 /* TraceLLMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceLLMView.swift; sourceTree = "<group>"; };
+		CC175D10F39892992F47F6AD /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		E3AD3330F14EE15D27C9BE46 /* AccountLimitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLimitsView.swift; sourceTree = "<group>"; };
+		EE02BA27B57D5C991D374041 /* IPadScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadScreens.swift; sourceTree = "<group>"; };
+		EF2969B418B82E87DC6362C1 /* TraceFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceFlowView.swift; sourceTree = "<group>"; };
+		F1C45D779B4D33A018C9E112 /* IPadSnapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadSnapshots.swift; sourceTree = "<group>"; };
+		F603B98DE32015033F53E980 /* BreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakdownView.swift; sourceTree = "<group>"; };
+		F8E76FFB346809F55B235175 /* TraceContextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TraceContextView.swift; sourceTree = "<group>"; };
+		FB3B074908C2D8DDE8988B6A /* XRay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XRay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C18F88D444D8FE65E18D39E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB21E2680967F5BF1D8E5521 /* XRayCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4EAE695AD1F489F78EA3E1C6 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				E59EB47AE1661FCB22A1C334 /* XRay */,
+				9D10A42589C8F5479091BEBD /* Shared */,
+				2AC8BA37DAC32D5437812408 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		337E1799FE35959003884C28 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				400603E9B5406CF741C7EB35 /* Trace */,
+				E3AD3330F14EE15D27C9BE46 /* AccountLimitsView.swift */,
+				F603B98DE32015033F53E980 /* BreakdownView.swift */,
+				2F20F40F7A269E70B1AF9478 /* Components.swift */,
+				0A65B4F4A25398657120D668 /* InsightsView.swift */,
+				437B507091A47BD473D44FCD /* LiveView.swift */,
+				485232DD69EB14375CD503A8 /* OverviewView.swift */,
+				8BAF55509AE9EAE457D38F4F /* ReportDocument.swift */,
+				065D2D7F3101C3BED4A7E91A /* RequestHealthView.swift */,
+				8BF703C4EA0A48D0DC7CAB6A /* RootView.swift */,
+				B09A5A85279493A22D7D48B3 /* SessionsView.swift */,
+				9FCA1F873F4AB3586E0FB989 /* SettingsView.swift */,
+				552E4101AED35AACC001A2EC /* Theme.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		400603E9B5406CF741C7EB35 /* Trace */ = {
+			isa = PBXGroup;
+			children = (
+				F8E76FFB346809F55B235175 /* TraceContextView.swift */,
+				AFC732ADD19B555EA1191952 /* TraceFeedView.swift */,
+				EF2969B418B82E87DC6362C1 /* TraceFlowView.swift */,
+				C644A662885E63C55A01C090 /* TraceLLMView.swift */,
+				8F8165E47A0EBD838D11934C /* TraceStyle.swift */,
+				2D8B70511F05778CFC334356 /* TraceTimelineView.swift */,
+				7B645F291948E76690ABB853 /* TraceToolsView.swift */,
+				3C4646D3AF5219675DB072CD /* TraceView.swift */,
+			);
+			path = Trace;
+			sourceTree = "<group>";
+		};
+		4F06DA281877CFBF560A3128 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				9D75BAA5B1CBF069470F1C16 /* AppLanguage.swift */,
+				CC175D10F39892992F47F6AD /* AppModel.swift */,
+				A7B67C2188AAF082DCD9540D /* Paths.swift */,
+				4814337B7D933388F046B468 /* SettingsStore.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9D10A42589C8F5479091BEBD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				4F06DA281877CFBF560A3128 /* App */,
+				337E1799FE35959003884C28 /* Views */,
+			);
+			name = Shared;
+			path = ../Sources/S2AClaudeXRay;
+			sourceTree = "<group>";
+		};
+		E59EB47AE1661FCB22A1C334 /* XRay */ = {
+			isa = PBXGroup;
+			children = (
+				8D92F0924A4F0E88C0C12771 /* DesktopSync.swift */,
+				EE02BA27B57D5C991D374041 /* IPadScreens.swift */,
+				78074AB7BD3A59CAAB5C44A2 /* IPadSettingsView.swift */,
+				F1C45D779B4D33A018C9E112 /* IPadSnapshots.swift */,
+				A765406465AAFBF6DA41F3AA /* Keychain.swift */,
+				AEE38761DA2AFDBD3CDC572A /* XRayApp.swift */,
+				9BE540B2D6A90EF5E94F4F7D /* Assets.xcassets */,
+				5A5019196DF9ED08B3439AAF /* Info.plist */,
+			);
+			path = XRay;
+			sourceTree = "<group>";
+		};
+		2AC8BA37DAC32D5437812408 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FB3B074908C2D8DDE8988B6A /* XRay.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		ACC13E3C6DBE028610D92CCE /* XRay */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D1FB7F0ADAE1142CC98867D /* Build configuration list for PBXNativeTarget "XRay" */;
+			buildPhases = (
+				C4D5163706E5908DC9E032F3 /* Sources */,
+				C18F88D444D8FE65E18D39E9 /* Frameworks */,
+				4FDAD6DB49035FA75C21467D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XRay;
+			packageProductDependencies = (
+				ACCCA3E1A9B4AC090B989C5B /* XRayCore */,
+			);
+			productName = XRay;
+			productReference = FB3B074908C2D8DDE8988B6A /* XRay.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F86FAA6BBF9AC94A7E4595 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					ACC13E3C6DBE028610D92CCE = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 43354254ABBF1517243CAD33 /* Build configuration list for PBXProject "XRay" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				de,
+				ru,
+			);
+			mainGroup = 4EAE695AD1F489F78EA3E1C6;
+			packageReferences = (
+				DC4222EEFE7D182FF8734352 /* XCLocalSwiftPackageReference ".." */,
+			);
+			productRefGroup = 2AC8BA37DAC32D5437812408 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				ACC13E3C6DBE028610D92CCE /* XRay */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4FDAD6DB49035FA75C21467D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5D43FE91990620097BFE53B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C4D5163706E5908DC9E032F3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2CDFE34C9DAC6471E079FE /* AppLanguage.swift in Sources */,
+				8AAA9056F3122EB351E32C9C /* AppModel.swift in Sources */,
+				755873C4D3F2444EBD9FDEA3 /* Paths.swift in Sources */,
+				FB951D3742BFACBCC508C7D5 /* SettingsStore.swift in Sources */,
+				93FCD0847D681C5B20AB442E /* AccountLimitsView.swift in Sources */,
+				1C4EC0A4479242797180B91B /* BreakdownView.swift in Sources */,
+				75C031C55A1A6E26BF9FA267 /* Components.swift in Sources */,
+				862077CE0682CE0D8D4589CE /* InsightsView.swift in Sources */,
+				70A5FE470A9D6B73C2E2EDE6 /* LiveView.swift in Sources */,
+				9C0DD1712A00CF4C0A01F093 /* OverviewView.swift in Sources */,
+				784C422FA491C8D877D7D464 /* ReportDocument.swift in Sources */,
+				4A8EF4AC79BEBABEBCF6F89C /* RequestHealthView.swift in Sources */,
+				86E52591FEC7B84536AF71A1 /* RootView.swift in Sources */,
+				B97AEA78600875B7C1A68297 /* SessionsView.swift in Sources */,
+				2D20533D3204DC569ECAC169 /* SettingsView.swift in Sources */,
+				0B13606A64E7A85ECCD228B0 /* Theme.swift in Sources */,
+				580CEDAA4E72E5ECF9E65BB9 /* TraceContextView.swift in Sources */,
+				2D5CA9BA4B138A5113C30014 /* TraceFeedView.swift in Sources */,
+				108AFF5C9CB0BD95892D94D5 /* TraceFlowView.swift in Sources */,
+				02ACA0E5484E4D92CE1ADCD2 /* TraceLLMView.swift in Sources */,
+				346D6D3DEFFD1F10F3087847 /* TraceStyle.swift in Sources */,
+				76CEDB65D497118CCF0C501B /* TraceTimelineView.swift in Sources */,
+				C4649A230398FABFF2136CA3 /* TraceToolsView.swift in Sources */,
+				010FFDA6B9885017F15406D2 /* TraceView.swift in Sources */,
+				F879E3586F167D640012296D /* DesktopSync.swift in Sources */,
+				B2F826ADFD7B4C91AE989CAC /* IPadScreens.swift in Sources */,
+				F6A8E6C3491DF95931EC3BAF /* IPadSettingsView.swift in Sources */,
+				EA832682C96C6DBB1347105F /* IPadSnapshots.swift in Sources */,
+				E166D50B795F991D5057DF3E /* Keychain.swift in Sources */,
+				71193F2D1F281E0024C6C190 /* XRayApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D48F58F8CA231B2301441318 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6AFE22E70BE079CBB63426F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		41EC14BFA61A85B336E4F999 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = XRay/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "X-Ray";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = "0.9.0";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.s2a.claude-xray.ipad";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		8668ED08E8535986A57FA16B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = XRay/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "X-Ray";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = "0.9.0";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.s2a.claude-xray.ipad";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		43354254ABBF1517243CAD33 /* Build configuration list for PBXProject "XRay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D48F58F8CA231B2301441318 /* Debug */,
+				6AFE22E70BE079CBB63426F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D1FB7F0ADAE1142CC98867D /* Build configuration list for PBXNativeTarget "XRay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				41EC14BFA61A85B336E4F999 /* Debug */,
+				8668ED08E8535986A57FA16B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		DC4222EEFE7D182FF8734352 /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ACCCA3E1A9B4AC090B989C5B /* XRayCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DC4222EEFE7D182FF8734352 /* XCLocalSwiftPackageReference ".." */;
+			productName = XRayCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+}

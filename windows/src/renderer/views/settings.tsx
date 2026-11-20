@@ -2,6 +2,8 @@
 // Port of Views/SettingsView.swift, the settings part of AccountLimitsView.swift and CloudReceiverView.swift.
 import type { LucideIcon } from "lucide-preact";
 import { useEffect, useState } from "preact/hooks";
+import qrcode from "qrcode-generator";
+import { viewerLink } from "../../core/viewerLink";
 import { Fmt } from "../../core/fmt";
 import { windowFraction, type PlanUsage } from "../../core/plan";
 import { displayModelName, familyReferencePrefix, modelFamily } from "../../core/model";
@@ -20,6 +22,7 @@ const TABS: { id: string; title: string; icon: LucideIcon }[] = titled([
   { id: "sources", title: N("Источники"), icon: I.Folder },
   { id: "limits", title: N("Лимиты аккаунта"), icon: I.Gauge },
   { id: "cloud", title: N("Облако"), icon: I.CloudDownload },
+  { id: "ipad", title: "iPad", icon: I.Tablet },
   { id: "pricing", title: N("Цены"), icon: I.Zap },
   { id: "plan", title: N("Подписка"), icon: I.User },
 ]);
@@ -42,6 +45,7 @@ export function SettingsView() {
           : tab === "sources" ? <SourcesSettings />
             : tab === "limits" ? <AccountLimitsSettings />
               : tab === "cloud" ? <CloudReceiverSettings />
+                : tab === "ipad" ? <IPadSettings />
                 : tab === "pricing" ? <PricingSettings />
                   : <PlanSettings />}
       </div>
@@ -285,6 +289,102 @@ function CloudReceiverSettings() {
         {L`Лог передаётся только на ваш компьютер через ваш туннель. Пока компьютер спит или X-Ray закрыт, облачная сессия копит новые строки и досылает их со следующим шагом. X-Ray на нескольких компьютерах (Windows и Mac) подключается так же, по адресу каждого: облачные сессии присылают лог на все сразу, и выключенный компьютер не задерживает остальные.`}
       </div>
     </div>
+  );
+}
+
+// MARK: iPad
+
+function IPadSettings() {
+  const s = useStore();
+  const [address, setAddress] = useState(s.settings.viewerAddress);
+  const [copied, setCopied] = useState<string>();
+  const status = s.receiver;
+  const masked = (token: string) => (token.length <= 12 ? token || "—" : `${token.slice(0, 10)}…${token.slice(-4)}`);
+  useEffect(() => {
+    if (!s.detectedAddress) void s.bridge.detectAddress().then((found) => { if (found) { store.detectedAddress = found; store.emit(); } });
+  }, []);
+  const saveAddress = () => {
+    if (address.trim() !== s.settings.viewerAddress) void s.updateSettings({ viewerAddress: address.trim() });
+  };
+  const link = s.settings.viewerEnabled ? viewerLink(address.trim() || s.detectedAddress || "", s.viewerToken, s.computerName) : undefined;
+  const hint = address.trim()
+    ? L`Адрес, по которому iPad находит этот компьютер: адрес из \`tailscale funnel\` или \`tailscale serve\`.`
+    : s.detectedAddress
+      ? L`Найден в Tailscale: ${s.detectedAddress}. Впишите другой, если iPad видит этот компьютер по другому адресу.`
+      : L`Tailscale не найден. Впишите адрес, по которому iPad находит этот компьютер, например из \`tailscale funnel\`.`;
+  return (
+    <div class="page narrow">
+      <div>
+        {L`X-Ray для iPad показывает всё то же, что и здесь: Live-трассу, сессии, обзор, оптимизацию и отчёты. Он копирует логи с этого компьютера и считает всё сам. Доступ только на чтение и со своим токеном: токен облачных сессий читать логи не может.`}
+      </div>
+      <div class="card">
+        <div class="stack-10">
+          <label class="check">
+            <input type="checkbox" checked={s.settings.viewerEnabled} onChange={(e) => void s.updateSettings({ viewerEnabled: (e.currentTarget as HTMLInputElement).checked })} />
+            <span>{L`Разрешить iPad читать логи`}</span>
+          </label>
+          {!s.settings.viewerEnabled ? <Label icon={I.CircleStop} class="secondary" text={L`Выключено`} />
+            : status.error ? <Label icon={I.TriangleExclamationPoint} class="critical" text={L`Не удалось открыть порт ${status.port}: ${status.error}`} />
+              : status.listening ? (
+                <div class="stack-3">
+                  <Label icon={I.Tablet} class="good-text" text={L`Ждёт iPad на 127.0.0.1:${status.port}`} />
+                  <div class="caption secondary">
+                    {status.lastViewerRequest !== undefined ? L`iPad последний раз обращался ${Fmt.ago((Date.now() - status.lastViewerRequest) / 1000)} · запросов ${status.viewerRequests}` : L`iPad ещё не подключался.`}
+                  </div>
+                  {status.viewerRejected > 0 ? <div class="caption warning-text">{L`Отклонено запросов с неверным токеном: ${status.viewerRejected}`}</div> : null}
+                </div>
+              ) : <Label icon={I.Hourglass} class="secondary" text={L`Запускается…`} />}
+          <div class="row gap-8">
+            <span class="secondary">{L`Адрес`}</span>
+            <input class="input grow" value={address} placeholder={s.detectedAddress ?? L`https://ваш-компьютер.имя-сети.ts.net`}
+              onInput={(e) => setAddress((e.currentTarget as HTMLInputElement).value)} onBlur={saveAddress} onKeyDown={(e) => e.key === "Enter" && saveAddress()} />
+            <Button small title={L`Взять адрес этого компьютера из Tailscale`} onClick={async () => { store.detectedAddress = await s.bridge.detectAddress(); store.emit(); }}>{L`Найти`}</Button>
+          </div>
+          <div class="caption secondary"><Md text={hint} /></div>
+          <div class="row gap-8">
+            <span class="secondary">{L`Токен iPad`}</span>
+            <span class="mono">{masked(s.viewerToken)}</span>
+            <Button small onClick={async () => { await s.bridge.copyText(s.viewerToken); setCopied("token"); }}>{copied === "token" ? L`Скопировано` : L`Скопировать`}</Button>
+            <Button small title={L`Создать новый токен. iPad придётся подключить заново.`} onClick={async () => { store.viewerToken = await s.bridge.regenerateViewerToken(); setCopied(undefined); store.emit(); }}>{L`Новый`}</Button>
+          </div>
+        </div>
+      </div>
+      {link ? (
+        <div class="row top gap-16">
+          <div class="qr-box"><QRCode text={link} /></div>
+          <div class="stack-8">
+            <h3>{L`Наведите камеру iPad на код`}</h3>
+            <div>{L`Камера предложит открыть ссылку в X-Ray, и iPad подключится к этому компьютеру. Или скопируйте ссылку и вставьте её в X-Ray на iPad: «Настройки → Компьютеры → Добавить».`}</div>
+            <div><Button small onClick={async () => { await s.bridge.copyText(link); setCopied("link"); }}>{copied === "link" ? L`Скопировано` : L`Скопировать ссылку`}</Button></div>
+            <div class="caption secondary">{L`В ссылке есть токен: кто её получит, сможет читать ваши логи. Если она попала не туда, создайте новый токен.`}</div>
+          </div>
+        </div>
+      ) : null}
+      <h3>{L`Как подключить`}</h3>
+      <Step n={1} text={L`Сделайте X-Ray доступным для iPad. Если облачные сессии уже подключены, это сделано: iPad использует тот же адрес. Иначе установите Tailscale для Windows (бесплатно), войдите и выполните в PowerShell команду ниже.`} />
+      <CommandBox command={`tailscale funnel --bg ${s.settings.receiverPort}`} />
+      <Step n={2} text={L`Установите X-Ray на iPad из Xcode на Mac: откройте \`iPad/XRay.xcodeproj\` из репозитория, выберите свой Apple ID в Signing и запустите на iPad. Подробно — в README.`} />
+      <Step n={3} text={L`Включите доступ выше и отсканируйте код камерой iPad. X-Ray на iPad скачает логи за выбранный период и дальше будет догружать новые строки каждые несколько секунд, пока открыт.`} />
+      <div class="caption secondary">
+        {L`Логи идут только с вашего компьютера на ваш iPad через ваш туннель. Компьютер с X-Ray должен быть включён; пока он спит, iPad показывает то, что успел скачать. iPad может читать несколько компьютеров сразу, например этот и Mac.`}
+      </div>
+    </div>
+  );
+}
+
+/** A QR code drawn as SVG squares, black on white so cameras read it in either theme. */
+function QRCode({ text, size = 180 }: { text: string; size?: number }) {
+  const qr = qrcode(0, "M");
+  qr.addData(text);
+  qr.make();
+  const count = qr.getModuleCount();
+  let d = "";
+  for (let r = 0; r < count; r++) for (let c = 0; c < count; c++) if (qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return (
+    <svg width={size} height={size} viewBox={`-2 -2 ${count + 4} ${count + 4}`} shape-rendering="crispEdges" role="img" aria-label={L`QR-код для подключения iPad`}>
+      <rect x={-2} y={-2} width={count + 4} height={count + 4} fill="#ffffff" />
+      <path d={d} fill="#000000" />
+    </svg>
   );
 }
 

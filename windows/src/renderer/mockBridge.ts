@@ -75,6 +75,12 @@ export function mockBridge(): XRayBridge {
     async regenerateToken() {
       return "xray_" + Math.random().toString(16).slice(2).padEnd(64, "0");
     },
+    async regenerateViewerToken() {
+      return "xrayv_" + Math.random().toString(16).slice(2).padEnd(64, "0");
+    },
+    async detectAddress() {
+      return state?.detectedAddress;
+    },
     async savePDF() {
       window.print();
       return undefined;

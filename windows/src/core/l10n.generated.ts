@@ -242,9 +242,17 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Auto-Modus an",
   "en": "Auto mode on"
  },
+ "CSV по дням": {
+  "de": "CSV nach Tagen",
+  "en": "CSV by day"
+ },
  "CSV по дням…": {
   "de": "CSV nach Tagen…",
   "en": "CSV by day…"
+ },
+ "CSV по сессиям": {
+  "de": "CSV nach Sitzungen",
+  "en": "CSV by session"
  },
  "CSV по сессиям…": {
   "de": "CSV nach Sitzungen…",
@@ -294,6 +302,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "MultiEdit {0} · {1} Änderungen",
   "en": "MultiEdit {0} · {1} edits"
  },
+ "QR-код для подключения iPad": {
+  "de": "QR-Code zum Verbinden des iPads",
+  "en": "QR code to connect the iPad"
+ },
  "S2A Claude X-Ray — отчёт {0}.pdf": {
   "de": "S2A Claude X-Ray – Bericht {0}.pdf",
   "en": "S2A Claude X-Ray — report {0}.pdf"
@@ -310,6 +322,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Cache-TTL {0}",
   "en": "cache TTL {0}"
  },
+ "Tailscale не найден. Впишите адрес, по которому iPad находит этот Mac, например из `tailscale funnel`.": {
+  "de": "Tailscale wurde nicht gefunden. Tragen Sie die Adresse ein, unter der das iPad diesen Mac findet, zum Beispiel von `tailscale funnel`.",
+  "en": "Tailscale was not found. Enter the address at which the iPad finds this Mac, for example from `tailscale funnel`."
+ },
+ "Tailscale не найден. Впишите адрес, по которому iPad находит этот компьютер, например из `tailscale funnel`.": {
+  "de": "Tailscale wurde nicht gefunden. Tragen Sie die Adresse ein, unter der das iPad diesen Computer findet, zum Beispiel von `tailscale funnel`.",
+  "en": "Tailscale was not found. Enter the address at which the iPad finds this computer, for example from `tailscale funnel`."
+ },
  "TodoWrite · {0} задач": {
   "de": "TodoWrite · {0} Aufgaben",
   "en": "TodoWrite · {0} tasks"
@@ -322,6 +342,18 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Write {0} · {1} Zeilen",
   "en": "Write {0} · {1} lines"
  },
+ "X-Ray": {
+  "de": "X-Ray",
+  "en": "X-Ray"
+ },
+ "X-Ray для iPad показывает всё то же, что и здесь: Live-трассу, сессии, обзор, оптимизацию и отчёты. Он копирует логи с этого Mac и считает всё сам. Доступ только на чтение и со своим токеном: токен облачных сессий читать логи не может.": {
+  "de": "X-Ray für iPad zeigt alles, was Sie hier sehen: Live-Trace, Sitzungen, Übersicht, Optimierung und Berichte. Es kopiert die Logs von diesem Mac und berechnet alles selbst. Der Zugriff ist schreibgeschützt und hat ein eigenes Token: Das Token der Cloud-Sitzungen kann keine Logs lesen.",
+  "en": "X-Ray for iPad shows everything you see here: the live trace, sessions, overview, optimization and reports. It copies the logs from this Mac and computes everything itself. Access is read-only and has its own token: the cloud sessions' token cannot read logs."
+ },
+ "X-Ray для iPad показывает всё то же, что и здесь: Live-трассу, сессии, обзор, оптимизацию и отчёты. Он копирует логи с этого компьютера и считает всё сам. Доступ только на чтение и со своим токеном: токен облачных сессий читать логи не может.": {
+  "de": "X-Ray für iPad zeigt alles, was Sie hier sehen: Live-Trace, Sitzungen, Übersicht, Optimierung und Berichte. Es kopiert die Logs von diesem Computer und berechnet alles selbst. Der Zugriff ist schreibgeschützt und hat ein eigenes Token: Das Token der Cloud-Sitzungen kann keine Logs lesen.",
+  "en": "X-Ray for iPad shows everything you see here: the live trace, sessions, overview, optimization and reports. It copies the logs from this computer and computes everything itself. Access is read-only and has its own token: the cloud sessions' token cannot read logs."
+ },
  "X-Ray меняет только `statusLine` в {0}, а прежний файл сохраняет рядом как settings.json.xray-backup. Строку статуса выполняет Claude Code в Терминале, в том числе с Remote Control. Если там уже была своя строка статуса, X-Ray оставляет её на экране и только запоминает цифры лимитов.": {
   "de": "X-Ray ändert nur `statusLine` in {0} und legt die bisherige Datei daneben als settings.json.xray-backup ab. Die Statuszeile führt Claude Code im Terminal aus, auch mit Remote Control. Gab es dort schon eine eigene Statuszeile, bleibt sie sichtbar, und X-Ray merkt sich nur die Limitwerte.",
   "en": "X-Ray only changes `statusLine` in {0} and keeps the previous file next to it as settings.json.xray-backup. Claude Code runs the status line in Terminal, including with Remote Control. If you already had a status line of your own, X-Ray keeps it on screen and only records the limit figures."
@@ -329,6 +361,38 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "X-Ray меняет только `statusLine` в {0}, а прежний файл сохраняет рядом как settings.json.xray-backup. Строку статуса выполняет Claude Code в терминале, в том числе с Remote Control. Если там уже была своя строка статуса, X-Ray оставляет её на экране (через Git Bash, как сам Claude Code) и только запоминает цифры лимитов.": {
   "de": "X-Ray ändert nur `statusLine` in {0} und legt die bisherige Datei daneben als settings.json.xray-backup ab. Die Statuszeile führt Claude Code im Terminal aus, auch mit Remote Control. Gab es dort schon eine eigene Statuszeile, bleibt sie sichtbar (über Git Bash, wie bei Claude Code selbst), und X-Ray merkt sich nur die Limitwerte.",
   "en": "X-Ray only changes `statusLine` in {0} and keeps the previous file next to it as settings.json.xray-backup. Claude Code runs the status line in the terminal, including with Remote Control. If you already had a status line of your own, X-Ray keeps it on screen (through Git Bash, like Claude Code itself) and only records the limit figures."
+ },
+ "X-Ray на iPad будет читать логи Claude Code с компьютера «{0}» по адресу {1}.": {
+  "de": "X-Ray auf dem iPad liest dann die Claude-Code-Logs des Computers „{0}“ unter {1}.",
+  "en": "X-Ray on the iPad will read Claude Code logs from the computer \"{0}\" at {1}."
+ },
+ "X-Ray на iPad показывает логи Claude Code ваших компьютеров: Mac или Windows с X-Ray 0.9 или новее.": {
+  "de": "X-Ray auf dem iPad zeigt die Claude-Code-Logs Ihrer Computer: Mac oder Windows mit X-Ray 0.9 oder neuer.",
+  "en": "X-Ray on the iPad shows the Claude Code logs of your computers: a Mac or Windows PC with X-Ray 0.9 or newer."
+ },
+ "X-Ray на iPad читает только ваши компьютеры, по вашему туннелю, и никуда не отправляет данные.": {
+  "de": "X-Ray auf dem iPad liest nur Ihre Computer über Ihren Tunnel und sendet keine Daten weiter.",
+  "en": "X-Ray on the iPad reads only your computers, through your tunnel, and sends data nowhere."
+ },
+ "X-Ray скачивает логи, пока открыт, и затем каждые несколько секунд догружает новые строки. Копии не попадают в резервную копию iPad: их всегда можно скачать снова.": {
+  "de": "X-Ray lädt die Logs, solange es geöffnet ist, und holt danach alle paar Sekunden neue Zeilen. Die Kopien sind nicht Teil des iPad-Backups: Sie lassen sich jederzeit erneut laden.",
+  "en": "X-Ray downloads the logs while it is open and then fetches new lines every few seconds. The copies are not part of the iPad's backup: they can always be downloaded again."
+ },
+ "https://ваш-mac.имя-сети.ts.net": {
+  "de": "https://ihr-mac.tailnet-name.ts.net",
+  "en": "https://your-mac.tailnet-name.ts.net"
+ },
+ "https://ваш-компьютер.имя-сети.ts.net": {
+  "de": "https://ihr-computer.tailnet-name.ts.net",
+  "en": "https://your-computer.tailnet-name.ts.net"
+ },
+ "iPad ещё не подключался.": {
+  "de": "Das iPad hat sich noch nicht verbunden.",
+  "en": "The iPad has not connected yet."
+ },
+ "iPad последний раз обращался {0} · запросов {1}": {
+  "de": "Letzte Anfrage des iPads {0} · {1} Anfragen",
+  "en": "The iPad last asked {0} · {1} requests"
  },
  "id модели, например claude-sonnet-4-5": {
   "de": "Modell-ID, z. B. claude-sonnet-4-5",
@@ -646,6 +710,22 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "· API-Modus: {0}",
   "en": "· API mode: {0}"
  },
+ "Адрес": {
+  "de": "Adresse",
+  "en": "Address"
+ },
+ "Адрес должен начинаться с https:// (или http:// в своей сети)": {
+  "de": "Die Adresse muss mit https:// beginnen (oder http:// im eigenen Netz)",
+  "en": "The address has to start with https:// (or http:// on your own network)"
+ },
+ "Адрес, по которому iPad находит этот Mac: адрес из `tailscale funnel` или `tailscale serve`.": {
+  "de": "Die Adresse, unter der das iPad diesen Mac findet: die von `tailscale funnel` oder `tailscale serve`.",
+  "en": "The address at which the iPad finds this Mac: the one from `tailscale funnel` or `tailscale serve`."
+ },
+ "Адрес, по которому iPad находит этот компьютер: адрес из `tailscale funnel` или `tailscale serve`.": {
+  "de": "Die Adresse, unter der das iPad diesen Computer findet: die von `tailscale funnel` oder `tailscale serve`.",
+  "en": "The address at which the iPad finds this computer: the one from `tailscale funnel` or `tailscale serve`."
+ },
  "Активность за 3 часа": {
   "de": "Aktivität der letzten 3 Stunden",
   "en": "Activity in the last 3 hours"
@@ -674,6 +754,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Große Ausgaben (ganze gelesene Dateien, lange Logs) bleiben bis /compact oder zum Sitzungsende im Kontext. Lesen Sie Dateien in Teilen und filtern Sie Befehlsausgaben.",
   "en": "Large outputs (whole files read, long logs) stay in the context until /compact or the end of the session. Read files in parts and filter command output."
  },
+ "В X-Ray на Mac или Windows откройте «Настройки → iPad» и наведите камеру iPad на QR-код. Можно добавить несколько компьютеров: X-Ray покажет их логи вместе.": {
+  "de": "Öffnen Sie in X-Ray auf dem Mac oder unter Windows „Einstellungen → iPad“ und richten Sie die iPad-Kamera auf den QR-Code. Sie können mehrere Computer hinzufügen: X-Ray zeigt ihre Logs zusammen.",
+  "en": "In X-Ray on the Mac or Windows, open Settings → iPad and point the iPad's camera at the QR code. You can add several computers: X-Ray shows their logs together."
+ },
  "В {0} API убрало из истории размышления модели: {1}. Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.": {
   "de": "In {0} entfernte die API das Denken des Modells aus dem Verlauf: {1}. Das Modell sah nicht, wie es zuvor überlegt hatte, und erarbeitete es neu – zusätzliche Ausgabe und Zeit.",
   "en": "In {0}, the API removed the model's thinking from the history: {1}. The model couldn't see how it had reasoned before and worked it out again — extra output and time."
@@ -689,6 +773,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "В очереди: ": {
   "de": "In der Warteschlange: ",
   "en": "Queued: "
+ },
+ "В ссылке есть токен: кто её получит, сможет читать ваши логи. Если она попала не туда, создайте новый токен.": {
+  "de": "Der Link enthält das Token: Wer ihn erhält, kann Ihre Logs lesen. Falls er in falsche Hände gerät, erstellen Sie ein neues Token.",
+  "en": "The link contains the token: whoever gets it can read your logs. If it ends up in the wrong place, create a new token."
  },
  "В транскрипте пока нет сведений о составе контекста": {
   "de": "Das Transkript enthält noch keine Angaben zur Zusammensetzung des Kontexts",
@@ -722,6 +810,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Git-Branch",
   "en": "Git branch"
  },
+ "Взять адрес этого Mac из Tailscale": {
+  "de": "Adresse dieses Macs aus Tailscale übernehmen",
+  "en": "Take this Mac's address from Tailscale"
+ },
+ "Взять адрес этого компьютера из Tailscale": {
+  "de": "Adresse dieses Computers aus Tailscale übernehmen",
+  "en": "Take this computer's address from Tailscale"
+ },
  "Вид": {
   "de": "Ansicht",
   "en": "View"
@@ -729,6 +825,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач.": {
   "de": "Schalten Sie den Fast Mode ein, wenn die Antwortgeschwindigkeit zählt, und für Hintergrundaufgaben aus.",
   "en": "Turn on fast mode when response speed matters, and turn it off for background tasks."
+ },
+ "Включите «Разрешить iPad читать логи». Если облачные сессии ещё не подключены, сделайте X-Ray доступным через Tailscale: `tailscale funnel --bg 47318`.": {
+  "de": "Schalten Sie „iPad das Lesen der Logs erlauben“ ein. Sind Cloud-Sitzungen noch nicht verbunden, machen Sie X-Ray über Tailscale erreichbar: `tailscale funnel --bg 47318`.",
+  "en": "Turn on \"Allow the iPad to read the logs\". If cloud sessions are not connected yet, make X-Ray reachable through Tailscale: `tailscale funnel --bg 47318`."
+ },
+ "Включите доступ выше и отсканируйте код камерой iPad. X-Ray на iPad скачает логи за выбранный период и дальше будет догружать новые строки каждые несколько секунд, пока открыт.": {
+  "de": "Schalten Sie den Zugriff oben ein und scannen Sie den Code mit der iPad-Kamera. X-Ray auf dem iPad lädt die Logs des gewählten Zeitraums herunter und holt danach alle paar Sekunden neue Zeilen, solange es geöffnet ist.",
+  "en": "Turn on access above and scan the code with the iPad's camera. X-Ray on the iPad downloads the logs of the chosen period and then fetches new lines every few seconds while it is open."
  },
  "Внимание": {
   "de": "Achtung",
@@ -753,6 +857,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Время размышлений": {
   "de": "Denkzeit",
   "en": "Thinking time"
+ },
+ "Вручную": {
+  "de": "Manuell",
+  "en": "Manually"
  },
  "Вс": {
   "de": "So",
@@ -850,6 +958,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Erzeugen der Tool-Eingaben",
   "en": "Generating tool input"
  },
+ "Год": {
+  "de": "1 Jahr",
+  "en": "1 year"
+ },
  "Данные": {
   "de": "Daten",
   "en": "Data"
@@ -906,6 +1018,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Hinzufügen",
   "en": "Add"
  },
+ "Добавить компьютер": {
+  "de": "Computer hinzufügen",
+  "en": "Add computer"
+ },
  "Добавить папку…": {
   "de": "Ordner hinzufügen…",
   "en": "Add folder…"
@@ -950,6 +1066,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Spur",
   "en": "Lane"
  },
+ "Доступ для iPad выключен в X-Ray на компьютере": {
+  "de": "Der iPad-Zugriff ist in X-Ray auf dem Computer ausgeschaltet",
+  "en": "iPad access is off in X-Ray on the computer"
+ },
  "Другие": {
   "de": "Andere",
   "en": "Other"
@@ -974,6 +1094,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Wird der Befehl `tailscale` nicht gefunden, liegt er hier: `C:\\Program Files\\Tailscale\\tailscale.exe`.",
   "en": "If the `tailscale` command isn't found, it's here: `C:\\Program Files\\Tailscale\\tailscale.exe`."
  },
+ "Ждёт iPad на 127.0.0.1:{0}": {
+  "de": "Wartet auf das iPad an 127.0.0.1:{0}",
+  "en": "Waiting for the iPad on 127.0.0.1:{0}"
+ },
  "Ждёт вас": {
   "de": "Wartet auf Sie",
   "en": "Waiting for you"
@@ -989,6 +1113,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Завершено / прервано": {
   "de": "Abgeschlossen / unterbrochen",
   "en": "Completed / interrupted"
+ },
+ "Загрузка": {
+  "de": "Download",
+  "en": "Download"
+ },
+ "Загрузка {0} из {1} · {2}": {
+  "de": "Lade {0} von {1} · {2}",
+  "en": "Downloading {0} of {1} · {2}"
  },
  "Задач в списке": {
   "de": "Aufgaben in der Liste",
@@ -1009,6 +1141,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Замечаний нет: расход выглядит сбалансированным.": {
   "de": "Keine Hinweise: Der Verbrauch wirkt ausgewogen.",
   "en": "No findings: spending looks balanced."
+ },
+ "Занято на iPad": {
+  "de": "Belegt auf dem iPad",
+  "en": "Used on the iPad"
  },
  "Запись": {
   "de": "Schreiben",
@@ -1182,6 +1318,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Quellen: Logs von Claude Code auf diesem Computer, importierte Logs und Logs, die Cloud-Sitzungen gesendet haben",
   "en": "Sources: Claude Code logs on this computer, imported logs and logs sent by cloud sessions"
  },
+ "Источники: логи Claude Code с ваших компьютеров, включая облачные сессии, которые они получили": {
+  "de": "Quellen: Claude-Code-Logs Ihrer Computer, einschließlich der Cloud-Sitzungen, die sie empfangen haben",
+  "en": "Sources: Claude Code logs from your computers, including the cloud sessions they received"
+ },
  "Итого": {
   "de": "Gesamt",
   "en": "Total"
@@ -1210,6 +1350,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Wie Tool-Aufrufe erlaubt wurden",
   "en": "How tool calls were permitted"
  },
+ "Как только Claude Code начнёт работать на одном из ваших компьютеров, здесь почти в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.": {
+  "de": "Sobald Claude Code auf einem Ihrer Computer arbeitet, erscheinen hier nahezu in Echtzeit Prompts, Denkschritte, Tool-Aufrufe, MCP, Skills, Subagenten und Kontext.",
+  "en": "As soon as Claude Code works on one of your computers, prompts, thinking, tool calls, MCP, skills, subagents and context appear here in near real time."
+ },
  "Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.": {
   "de": "Sobald Claude Code auf diesem Mac arbeitet, erscheinen hier in Echtzeit Prompts, Denken, Tool-Aufrufe, MCP, Skills, Subagents und Kontext.",
   "en": "As soon as Claude Code starts working on this Mac, prompts, thinking, tool calls, MCP, skills, subagents and context appear here in real time."
@@ -1221,6 +1365,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Как увидеть сессию": {
   "de": "So sehen Sie eine Sitzung",
   "en": "How to see a session"
+ },
+ "Камера предложит открыть ссылку в X-Ray, и iPad подключится к этому Mac. Или скопируйте ссылку и вставьте её в X-Ray на iPad: «Настройки → Компьютеры → Добавить».": {
+  "de": "Die Kamera bietet an, den Link in X-Ray zu öffnen, und das iPad verbindet sich mit diesem Mac. Oder kopieren Sie den Link und fügen Sie ihn in X-Ray auf dem iPad ein: „Einstellungen → Computer → Hinzufügen“.",
+  "en": "The camera offers to open the link in X-Ray, and the iPad connects to this Mac. Or copy the link and paste it into X-Ray on the iPad: Settings → Computers → Add."
+ },
+ "Камера предложит открыть ссылку в X-Ray, и iPad подключится к этому компьютеру. Или скопируйте ссылку и вставьте её в X-Ray на iPad: «Настройки → Компьютеры → Добавить».": {
+  "de": "Die Kamera bietet an, den Link in X-Ray zu öffnen, und das iPad verbindet sich mit diesem Computer. Oder kopieren Sie den Link und fügen Sie ihn in X-Ray auf dem iPad ein: „Einstellungen → Computer → Hinzufügen“.",
+  "en": "The camera offers to open the link in X-Ray, and the iPad connects to this computer. Or copy the link and paste it into X-Ray on the iPad: Settings → Computers → Add."
  },
  "Карта переходов": {
   "de": "Übergangskarte",
@@ -1245,6 +1397,26 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Компромисс": {
   "de": "Kompromiss",
   "en": "Trade-off"
+ },
+ "Компьютер": {
+  "de": "Computer",
+  "en": "Computer"
+ },
+ "Компьютер не отвечает ({0}): X-Ray закрыт или компьютер спит": {
+  "de": "Der Computer antwortet nicht ({0}): X-Ray ist geschlossen oder der Computer schläft",
+  "en": "The computer does not respond ({0}): X-Ray is closed or the computer is asleep"
+ },
+ "Компьютер не подключён": {
+  "de": "Kein Computer verbunden",
+  "en": "No computer connected"
+ },
+ "Компьютер прислал не тот кусок файла": {
+  "de": "Der Computer hat den falschen Teil der Datei gesendet",
+  "en": "The computer sent the wrong part of the file"
+ },
+ "Компьютеры": {
+  "de": "Computer",
+  "en": "Computers"
  },
  "Конец": {
   "de": "Ende",
@@ -1281,6 +1453,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Копировать как Markdown": {
   "de": "Als Markdown kopieren",
   "en": "Copy as Markdown"
+ },
+ "Коснитесь ячейки, чтобы увидеть значение.": {
+  "de": "Tippen Sie auf eine Zelle, um den Wert zu sehen.",
+  "en": "Tap a cell to see its value."
  },
  "Критично": {
   "de": "Kritisch",
@@ -1350,6 +1526,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Keine Logs von Claude Code gefunden",
   "en": "No Claude Code logs found"
  },
+ "Логи идут только с вашего Mac на ваш iPad через ваш туннель. Mac с X-Ray должен быть включён; пока он спит, iPad показывает то, что успел скачать. X-Ray на Windows подключается к iPad так же, и iPad может читать несколько компьютеров сразу.": {
+  "de": "Die Logs gehen nur von Ihrem Mac über Ihren Tunnel auf Ihr iPad. Der Mac mit X-Ray muss eingeschaltet sein; solange er schläft, zeigt das iPad, was es bereits heruntergeladen hat. X-Ray unter Windows verbindet sich genauso, und das iPad kann mehrere Computer gleichzeitig lesen.",
+  "en": "The logs go only from your Mac to your iPad through your tunnel. The Mac with X-Ray has to be on; while it sleeps, the iPad shows what it has downloaded. X-Ray on Windows connects to the iPad the same way, and the iPad can read several computers at once."
+ },
+ "Логи идут только с вашего компьютера на ваш iPad через ваш туннель. Компьютер с X-Ray должен быть включён; пока он спит, iPad показывает то, что успел скачать. iPad может читать несколько компьютеров сразу, например этот и Mac.": {
+  "de": "Die Logs gehen nur von Ihrem Computer über Ihren Tunnel auf Ihr iPad. Der Computer mit X-Ray muss eingeschaltet sein; solange er schläft, zeigt das iPad, was es bereits heruntergeladen hat. Das iPad kann mehrere Computer gleichzeitig lesen, zum Beispiel diesen und einen Mac.",
+  "en": "The logs go only from your computer to your iPad through your tunnel. The computer with X-Ray has to be on; while it sleeps, the iPad shows what it has downloaded. The iPad can read several computers at once, for example this one and a Mac."
+ },
  "Логи сессий Claude Code (.jsonl) или архивы .zip с ними": {
   "de": "Sitzungslogs von Claude Code (.jsonl) oder .zip-Archive damit",
   "en": "Claude Code session logs (.jsonl) or .zip archives of them"
@@ -1362,6 +1546,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Auf diesem Computer gibt es noch keine Logs von Claude Code.",
   "en": "There are no Claude Code logs on this computer yet."
  },
+ "Логов Claude Code с компьютеров пока нет.": {
+  "de": "Noch keine Claude-Code-Logs von den Computern.",
+  "en": "No Claude Code logs from the computers yet."
+ },
  "Логов на этом Mac нет": {
   "de": "Keine Logs auf diesem Mac",
   "en": "No logs on this Mac"
@@ -1369,6 +1557,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Логов на этом компьютере нет": {
   "de": "Keine Logs auf diesem Computer",
   "en": "No logs on this computer"
+ },
+ "Логов там": {
+  "de": "Logs dort",
+  "en": "Logs there"
  },
  "Максимум": {
   "de": "Maximum",
@@ -1426,6 +1618,18 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Bei Pro und Max werden Limits in 5-Stunden-Fenstern gezählt, die mit der ersten Anfrage beginnen, und zusätzlich pro Woche. Die genaue Höhe veröffentlicht Anthropic nicht, und in den Logs steht sie nicht. Darum zeigt X-Ray das API-Äquivalent des Fensters und vergleicht es mit Ihrem stärksten Fenster im Verlauf.",
   "en": "On Pro and Max, limits are counted in 5-hour windows that start with the first request, and also per week. Anthropic doesn't publish the exact limit, and it isn't in the logs. So X-Ray shows the window's API equivalent and compares it with your busiest window in the history."
  },
+ "На ваших компьютерах Claude Code не работал последние 3 дня": {
+  "de": "Claude Code lief in den letzten 3 Tagen auf keinem Ihrer Computer",
+  "en": "Claude Code has not run on your computers in the last 3 days"
+ },
+ "На компьютерах ничего не удаляется. X-Ray скачает логи за выбранный период заново.": {
+  "de": "Auf den Computern wird nichts gelöscht. X-Ray lädt die Logs des gewählten Zeitraums erneut.",
+  "en": "Nothing is deleted on the computers. X-Ray downloads the logs of the chosen period again."
+ },
+ "На компьютере установите X-Ray 0.9 или новее (Mac или Windows) и откройте «Настройки → iPad».": {
+  "de": "Installieren Sie auf dem Computer X-Ray 0.9 oder neuer (Mac oder Windows) und öffnen Sie „Einstellungen → iPad“.",
+  "en": "On the computer, install X-Ray 0.9 or newer (Mac or Windows) and open Settings → iPad."
+ },
  "На подписке Pro/Max суммы — API-эквивалент по прайс-листу: деньги не списываются, но по ним видно, как быстро расходуется лимит. Границы окна восстанавливаются по активности; точный остаток лимита в логах не хранится.": {
   "de": "Im Pro/Max-Abo sind Beträge das API-Äquivalent zum Listenpreis: Es wird kein Geld berechnet, aber sie zeigen, wie schnell das Limit verbraucht wird. Fenstergrenzen werden aus der Aktivität rekonstruiert; das genaue Restlimit steht nicht in den Logs.",
   "en": "On a Pro/Max subscription, amounts are the API equivalent at list prices: no money is charged, but they show how fast the limit is used. Window boundaries are reconstructed from activity; the logs don't store the exact remaining limit."
@@ -1433,6 +1637,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита.": {
   "de": "Im Abo bedeuten Einsparungen kein Geld, sondern einen langsameren Verbrauch des 5-Stunden-Fensters und des Wochenlimits.",
   "en": "On a subscription, savings don't mean money but a slower use of the 5-hour window and the weekly limit."
+ },
+ "На связи": {
+  "de": "Verbunden",
+  "en": "Connected"
  },
  "На этом Mac Claude Code не работал последние 3 дня": {
   "de": "Claude Code lief in den letzten 3 Tagen nicht auf diesem Mac",
@@ -1458,9 +1666,33 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Die Tool-Auswahl änderte sich unterwegs: MCP-Server wurden verbunden oder getrennt, Berechtigungen oder Tool-Beschreibungen geändert. Verbinden Sie benötigte MCP-Server vor Arbeitsbeginn.",
   "en": "The tool set changed along the way: MCP servers connected or disconnected, permissions or tool descriptions changed. Connect the MCP servers you need before you start."
  },
+ "Наведите камеру iPad на QR-код и откройте ссылку в X-Ray. Или скопируйте ссылку и вставьте её здесь: «Настройки → Добавить компьютер».": {
+  "de": "Richten Sie die iPad-Kamera auf den QR-Code und öffnen Sie den Link in X-Ray. Oder kopieren Sie den Link und fügen Sie ihn hier ein: „Einstellungen → Computer hinzufügen“.",
+  "en": "Point the iPad's camera at the QR code and open the link in X-Ray. Or copy the link and paste it here: Settings → Add computer."
+ },
+ "Наведите камеру iPad на код": {
+  "de": "Richten Sie die iPad-Kamera auf den Code",
+  "en": "Point the iPad's camera at the code"
+ },
  "Наведите курсор на ячейку, чтобы увидеть значение.": {
   "de": "Zeigen Sie auf eine Zelle, um den Wert zu sehen.",
   "en": "Hover over a cell to see its value."
+ },
+ "Название, например «MacBook»": {
+  "de": "Name, zum Beispiel „MacBook“",
+  "en": "Name, for example \"MacBook\""
+ },
+ "Найден в Tailscale: {0}. Впишите другой, если iPad видит этот Mac по другому адресу.": {
+  "de": "In Tailscale gefunden: {0}. Tragen Sie eine andere ein, wenn das iPad diesen Mac unter einer anderen Adresse erreicht.",
+  "en": "Found in Tailscale: {0}. Enter another one if the iPad reaches this Mac at a different address."
+ },
+ "Найден в Tailscale: {0}. Впишите другой, если iPad видит этот компьютер по другому адресу.": {
+  "de": "In Tailscale gefunden: {0}. Tragen Sie eine andere ein, wenn das iPad diesen Computer unter einer anderen Adresse erreicht.",
+  "en": "Found in Tailscale: {0}. Enter another one if the iPad reaches this computer at a different address."
+ },
+ "Найти": {
+  "de": "Ermitteln",
+  "en": "Detect"
  },
  "Напишите в облачной сессии Claude: «Подключи X-Ray: <адрес из шага 1>». Claude настроит облачную среду (вы подтвердите изменение) и попросит токен доступа через защищённую форму: вставьте туда токен отсюда. В чат токен не пишите.": {
   "de": "Schreiben Sie in einer Cloud-Sitzung von Claude: „Verbinde X-Ray: <Adresse aus Schritt 1>“. Claude richtet die Cloud-Umgebung ein (Sie bestätigen die Änderung) und fragt das Zugriffstoken über ein sicheres Formular ab: Fügen Sie dort das Token von hier ein. Schreiben Sie das Token nicht in den Chat.",
@@ -1469,6 +1701,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Настройки": {
   "de": "Einstellungen",
   "en": "Settings"
+ },
+ "Настройки → Добавить компьютер": {
+  "de": "Einstellungen → Computer hinzufügen",
+  "en": "Settings → Add computer"
  },
  "Начало": {
   "de": "Beginn",
@@ -1518,9 +1754,21 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Einstellungen von Claude Code konnten nicht gelesen werden: {0}",
   "en": "Couldn't read Claude Code's settings: {0}"
  },
+ "Не удалось распаковать данные": {
+  "de": "Die Daten konnten nicht entpackt werden",
+  "en": "Could not unpack the data"
+ },
+ "Не удалось сохранить токен в связке ключей: после перезапуска его придётся ввести снова.": {
+  "de": "Das Token konnte nicht im Schlüsselbund gespeichert werden: Nach einem Neustart muss es erneut eingegeben werden.",
+  "en": "Could not save the token in the keychain: after a restart it has to be entered again."
+ },
  "Не удалось сохранить: {0}": {
   "de": "Speichern fehlgeschlagen: {0}",
   "en": "Couldn't save: {0}"
+ },
+ "Неверный адрес": {
+  "de": "Ungültige Adresse",
+  "en": "Invalid address"
  },
  "Неделя": {
   "de": "Woche",
@@ -1533,6 +1781,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Нейтральная палитра и системный акцент Windows": {
   "de": "Neutrale Palette und die Akzentfarbe von Windows",
   "en": "Neutral palette and the Windows accent color"
+ },
+ "Нейтральная палитра и системный акцент iPad": {
+  "de": "Neutrale Palette und der Systemakzent des iPads",
+  "en": "Neutral palette and the iPad's system accent"
  },
  "Нейтральная палитра и системный акцент macOS": {
   "de": "Neutrale Palette und die Akzentfarbe von macOS",
@@ -1574,9 +1826,25 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Keine neuen Ereignisse",
   "en": "No new events"
  },
+ "Нет ответа": {
+  "de": "Keine Antwort",
+  "en": "No response"
+ },
+ "Нет связи: {0}": {
+  "de": "Nicht erreichbar: {0}",
+  "en": "Not reachable: {0}"
+ },
+ "Нет сессий за этот период": {
+  "de": "Keine Sitzungen in diesem Zeitraum",
+  "en": "No sessions in this period"
+ },
  "Низкая доля попаданий в кэш": {
   "de": "Niedrige Cache-Trefferquote",
   "en": "Low cache hit rate"
+ },
+ "Ничего не найдено": {
+  "de": "Nichts gefunden",
+  "en": "Nothing found"
  },
  "Новые облачные сессии начнут присылать лог сами. Они появятся в «Сессиях», «Обзоре» и Live-трассе, а их логи лежат в `{0}\\cloud`.": {
   "de": "Neue Cloud-Sitzungen senden ihr Log dann von selbst. Sie erscheinen unter „Sitzungen“, „Übersicht“ und im Live-Trace; ihre Logs liegen in `{0}\\cloud`.",
@@ -1589,6 +1857,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Новый": {
   "de": "Neu",
   "en": "New"
+ },
+ "Новый компьютер": {
+  "de": "Neuer Computer",
+  "en": "New computer"
+ },
+ "Новый токен, если менялся": {
+  "de": "Neues Token, falls es sich geändert hat",
+  "en": "New token, if it changed"
  },
  "Ноль": {
   "de": "Null",
@@ -1629,6 +1905,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Облачные сессии Claude Code могут сами отправлять сюда свой лог после каждого шага: промпты, ответы, размышления, вызовы инструментов, контекст и токены каждого запроса. X-Ray покажет их так же подробно, как сессии на этом компьютере, почти вживую.": {
   "de": "Cloud-Sitzungen von Claude Code können ihr Log nach jedem Schritt selbst hierher senden: Prompts, Antworten, Denken, Tool-Aufrufe sowie Kontext und Tokens jeder Anfrage. X-Ray zeigt sie so ausführlich wie Sitzungen auf diesem Computer, fast live.",
   "en": "Claude Code cloud sessions can send their log here themselves after every step: prompts, replies, thinking, tool calls, and the context and tokens of each request. X-Ray shows them in as much detail as sessions on this computer, almost live."
+ },
+ "Облачные сессии видны здесь, когда X-Ray на компьютере принимает их логи: «Настройки → Облако» в X-Ray на Mac или Windows.": {
+  "de": "Cloud-Sitzungen erscheinen hier, wenn X-Ray auf einem Computer ihre Logs empfängt: „Einstellungen → Cloud“ in X-Ray auf dem Mac oder unter Windows.",
+  "en": "Cloud sessions show up here when X-Ray on a computer receives their logs: Settings → Cloud in X-Ray on the Mac or Windows."
  },
  "Облачные сессии ещё ничего не присылали.": {
   "de": "Cloud-Sitzungen haben noch nichts gesendet.",
@@ -1682,6 +1962,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Fenster",
   "en": "Window"
  },
+ "Окно 5 часов по логам ваших компьютеров": {
+  "de": "5-Stunden-Fenster laut den Logs Ihrer Computer",
+  "en": "5-hour window from your computers' logs"
+ },
  "Окно 5 часов по логам этого Mac": {
   "de": "5-Stunden-Fenster laut den Logs dieses Macs",
   "en": "5-hour window from this Mac's logs"
@@ -1713,6 +1997,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Ответ": {
   "de": "Antwort",
   "en": "Reply"
+ },
+ "Ответ {0}: по этому адресу не X-Ray, или он устарел. Нужна версия 0.9 или новее.": {
+  "de": "Antwort {0}: Unter dieser Adresse läuft kein X-Ray, oder es ist veraltet. Version 0.9 oder neuer ist nötig.",
+  "en": "Response {0}: this address is not X-Ray, or it is outdated. Version 0.9 or newer is needed."
  },
  "Ответ · {0} символов": {
   "de": "Antwort · {0} Zeichen",
@@ -1750,6 +2038,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Trennen",
   "en": "Disconnect"
  },
+ "Откройте ссылку или QR-код из X-Ray на компьютере: «Настройки → iPad».": {
+  "de": "Öffnen Sie den Link oder QR-Code aus X-Ray auf dem Computer: „Einstellungen → iPad“.",
+  "en": "Open the link or QR code from X-Ray on the computer: Settings → iPad."
+ },
  "Открыть Live-трассу": {
   "de": "Live-Trace öffnen",
   "en": "Open the Live trace"
@@ -1757,6 +2049,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Открыть X-Ray": {
   "de": "X-Ray öffnen",
   "en": "Open X-Ray"
+ },
+ "Открыть настройки": {
+  "de": "Einstellungen öffnen",
+  "en": "Open settings"
+ },
+ "Отмена": {
+  "de": "Abbrechen",
+  "en": "Cancel"
  },
  "Отпустите, чтобы импортировать логи сессий (.jsonl, .zip)": {
   "de": "Loslassen, um Sitzungslogs zu importieren (.jsonl, .zip)",
@@ -1874,9 +2174,29 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Mo",
   "en": "Mon"
  },
+ "По длительности": {
+  "de": "Nach Dauer",
+  "en": "By duration"
+ },
+ "По пику контекста": {
+  "de": "Nach Kontextspitze",
+  "en": "By peak context"
+ },
+ "По стоимости": {
+  "de": "Nach Kosten",
+  "en": "By cost"
+ },
  "По умолчанию": {
   "de": "Standard",
   "en": "Default"
+ },
+ "По числу запросов": {
+  "de": "Nach Anzahl der Anfragen",
+  "en": "By number of requests"
+ },
+ "Поделиться PDF": {
+  "de": "PDF teilen",
+  "en": "Share PDF"
  },
  "Подключается": {
   "de": "Verbindet",
@@ -1885,6 +2205,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Подключаются: {0}": {
   "de": "Verbinden: {0}",
   "en": "Connecting: {0}"
+ },
+ "Подключение…": {
+  "de": "Verbinden …",
+  "en": "Connecting…"
  },
  "Подключено": {
   "de": "Verbunden",
@@ -1898,9 +2222,17 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Verbunden. Die Zahlen erscheinen nach der ersten Antwort von Claude Code im Terminal auf diesem Computer: claude oder claude --remote-control.",
   "en": "Connected. Figures appear after Claude Code's first reply in the terminal on this computer: claude or claude --remote-control."
  },
+ "Подключите компьютер": {
+  "de": "Computer verbinden",
+  "en": "Connect a computer"
+ },
  "Подключить": {
   "de": "Verbinden",
   "en": "Connect"
+ },
+ "Подключить компьютер?": {
+  "de": "Computer verbinden?",
+  "en": "Connect the computer?"
  },
  "Подключён": {
   "de": "Verbunden",
@@ -1937,6 +2269,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Показать ещё {0}": {
   "de": "{0} weitere zeigen",
   "en": "Show {0} more"
+ },
+ "Понятно": {
+  "de": "OK",
+  "en": "OK"
  },
  "Порт": {
   "de": "Port",
@@ -2026,6 +2362,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Unterbrechung",
   "en": "Interruption"
  },
+ "Приложение": {
+  "de": "App",
+  "en": "App"
+ },
  "Приложение только читает эти файлы и никуда не отправляет данные.": {
   "de": "Die App liest diese Dateien nur und sendet keine Daten.",
   "en": "The app only reads these files and doesn't send data anywhere."
@@ -2074,6 +2414,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Prompt",
   "en": "Prompt"
  },
+ "Проще всего навести камеру iPad на QR-код в X-Ray на компьютере («Настройки → iPad»). Или скопируйте ссылку там, а здесь нажмите «Вставить».": {
+  "de": "Am einfachsten richten Sie die iPad-Kamera auf den QR-Code in X-Ray auf dem Computer („Einstellungen → iPad“). Oder kopieren Sie dort den Link und tippen Sie hier auf „Einsetzen“.",
+  "en": "The easiest way is to point the iPad's camera at the QR code in X-Ray on the computer (Settings → iPad). Or copy the link there and tap Paste here."
+ },
  "Пт": {
   "de": "Fr",
   "en": "Fri"
@@ -2114,6 +2458,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Berechtigungen",
   "en": "Permissions"
  },
+ "Разрешить iPad читать логи": {
+  "de": "iPad das Lesen der Logs erlauben",
+  "en": "Allow the iPad to read the logs"
+ },
  "Разрешённые правила": {
   "de": "Erlaubnisregeln",
   "en": "Allow rules"
@@ -2125,6 +2473,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Расход {0}": {
   "de": "Verbrauch {0}",
   "en": "Spending {0}"
+ },
+ "Реальный процент 5‑часового и недельного лимита аккаунта приходит с компьютера, где X-Ray подключён к строке статуса Claude Code: «Настройки → Лимиты аккаунта» в X-Ray на Mac или Windows. Цифры появятся здесь после следующего ответа Claude Code там.": {
+  "de": "Die tatsächliche Auslastung des 5-Stunden- und des Wochenlimits kommt von dem Computer, auf dem X-Ray mit der Statuszeile von Claude Code verbunden ist: „Einstellungen → Kontolimits“ in X-Ray auf dem Mac oder unter Windows. Die Zahlen erscheinen hier nach der nächsten Antwort von Claude Code dort.",
+  "en": "The account's real 5-hour and weekly limit usage comes from the computer where X-Ray is connected to Claude Code's status line: Settings → Account limits in X-Ray on the Mac or Windows. The numbers appear here after Claude Code's next reply there."
  },
  "Реальный процент 5‑часового и недельного лимита всего аккаунта, включая чаты, облачные сессии и Cowork. Claude Code сообщает его своей строке статуса; X-Ray подключается к ней и запоминает цифры.": {
   "de": "Der echte Verbrauch des 5‑Stunden- und des Wochenlimits des ganzen Kontos, einschließlich Chats, Cloud-Sitzungen und Cowork. Claude Code meldet ihn seiner Statuszeile; X-Ray klinkt sich dort ein und merkt sich die Zahlen.",
@@ -2162,6 +2514,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Kontextwachstum",
   "en": "Context growth"
  },
+ "С компьютеров пока не пришло ни одного лога.": {
+  "de": "Von den Computern ist noch kein Log angekommen.",
+  "en": "No logs have come from the computers yet."
+ },
  "Самые дорогие проекты": {
   "de": "Teuerste Projekte",
   "en": "Most expensive projects"
@@ -2197,6 +2553,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте.": {
   "de": "Über 100K Prompt-Tokens: $0.50 / $2.50. Der Preis für Cache-Lesen ist mit 0,1× angenommen – bitte prüfen.",
   "en": "Above 100K prompt tokens: $0.50 / $2.50. The cache read price is assumed to be 0.1× — please check."
+ },
+ "Сделайте X-Ray доступным для iPad. Если облачные сессии уже подключены, это сделано: iPad использует тот же адрес. Иначе установите Tailscale (бесплатно), войдите и выполните в Терминале команду ниже.": {
+  "de": "Machen Sie X-Ray für das iPad erreichbar. Sind Cloud-Sitzungen schon verbunden, ist das erledigt: Das iPad nutzt dieselbe Adresse. Andernfalls installieren Sie Tailscale (kostenlos), melden sich an und führen den Befehl unten im Terminal aus.",
+  "en": "Make X-Ray reachable for the iPad. If cloud sessions are already connected, this is done: the iPad uses the same address. Otherwise install Tailscale (free), sign in and run the command below in Terminal."
+ },
+ "Сделайте X-Ray доступным для iPad. Если облачные сессии уже подключены, это сделано: iPad использует тот же адрес. Иначе установите Tailscale для Windows (бесплатно), войдите и выполните в PowerShell команду ниже.": {
+  "de": "Machen Sie X-Ray für das iPad erreichbar. Sind Cloud-Sitzungen schon verbunden, ist das erledigt: Das iPad nutzt dieselbe Adresse. Andernfalls installieren Sie Tailscale für Windows (kostenlos), melden sich an und führen den Befehl unten in PowerShell aus.",
+  "en": "Make X-Ray reachable for the iPad. If cloud sessions are already connected, this is done: the iPad uses the same address. Otherwise install Tailscale for Windows (free), sign in and run the command below in PowerShell."
  },
  "Сделайте X-Ray доступным из облака. Проще всего через Tailscale Funnel: установите Tailscale (бесплатно), войдите и выполните в Терминале команду ниже. Она напечатает адрес вида `https://ваш-mac.имя-сети.ts.net`.": {
   "de": "Machen Sie X-Ray aus der Cloud erreichbar. Am einfachsten mit Tailscale Funnel: Installieren Sie Tailscale (kostenlos), melden Sie sich an und führen Sie den Befehl unten im Terminal aus. Er gibt eine Adresse wie `https://ihr-mac.ihr-netz.ts.net` aus.",
@@ -2238,6 +2602,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Sitzungen von Claude Code in der Cloud (claude.ai/code, die Claude-App fürs Handy, die Cloud-Umgebung in Claude Desktop) laufen auf den Servern von Anthropic, und ihre Logs bleiben dort. Ohne Einrichtung sieht X-Ray nur Sitzungen, die auf diesem Computer laufen:",
   "en": "Claude Code sessions in the cloud (claude.ai/code, the Claude mobile app, the cloud environment in Claude Desktop) run on Anthropic's servers, and their logs stay there. Without setup, X-Ray sees only sessions that run on this computer:"
  },
+ "Сессии нет в выбранном периоде": {
+  "de": "Die Sitzung liegt nicht im gewählten Zeitraum",
+  "en": "The session is not in the selected period"
+ },
  "Сессий за период нет": {
   "de": "Keine Sitzungen im Zeitraum",
   "en": "No sessions in the period"
@@ -2262,6 +2630,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Kontextkomprimierungen",
   "en": "Context compactions"
  },
+ "Синхронизировано": {
+  "de": "Synchronisiert",
+  "en": "Synced"
+ },
+ "Синхронизировать сейчас": {
+  "de": "Jetzt synchronisieren",
+  "en": "Sync now"
+ },
  "Системная": {
   "de": "System",
   "en": "System"
@@ -2277,6 +2653,22 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Системный промпт: {0} символов (≈{1} токенов)": {
   "de": "System-Prompt: {0} Zeichen (≈{1} Tokens)",
   "en": "System prompt: {0} characters (≈{1} tokens)"
+ },
+ "Скачанные с него логи тоже удалятся с iPad. На компьютере ничего не меняется.": {
+  "de": "Die von ihm geladenen Logs werden ebenfalls vom iPad entfernt. Auf dem Computer ändert sich nichts.",
+  "en": "The logs downloaded from it are removed from the iPad too. Nothing changes on the computer."
+ },
+ "Скачано": {
+  "de": "Geladen",
+  "en": "Downloaded"
+ },
+ "Скачивать логи": {
+  "de": "Logs laden für",
+  "en": "Download logs of"
+ },
+ "Скачиваются логи: {0} из {1}.": {
+  "de": "Logs werden geladen: {0} von {1}.",
+  "en": "Downloading logs: {0} of {1}."
  },
  "Скилл": {
   "de": "Skill",
@@ -2306,6 +2698,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Ein Sitzungslog (.jsonl oder .zip), etwa aus der Cloud, in den Importordner von X-Ray kopieren",
   "en": "Copy a session log (.jsonl or .zip), for example a cloud one, into X-Ray's import folder"
  },
+ "Скопировать ссылку": {
+  "de": "Link kopieren",
+  "en": "Copy link"
+ },
  "Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана": {
   "de": "Blendet die Texte von Prompts, Antworten, Befehlen und Ausgaben aus – praktisch beim Bildschirmteilen",
   "en": "Hides the text of prompts, replies, commands and outputs — handy for screen sharing"
@@ -2322,6 +2718,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Der aktiven Sitzung folgen",
   "en": "Follow the active session"
  },
+ "Сначала новые": {
+  "de": "Neueste zuerst",
+  "en": "Newest first"
+ },
  "Совет": {
   "de": "Tipp",
   "en": "Tip"
@@ -2329,6 +2729,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Содержимое скрыто переключателем «Скрыть содержимое».": {
   "de": "Inhalt durch den Schalter „Inhalte ausblenden“ verborgen.",
   "en": "Content hidden by the “Hide content” switch."
+ },
+ "Создать новый токен. iPad придётся подключить заново.": {
+  "de": "Neues Token erstellen. Das iPad muss danach neu verbunden werden.",
+  "en": "Create a new token. The iPad will have to be connected again."
  },
  "Создать новый токен. Старый перестанет приниматься.": {
   "de": "Neues Token erstellen. Das alte wird dann nicht mehr angenommen.",
@@ -2346,13 +2750,25 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Nachrichten während der Arbeit",
   "en": "Messages while working"
  },
+ "Сортировка": {
+  "de": "Sortierung",
+  "en": "Sort"
+ },
  "Состав контекста": {
   "de": "Zusammensetzung des Kontexts",
   "en": "Context makeup"
  },
+ "Состояние": {
+  "de": "Status",
+  "en": "Status"
+ },
  "Сохранено: {0}": {
   "de": "Gespeichert: {0}",
   "en": "Saved: {0}"
+ },
+ "Сохранить": {
+  "de": "Speichern",
+  "en": "Save"
  },
  "Сохранить PDF…": {
   "de": "PDF sichern…",
@@ -2389,6 +2805,18 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Средняя сессия": {
   "de": "Durchschnittliche Sitzung",
   "en": "Average session"
+ },
+ "Ссылка s2a-xray://… из X-Ray на компьютере": {
+  "de": "s2a-xray://…-Link aus X-Ray auf dem Computer",
+  "en": "s2a-xray://… link from X-Ray on the computer"
+ },
+ "Ссылка не подходит": {
+  "de": "Dieser Link passt nicht",
+  "en": "This link does not fit"
+ },
+ "Ссылка подключения": {
+  "de": "Verbindungslink",
+  "en": "Connect link"
  },
  "Статус": {
   "de": "Status",
@@ -2502,9 +2930,25 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Subagent-Typen: {0}",
   "en": "Subagent types: {0}"
  },
+ "Токен iPad": {
+  "de": "iPad-Token",
+  "en": "iPad token"
+ },
+ "Токен iPad (xrayv_…)": {
+  "de": "iPad-Token (xrayv_…)",
+  "en": "iPad token (xrayv_…)"
+ },
  "Токен доступа": {
   "de": "Zugriffstoken",
   "en": "Access token"
+ },
+ "Токен не подходит: подключите iPad заново по QR-коду": {
+  "de": "Das Token wird nicht akzeptiert: Verbinden Sie das iPad erneut per QR-Code",
+  "en": "The token is not accepted: connect the iPad again with the QR code"
+ },
+ "Токен не похож на токен X-Ray": {
+  "de": "Das sieht nicht wie ein X-Ray-Token aus",
+  "en": "This does not look like an X-Ray token"
  },
  "Токены": {
   "de": "Tokens",
@@ -2534,6 +2978,26 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Erhöhen Sie das Ausgabelimit (Variable CLAUDE_CODE_MAX_OUTPUT_TOKENS) oder bitten Sie das Modell, Änderungen in kleineren Teilen zu machen.",
   "en": "Raise the output limit (the CLAUDE_CODE_MAX_OUTPUT_TOKENS variable) or ask the model to make changes in smaller pieces."
  },
+ "Удалить": {
+  "de": "Löschen",
+  "en": "Delete"
+ },
+ "Удалить компьютер": {
+  "de": "Computer entfernen",
+  "en": "Remove computer"
+ },
+ "Удалить компьютер?": {
+  "de": "Computer entfernen?",
+  "en": "Remove the computer?"
+ },
+ "Удалить скачанные логи": {
+  "de": "Geladene Logs löschen",
+  "en": "Delete downloaded logs"
+ },
+ "Удалить скачанные логи?": {
+  "de": "Geladene Logs löschen?",
+  "en": "Delete the downloaded logs?"
+ },
  "Удалить строку": {
   "de": "Zeile löschen",
   "en": "Delete row"
@@ -2541,6 +3005,18 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Успех": {
   "de": "Erfolg",
   "en": "Success"
+ },
+ "Установите X-Ray на iPad из Xcode на Mac: откройте `iPad/XRay.xcodeproj` из репозитория, выберите свой Apple ID в Signing и запустите на iPad. Подробно — в README.": {
+  "de": "Installieren Sie X-Ray über Xcode auf einem Mac auf dem iPad: Öffnen Sie `iPad/XRay.xcodeproj` aus dem Repository, wählen Sie unter Signing Ihre Apple-ID und starten Sie es auf dem iPad. Details stehen in der README.",
+  "en": "Install X-Ray on the iPad from Xcode on a Mac: open `iPad/XRay.xcodeproj` from the repository, choose your Apple ID under Signing and run it on the iPad. Details are in the README."
+ },
+ "Установите X-Ray на iPad из Xcode: откройте `iPad/XRay.xcodeproj` из репозитория, выберите свой Apple ID в Signing и запустите на iPad. Подробно — в README.": {
+  "de": "Installieren Sie X-Ray über Xcode auf dem iPad: Öffnen Sie `iPad/XRay.xcodeproj` aus dem Repository, wählen Sie unter Signing Ihre Apple-ID und starten Sie es auf dem iPad. Details stehen in der README.",
+  "en": "Install X-Ray on the iPad from Xcode: open `iPad/XRay.xcodeproj` from the repository, choose your Apple ID under Signing and run it on the iPad. Details are in the README."
+ },
+ "Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на компьютерах. Цифры приходят с компьютера, где X-Ray подключён к строке статуса Claude Code.": {
+  "de": "Umfasst alles, was das Abo verbraucht: Chats, Cloud-Sitzungen, Cowork und Sitzungen auf Ihren Computern. Die Zahlen kommen von dem Computer, auf dem X-Ray mit der Statuszeile von Claude Code verbunden ist.",
+  "en": "Covers everything that draws on the subscription: chats, cloud sessions, Cowork and sessions on your computers. The numbers come from the computer where X-Ray is connected to Claude Code's status line."
  },
  "Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на этом Mac. Claude Code обновляет эти цифры после каждого своего ответа в Терминале на этом Mac.": {
   "de": "Zählt alles, was das Abo verbraucht: Chats, Cloud-Sitzungen, Cowork und Sitzungen auf diesem Mac. Claude Code aktualisiert diese Zahlen nach jeder Antwort im Terminal auf diesem Mac.",
@@ -2626,6 +3102,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Agentenschleife",
   "en": "Agent loop"
  },
+ "Цифры на {0}. Обновятся после следующего ответа Claude Code на компьютере.": {
+  "de": "Stand {0}. Die Zahlen werden nach der nächsten Antwort von Claude Code auf dem Computer aktualisiert.",
+  "en": "Numbers as of {0}. They update after Claude Code's next reply on the computer."
+ },
  "Цифры на {0}. Обновятся после следующего ответа Claude Code на этом Mac.": {
   "de": "Stand: {0}. Aktualisiert nach der nächsten Antwort von Claude Code auf diesem Mac.",
   "en": "Figures as of {0}. They update after Claude Code's next reply on this Mac."
@@ -2697,6 +3177,14 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "Шаги запроса: {0}": {
   "de": "Schritte der Anfrage: {0}",
   "en": "Request steps: {0}"
+ },
+ "Экраны, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык iPad: русский, английский или немецкий, для других языков — английский.": {
+  "de": "Bildschirme, Hinweise, Sitzungsanalyse und Berichte. „Wie im System“ übernimmt die Sprache des iPads: Russisch, Englisch oder Deutsch, für andere Sprachen Englisch.",
+  "en": "Screens, hints, session analysis and reports. \"System\" uses the iPad's language: Russian, English or German, English for other languages."
+ },
+ "Это не ссылка X-Ray. Она начинается с s2a-xray://connect": {
+  "de": "Das ist kein X-Ray-Link. Er beginnt mit s2a-xray://connect",
+  "en": "This is not an X-Ray link. It starts with s2a-xray://connect"
  },
  "Язык и оформление": {
   "de": "Sprache & Darstellung",
@@ -3026,6 +3514,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
   "de": "Kontext {0}%",
   "en": "context {0}%"
  },
+ "контекст до {0}": {
+  "de": "Kontext bis {0}",
+  "en": "context up to {0}"
+ },
  "краткое изложение": {
   "de": "Zusammenfassung",
   "en": "summary"
@@ -3033,6 +3525,10 @@ export const STRINGS: Record<string, { en?: string; de?: string }> = {
  "критично": {
   "de": "kritisch",
   "en": "critical"
+ },
+ "кэш {0}": {
+  "de": "Cache {0}",
+  "en": "cache {0}"
  },
  "кэш и гигиена контекста": {
   "de": "Cache und Kontexthygiene",

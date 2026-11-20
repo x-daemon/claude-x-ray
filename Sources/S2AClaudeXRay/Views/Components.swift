@@ -1,6 +1,23 @@
 import Charts
 import SwiftUI
 import XRayCore
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
+
+/// Copies text to the clipboard.
+enum Clipboard {
+    static func copy(_ text: String) {
+        #if os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        #else
+        UIPasteboard.general.string = text
+        #endif
+    }
+}
 
 /// Headline number with a label and an optional caption.
 struct StatTile: View {

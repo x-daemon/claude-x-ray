@@ -241,9 +241,17 @@
    "en": "Auto mode on",
    "de": "Auto-Modus an"
   },
+  "CSV по дням": {
+   "en": "CSV by day",
+   "de": "CSV nach Tagen"
+  },
   "CSV по дням…": {
    "en": "CSV by day…",
    "de": "CSV nach Tagen…"
+  },
+  "CSV по сессиям": {
+   "en": "CSV by session",
+   "de": "CSV nach Sitzungen"
   },
   "CSV по сессиям…": {
    "en": "CSV by session…",
@@ -293,6 +301,10 @@
    "en": "MultiEdit {0} · {1} edits",
    "de": "MultiEdit {0} · {1} Änderungen"
   },
+  "QR-код для подключения iPad": {
+   "en": "QR code to connect the iPad",
+   "de": "QR-Code zum Verbinden des iPads"
+  },
   "S2A Claude X-Ray — отчёт {0}.pdf": {
    "en": "S2A Claude X-Ray — report {0}.pdf",
    "de": "S2A Claude X-Ray – Bericht {0}.pdf"
@@ -309,6 +321,14 @@
    "en": "cache TTL {0}",
    "de": "Cache-TTL {0}"
   },
+  "Tailscale не найден. Впишите адрес, по которому iPad находит этот Mac, например из `tailscale funnel`.": {
+   "en": "Tailscale was not found. Enter the address at which the iPad finds this Mac, for example from `tailscale funnel`.",
+   "de": "Tailscale wurde nicht gefunden. Tragen Sie die Adresse ein, unter der das iPad diesen Mac findet, zum Beispiel von `tailscale funnel`."
+  },
+  "Tailscale не найден. Впишите адрес, по которому iPad находит этот компьютер, например из `tailscale funnel`.": {
+   "en": "Tailscale was not found. Enter the address at which the iPad finds this computer, for example from `tailscale funnel`.",
+   "de": "Tailscale wurde nicht gefunden. Tragen Sie die Adresse ein, unter der das iPad diesen Computer findet, zum Beispiel von `tailscale funnel`."
+  },
   "TodoWrite · {0} задач": {
    "en": "TodoWrite · {0} tasks",
    "de": "TodoWrite · {0} Aufgaben"
@@ -321,6 +341,18 @@
    "en": "Write {0} · {1} lines",
    "de": "Write {0} · {1} Zeilen"
   },
+  "X-Ray": {
+   "en": "X-Ray",
+   "de": "X-Ray"
+  },
+  "X-Ray для iPad показывает всё то же, что и здесь: Live-трассу, сессии, обзор, оптимизацию и отчёты. Он копирует логи с этого Mac и считает всё сам. Доступ только на чтение и со своим токеном: токен облачных сессий читать логи не может.": {
+   "en": "X-Ray for iPad shows everything you see here: the live trace, sessions, overview, optimization and reports. It copies the logs from this Mac and computes everything itself. Access is read-only and has its own token: the cloud sessions' token cannot read logs.",
+   "de": "X-Ray für iPad zeigt alles, was Sie hier sehen: Live-Trace, Sitzungen, Übersicht, Optimierung und Berichte. Es kopiert die Logs von diesem Mac und berechnet alles selbst. Der Zugriff ist schreibgeschützt und hat ein eigenes Token: Das Token der Cloud-Sitzungen kann keine Logs lesen."
+  },
+  "X-Ray для iPad показывает всё то же, что и здесь: Live-трассу, сессии, обзор, оптимизацию и отчёты. Он копирует логи с этого компьютера и считает всё сам. Доступ только на чтение и со своим токеном: токен облачных сессий читать логи не может.": {
+   "en": "X-Ray for iPad shows everything you see here: the live trace, sessions, overview, optimization and reports. It copies the logs from this computer and computes everything itself. Access is read-only and has its own token: the cloud sessions' token cannot read logs.",
+   "de": "X-Ray für iPad zeigt alles, was Sie hier sehen: Live-Trace, Sitzungen, Übersicht, Optimierung und Berichte. Es kopiert die Logs von diesem Computer und berechnet alles selbst. Der Zugriff ist schreibgeschützt und hat ein eigenes Token: Das Token der Cloud-Sitzungen kann keine Logs lesen."
+  },
   "X-Ray меняет только `statusLine` в {0}, а прежний файл сохраняет рядом как settings.json.xray-backup. Строку статуса выполняет Claude Code в Терминале, в том числе с Remote Control. Если там уже была своя строка статуса, X-Ray оставляет её на экране и только запоминает цифры лимитов.": {
    "en": "X-Ray only changes `statusLine` in {0} and keeps the previous file next to it as settings.json.xray-backup. Claude Code runs the status line in Terminal, including with Remote Control. If you already had a status line of your own, X-Ray keeps it on screen and only records the limit figures.",
    "de": "X-Ray ändert nur `statusLine` in {0} und legt die bisherige Datei daneben als settings.json.xray-backup ab. Die Statuszeile führt Claude Code im Terminal aus, auch mit Remote Control. Gab es dort schon eine eigene Statuszeile, bleibt sie sichtbar, und X-Ray merkt sich nur die Limitwerte."
@@ -328,6 +360,38 @@
   "X-Ray меняет только `statusLine` в {0}, а прежний файл сохраняет рядом как settings.json.xray-backup. Строку статуса выполняет Claude Code в терминале, в том числе с Remote Control. Если там уже была своя строка статуса, X-Ray оставляет её на экране (через Git Bash, как сам Claude Code) и только запоминает цифры лимитов.": {
    "en": "X-Ray only changes `statusLine` in {0} and keeps the previous file next to it as settings.json.xray-backup. Claude Code runs the status line in the terminal, including with Remote Control. If you already had a status line of your own, X-Ray keeps it on screen (through Git Bash, like Claude Code itself) and only records the limit figures.",
    "de": "X-Ray ändert nur `statusLine` in {0} und legt die bisherige Datei daneben als settings.json.xray-backup ab. Die Statuszeile führt Claude Code im Terminal aus, auch mit Remote Control. Gab es dort schon eine eigene Statuszeile, bleibt sie sichtbar (über Git Bash, wie bei Claude Code selbst), und X-Ray merkt sich nur die Limitwerte."
+  },
+  "X-Ray на iPad будет читать логи Claude Code с компьютера «{0}» по адресу {1}.": {
+   "en": "X-Ray on the iPad will read Claude Code logs from the computer \"{0}\" at {1}.",
+   "de": "X-Ray auf dem iPad liest dann die Claude-Code-Logs des Computers „{0}“ unter {1}."
+  },
+  "X-Ray на iPad показывает логи Claude Code ваших компьютеров: Mac или Windows с X-Ray 0.9 или новее.": {
+   "en": "X-Ray on the iPad shows the Claude Code logs of your computers: a Mac or Windows PC with X-Ray 0.9 or newer.",
+   "de": "X-Ray auf dem iPad zeigt die Claude-Code-Logs Ihrer Computer: Mac oder Windows mit X-Ray 0.9 oder neuer."
+  },
+  "X-Ray на iPad читает только ваши компьютеры, по вашему туннелю, и никуда не отправляет данные.": {
+   "en": "X-Ray on the iPad reads only your computers, through your tunnel, and sends data nowhere.",
+   "de": "X-Ray auf dem iPad liest nur Ihre Computer über Ihren Tunnel und sendet keine Daten weiter."
+  },
+  "X-Ray скачивает логи, пока открыт, и затем каждые несколько секунд догружает новые строки. Копии не попадают в резервную копию iPad: их всегда можно скачать снова.": {
+   "en": "X-Ray downloads the logs while it is open and then fetches new lines every few seconds. The copies are not part of the iPad's backup: they can always be downloaded again.",
+   "de": "X-Ray lädt die Logs, solange es geöffnet ist, und holt danach alle paar Sekunden neue Zeilen. Die Kopien sind nicht Teil des iPad-Backups: Sie lassen sich jederzeit erneut laden."
+  },
+  "https://ваш-mac.имя-сети.ts.net": {
+   "en": "https://your-mac.tailnet-name.ts.net",
+   "de": "https://ihr-mac.tailnet-name.ts.net"
+  },
+  "https://ваш-компьютер.имя-сети.ts.net": {
+   "en": "https://your-computer.tailnet-name.ts.net",
+   "de": "https://ihr-computer.tailnet-name.ts.net"
+  },
+  "iPad ещё не подключался.": {
+   "en": "The iPad has not connected yet.",
+   "de": "Das iPad hat sich noch nicht verbunden."
+  },
+  "iPad последний раз обращался {0} · запросов {1}": {
+   "en": "The iPad last asked {0} · {1} requests",
+   "de": "Letzte Anfrage des iPads {0} · {1} Anfragen"
   },
   "id модели, например claude-sonnet-4-5": {
    "en": "model id, e.g. claude-sonnet-4-5",
@@ -645,6 +709,22 @@
    "en": "· API mode: {0}",
    "de": "· API-Modus: {0}"
   },
+  "Адрес": {
+   "en": "Address",
+   "de": "Adresse"
+  },
+  "Адрес должен начинаться с https:// (или http:// в своей сети)": {
+   "en": "The address has to start with https:// (or http:// on your own network)",
+   "de": "Die Adresse muss mit https:// beginnen (oder http:// im eigenen Netz)"
+  },
+  "Адрес, по которому iPad находит этот Mac: адрес из `tailscale funnel` или `tailscale serve`.": {
+   "en": "The address at which the iPad finds this Mac: the one from `tailscale funnel` or `tailscale serve`.",
+   "de": "Die Adresse, unter der das iPad diesen Mac findet: die von `tailscale funnel` oder `tailscale serve`."
+  },
+  "Адрес, по которому iPad находит этот компьютер: адрес из `tailscale funnel` или `tailscale serve`.": {
+   "en": "The address at which the iPad finds this computer: the one from `tailscale funnel` or `tailscale serve`.",
+   "de": "Die Adresse, unter der das iPad diesen Computer findet: die von `tailscale funnel` oder `tailscale serve`."
+  },
   "Активность за 3 часа": {
    "en": "Activity in the last 3 hours",
    "de": "Aktivität der letzten 3 Stunden"
@@ -673,6 +753,10 @@
    "en": "Large outputs (whole files read, long logs) stay in the context until /compact or the end of the session. Read files in parts and filter command output.",
    "de": "Große Ausgaben (ganze gelesene Dateien, lange Logs) bleiben bis /compact oder zum Sitzungsende im Kontext. Lesen Sie Dateien in Teilen und filtern Sie Befehlsausgaben."
   },
+  "В X-Ray на Mac или Windows откройте «Настройки → iPad» и наведите камеру iPad на QR-код. Можно добавить несколько компьютеров: X-Ray покажет их логи вместе.": {
+   "en": "In X-Ray on the Mac or Windows, open Settings → iPad and point the iPad's camera at the QR code. You can add several computers: X-Ray shows their logs together.",
+   "de": "Öffnen Sie in X-Ray auf dem Mac oder unter Windows „Einstellungen → iPad“ und richten Sie die iPad-Kamera auf den QR-Code. Sie können mehrere Computer hinzufügen: X-Ray zeigt ihre Logs zusammen."
+  },
   "В {0} API убрало из истории размышления модели: {1}. Модель не видела, как рассуждала раньше, и восстанавливала это заново — лишний вывод и время.": {
    "en": "In {0}, the API removed the model's thinking from the history: {1}. The model couldn't see how it had reasoned before and worked it out again — extra output and time.",
    "de": "In {0} entfernte die API das Denken des Modells aus dem Verlauf: {1}. Das Modell sah nicht, wie es zuvor überlegt hatte, und erarbeitete es neu – zusätzliche Ausgabe und Zeit."
@@ -688,6 +772,10 @@
   "В очереди: ": {
    "en": "Queued: ",
    "de": "In der Warteschlange: "
+  },
+  "В ссылке есть токен: кто её получит, сможет читать ваши логи. Если она попала не туда, создайте новый токен.": {
+   "en": "The link contains the token: whoever gets it can read your logs. If it ends up in the wrong place, create a new token.",
+   "de": "Der Link enthält das Token: Wer ihn erhält, kann Ihre Logs lesen. Falls er in falsche Hände gerät, erstellen Sie ein neues Token."
   },
   "В транскрипте пока нет сведений о составе контекста": {
    "en": "The transcript has no details about the context's makeup yet",
@@ -721,6 +809,14 @@
    "en": "Git branch",
    "de": "Git-Branch"
   },
+  "Взять адрес этого Mac из Tailscale": {
+   "en": "Take this Mac's address from Tailscale",
+   "de": "Adresse dieses Macs aus Tailscale übernehmen"
+  },
+  "Взять адрес этого компьютера из Tailscale": {
+   "en": "Take this computer's address from Tailscale",
+   "de": "Adresse dieses Computers aus Tailscale übernehmen"
+  },
   "Вид": {
    "en": "View",
    "de": "Ansicht"
@@ -728,6 +824,14 @@
   "Включайте fast mode, когда важна скорость ответа, и выключайте для фоновых задач.": {
    "en": "Turn on fast mode when response speed matters, and turn it off for background tasks.",
    "de": "Schalten Sie den Fast Mode ein, wenn die Antwortgeschwindigkeit zählt, und für Hintergrundaufgaben aus."
+  },
+  "Включите «Разрешить iPad читать логи». Если облачные сессии ещё не подключены, сделайте X-Ray доступным через Tailscale: `tailscale funnel --bg 47318`.": {
+   "en": "Turn on \"Allow the iPad to read the logs\". If cloud sessions are not connected yet, make X-Ray reachable through Tailscale: `tailscale funnel --bg 47318`.",
+   "de": "Schalten Sie „iPad das Lesen der Logs erlauben“ ein. Sind Cloud-Sitzungen noch nicht verbunden, machen Sie X-Ray über Tailscale erreichbar: `tailscale funnel --bg 47318`."
+  },
+  "Включите доступ выше и отсканируйте код камерой iPad. X-Ray на iPad скачает логи за выбранный период и дальше будет догружать новые строки каждые несколько секунд, пока открыт.": {
+   "en": "Turn on access above and scan the code with the iPad's camera. X-Ray on the iPad downloads the logs of the chosen period and then fetches new lines every few seconds while it is open.",
+   "de": "Schalten Sie den Zugriff oben ein und scannen Sie den Code mit der iPad-Kamera. X-Ray auf dem iPad lädt die Logs des gewählten Zeitraums herunter und holt danach alle paar Sekunden neue Zeilen, solange es geöffnet ist."
   },
   "Внимание": {
    "en": "Warning",
@@ -752,6 +856,10 @@
   "Время размышлений": {
    "en": "Thinking time",
    "de": "Denkzeit"
+  },
+  "Вручную": {
+   "en": "Manually",
+   "de": "Manuell"
   },
   "Вс": {
    "en": "Sun",
@@ -849,6 +957,10 @@
    "en": "Generating tool input",
    "de": "Erzeugen der Tool-Eingaben"
   },
+  "Год": {
+   "en": "1 year",
+   "de": "1 Jahr"
+  },
   "Данные": {
    "en": "Data",
    "de": "Daten"
@@ -905,6 +1017,10 @@
    "en": "Add",
    "de": "Hinzufügen"
   },
+  "Добавить компьютер": {
+   "en": "Add computer",
+   "de": "Computer hinzufügen"
+  },
   "Добавить папку…": {
    "en": "Add folder…",
    "de": "Ordner hinzufügen…"
@@ -949,6 +1065,10 @@
    "en": "Lane",
    "de": "Spur"
   },
+  "Доступ для iPad выключен в X-Ray на компьютере": {
+   "en": "iPad access is off in X-Ray on the computer",
+   "de": "Der iPad-Zugriff ist in X-Ray auf dem Computer ausgeschaltet"
+  },
   "Другие": {
    "en": "Other",
    "de": "Andere"
@@ -973,6 +1093,10 @@
    "en": "If the `tailscale` command isn't found, it's here: `C:\\Program Files\\Tailscale\\tailscale.exe`.",
    "de": "Wird der Befehl `tailscale` nicht gefunden, liegt er hier: `C:\\Program Files\\Tailscale\\tailscale.exe`."
   },
+  "Ждёт iPad на 127.0.0.1:{0}": {
+   "en": "Waiting for the iPad on 127.0.0.1:{0}",
+   "de": "Wartet auf das iPad an 127.0.0.1:{0}"
+  },
   "Ждёт вас": {
    "en": "Waiting for you",
    "de": "Wartet auf Sie"
@@ -988,6 +1112,14 @@
   "Завершено / прервано": {
    "en": "Completed / interrupted",
    "de": "Abgeschlossen / unterbrochen"
+  },
+  "Загрузка": {
+   "en": "Download",
+   "de": "Download"
+  },
+  "Загрузка {0} из {1} · {2}": {
+   "en": "Downloading {0} of {1} · {2}",
+   "de": "Lade {0} von {1} · {2}"
   },
   "Задач в списке": {
    "en": "Tasks in the list",
@@ -1008,6 +1140,10 @@
   "Замечаний нет: расход выглядит сбалансированным.": {
    "en": "No findings: spending looks balanced.",
    "de": "Keine Hinweise: Der Verbrauch wirkt ausgewogen."
+  },
+  "Занято на iPad": {
+   "en": "Used on the iPad",
+   "de": "Belegt auf dem iPad"
   },
   "Запись": {
    "en": "Write",
@@ -1181,6 +1317,10 @@
    "en": "Sources: Claude Code logs on this computer, imported logs and logs sent by cloud sessions",
    "de": "Quellen: Logs von Claude Code auf diesem Computer, importierte Logs und Logs, die Cloud-Sitzungen gesendet haben"
   },
+  "Источники: логи Claude Code с ваших компьютеров, включая облачные сессии, которые они получили": {
+   "en": "Sources: Claude Code logs from your computers, including the cloud sessions they received",
+   "de": "Quellen: Claude-Code-Logs Ihrer Computer, einschließlich der Cloud-Sitzungen, die sie empfangen haben"
+  },
   "Итого": {
    "en": "Total",
    "de": "Gesamt"
@@ -1209,6 +1349,10 @@
    "en": "How tool calls were permitted",
    "de": "Wie Tool-Aufrufe erlaubt wurden"
   },
+  "Как только Claude Code начнёт работать на одном из ваших компьютеров, здесь почти в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.": {
+   "en": "As soon as Claude Code works on one of your computers, prompts, thinking, tool calls, MCP, skills, subagents and context appear here in near real time.",
+   "de": "Sobald Claude Code auf einem Ihrer Computer arbeitet, erscheinen hier nahezu in Echtzeit Prompts, Denkschritte, Tool-Aufrufe, MCP, Skills, Subagenten und Kontext."
+  },
   "Как только Claude Code начнёт работать на этом Mac, здесь в реальном времени появятся промпты, размышления, вызовы инструментов, MCP, скиллы, субагенты и контекст.": {
    "en": "As soon as Claude Code starts working on this Mac, prompts, thinking, tool calls, MCP, skills, subagents and context appear here in real time.",
    "de": "Sobald Claude Code auf diesem Mac arbeitet, erscheinen hier in Echtzeit Prompts, Denken, Tool-Aufrufe, MCP, Skills, Subagents und Kontext."
@@ -1220,6 +1364,14 @@
   "Как увидеть сессию": {
    "en": "How to see a session",
    "de": "So sehen Sie eine Sitzung"
+  },
+  "Камера предложит открыть ссылку в X-Ray, и iPad подключится к этому Mac. Или скопируйте ссылку и вставьте её в X-Ray на iPad: «Настройки → Компьютеры → Добавить».": {
+   "en": "The camera offers to open the link in X-Ray, and the iPad connects to this Mac. Or copy the link and paste it into X-Ray on the iPad: Settings → Computers → Add.",
+   "de": "Die Kamera bietet an, den Link in X-Ray zu öffnen, und das iPad verbindet sich mit diesem Mac. Oder kopieren Sie den Link und fügen Sie ihn in X-Ray auf dem iPad ein: „Einstellungen → Computer → Hinzufügen“."
+  },
+  "Камера предложит открыть ссылку в X-Ray, и iPad подключится к этому компьютеру. Или скопируйте ссылку и вставьте её в X-Ray на iPad: «Настройки → Компьютеры → Добавить».": {
+   "en": "The camera offers to open the link in X-Ray, and the iPad connects to this computer. Or copy the link and paste it into X-Ray on the iPad: Settings → Computers → Add.",
+   "de": "Die Kamera bietet an, den Link in X-Ray zu öffnen, und das iPad verbindet sich mit diesem Computer. Oder kopieren Sie den Link und fügen Sie ihn in X-Ray auf dem iPad ein: „Einstellungen → Computer → Hinzufügen“."
   },
   "Карта переходов": {
    "en": "Transition map",
@@ -1244,6 +1396,26 @@
   "Компромисс": {
    "en": "Trade-off",
    "de": "Kompromiss"
+  },
+  "Компьютер": {
+   "en": "Computer",
+   "de": "Computer"
+  },
+  "Компьютер не отвечает ({0}): X-Ray закрыт или компьютер спит": {
+   "en": "The computer does not respond ({0}): X-Ray is closed or the computer is asleep",
+   "de": "Der Computer antwortet nicht ({0}): X-Ray ist geschlossen oder der Computer schläft"
+  },
+  "Компьютер не подключён": {
+   "en": "No computer connected",
+   "de": "Kein Computer verbunden"
+  },
+  "Компьютер прислал не тот кусок файла": {
+   "en": "The computer sent the wrong part of the file",
+   "de": "Der Computer hat den falschen Teil der Datei gesendet"
+  },
+  "Компьютеры": {
+   "en": "Computers",
+   "de": "Computer"
   },
   "Конец": {
    "en": "End",
@@ -1280,6 +1452,10 @@
   "Копировать как Markdown": {
    "en": "Copy as Markdown",
    "de": "Als Markdown kopieren"
+  },
+  "Коснитесь ячейки, чтобы увидеть значение.": {
+   "en": "Tap a cell to see its value.",
+   "de": "Tippen Sie auf eine Zelle, um den Wert zu sehen."
   },
   "Критично": {
    "en": "Critical",
@@ -1349,6 +1525,14 @@
    "en": "No Claude Code logs found",
    "de": "Keine Logs von Claude Code gefunden"
   },
+  "Логи идут только с вашего Mac на ваш iPad через ваш туннель. Mac с X-Ray должен быть включён; пока он спит, iPad показывает то, что успел скачать. X-Ray на Windows подключается к iPad так же, и iPad может читать несколько компьютеров сразу.": {
+   "en": "The logs go only from your Mac to your iPad through your tunnel. The Mac with X-Ray has to be on; while it sleeps, the iPad shows what it has downloaded. X-Ray on Windows connects to the iPad the same way, and the iPad can read several computers at once.",
+   "de": "Die Logs gehen nur von Ihrem Mac über Ihren Tunnel auf Ihr iPad. Der Mac mit X-Ray muss eingeschaltet sein; solange er schläft, zeigt das iPad, was es bereits heruntergeladen hat. X-Ray unter Windows verbindet sich genauso, und das iPad kann mehrere Computer gleichzeitig lesen."
+  },
+  "Логи идут только с вашего компьютера на ваш iPad через ваш туннель. Компьютер с X-Ray должен быть включён; пока он спит, iPad показывает то, что успел скачать. iPad может читать несколько компьютеров сразу, например этот и Mac.": {
+   "en": "The logs go only from your computer to your iPad through your tunnel. The computer with X-Ray has to be on; while it sleeps, the iPad shows what it has downloaded. The iPad can read several computers at once, for example this one and a Mac.",
+   "de": "Die Logs gehen nur von Ihrem Computer über Ihren Tunnel auf Ihr iPad. Der Computer mit X-Ray muss eingeschaltet sein; solange er schläft, zeigt das iPad, was es bereits heruntergeladen hat. Das iPad kann mehrere Computer gleichzeitig lesen, zum Beispiel diesen und einen Mac."
+  },
   "Логи сессий Claude Code (.jsonl) или архивы .zip с ними": {
    "en": "Claude Code session logs (.jsonl) or .zip archives of them",
    "de": "Sitzungslogs von Claude Code (.jsonl) oder .zip-Archive damit"
@@ -1361,6 +1545,10 @@
    "en": "There are no Claude Code logs on this computer yet.",
    "de": "Auf diesem Computer gibt es noch keine Logs von Claude Code."
   },
+  "Логов Claude Code с компьютеров пока нет.": {
+   "en": "No Claude Code logs from the computers yet.",
+   "de": "Noch keine Claude-Code-Logs von den Computern."
+  },
   "Логов на этом Mac нет": {
    "en": "No logs on this Mac",
    "de": "Keine Logs auf diesem Mac"
@@ -1368,6 +1556,10 @@
   "Логов на этом компьютере нет": {
    "en": "No logs on this computer",
    "de": "Keine Logs auf diesem Computer"
+  },
+  "Логов там": {
+   "en": "Logs there",
+   "de": "Logs dort"
   },
   "Максимум": {
    "en": "Maximum",
@@ -1425,6 +1617,18 @@
    "en": "On Pro and Max, limits are counted in 5-hour windows that start with the first request, and also per week. Anthropic doesn't publish the exact limit, and it isn't in the logs. So X-Ray shows the window's API equivalent and compares it with your busiest window in the history.",
    "de": "Bei Pro und Max werden Limits in 5-Stunden-Fenstern gezählt, die mit der ersten Anfrage beginnen, und zusätzlich pro Woche. Die genaue Höhe veröffentlicht Anthropic nicht, und in den Logs steht sie nicht. Darum zeigt X-Ray das API-Äquivalent des Fensters und vergleicht es mit Ihrem stärksten Fenster im Verlauf."
   },
+  "На ваших компьютерах Claude Code не работал последние 3 дня": {
+   "en": "Claude Code has not run on your computers in the last 3 days",
+   "de": "Claude Code lief in den letzten 3 Tagen auf keinem Ihrer Computer"
+  },
+  "На компьютерах ничего не удаляется. X-Ray скачает логи за выбранный период заново.": {
+   "en": "Nothing is deleted on the computers. X-Ray downloads the logs of the chosen period again.",
+   "de": "Auf den Computern wird nichts gelöscht. X-Ray lädt die Logs des gewählten Zeitraums erneut."
+  },
+  "На компьютере установите X-Ray 0.9 или новее (Mac или Windows) и откройте «Настройки → iPad».": {
+   "en": "On the computer, install X-Ray 0.9 or newer (Mac or Windows) and open Settings → iPad.",
+   "de": "Installieren Sie auf dem Computer X-Ray 0.9 oder neuer (Mac oder Windows) und öffnen Sie „Einstellungen → iPad“."
+  },
   "На подписке Pro/Max суммы — API-эквивалент по прайс-листу: деньги не списываются, но по ним видно, как быстро расходуется лимит. Границы окна восстанавливаются по активности; точный остаток лимита в логах не хранится.": {
    "en": "On a Pro/Max subscription, amounts are the API equivalent at list prices: no money is charged, but they show how fast the limit is used. Window boundaries are reconstructed from activity; the logs don't store the exact remaining limit.",
    "de": "Im Pro/Max-Abo sind Beträge das API-Äquivalent zum Listenpreis: Es wird kein Geld berechnet, aber sie zeigen, wie schnell das Limit verbraucht wird. Fenstergrenzen werden aus der Aktivität rekonstruiert; das genaue Restlimit steht nicht in den Logs."
@@ -1432,6 +1636,10 @@
   "На подписке экономия означает не деньги, а более медленный расход лимита 5-часового окна и недельного лимита.": {
    "en": "On a subscription, savings don't mean money but a slower use of the 5-hour window and the weekly limit.",
    "de": "Im Abo bedeuten Einsparungen kein Geld, sondern einen langsameren Verbrauch des 5-Stunden-Fensters und des Wochenlimits."
+  },
+  "На связи": {
+   "en": "Connected",
+   "de": "Verbunden"
   },
   "На этом Mac Claude Code не работал последние 3 дня": {
    "en": "Claude Code hasn't run on this Mac in the last 3 days",
@@ -1457,9 +1665,33 @@
    "en": "The tool set changed along the way: MCP servers connected or disconnected, permissions or tool descriptions changed. Connect the MCP servers you need before you start.",
    "de": "Die Tool-Auswahl änderte sich unterwegs: MCP-Server wurden verbunden oder getrennt, Berechtigungen oder Tool-Beschreibungen geändert. Verbinden Sie benötigte MCP-Server vor Arbeitsbeginn."
   },
+  "Наведите камеру iPad на QR-код и откройте ссылку в X-Ray. Или скопируйте ссылку и вставьте её здесь: «Настройки → Добавить компьютер».": {
+   "en": "Point the iPad's camera at the QR code and open the link in X-Ray. Or copy the link and paste it here: Settings → Add computer.",
+   "de": "Richten Sie die iPad-Kamera auf den QR-Code und öffnen Sie den Link in X-Ray. Oder kopieren Sie den Link und fügen Sie ihn hier ein: „Einstellungen → Computer hinzufügen“."
+  },
+  "Наведите камеру iPad на код": {
+   "en": "Point the iPad's camera at the code",
+   "de": "Richten Sie die iPad-Kamera auf den Code"
+  },
   "Наведите курсор на ячейку, чтобы увидеть значение.": {
    "en": "Hover over a cell to see its value.",
    "de": "Zeigen Sie auf eine Zelle, um den Wert zu sehen."
+  },
+  "Название, например «MacBook»": {
+   "en": "Name, for example \"MacBook\"",
+   "de": "Name, zum Beispiel „MacBook“"
+  },
+  "Найден в Tailscale: {0}. Впишите другой, если iPad видит этот Mac по другому адресу.": {
+   "en": "Found in Tailscale: {0}. Enter another one if the iPad reaches this Mac at a different address.",
+   "de": "In Tailscale gefunden: {0}. Tragen Sie eine andere ein, wenn das iPad diesen Mac unter einer anderen Adresse erreicht."
+  },
+  "Найден в Tailscale: {0}. Впишите другой, если iPad видит этот компьютер по другому адресу.": {
+   "en": "Found in Tailscale: {0}. Enter another one if the iPad reaches this computer at a different address.",
+   "de": "In Tailscale gefunden: {0}. Tragen Sie eine andere ein, wenn das iPad diesen Computer unter einer anderen Adresse erreicht."
+  },
+  "Найти": {
+   "en": "Detect",
+   "de": "Ermitteln"
   },
   "Напишите в облачной сессии Claude: «Подключи X-Ray: <адрес из шага 1>». Claude настроит облачную среду (вы подтвердите изменение) и попросит токен доступа через защищённую форму: вставьте туда токен отсюда. В чат токен не пишите.": {
    "en": "In a Claude cloud session, write: “Connect X-Ray: <address from step 1>”. Claude sets up the cloud environment (you confirm the change) and asks for the access token in a secure form: paste the token from here into it. Don't type the token into the chat.",
@@ -1468,6 +1700,10 @@
   "Настройки": {
    "en": "Settings",
    "de": "Einstellungen"
+  },
+  "Настройки → Добавить компьютер": {
+   "en": "Settings → Add computer",
+   "de": "Einstellungen → Computer hinzufügen"
   },
   "Начало": {
    "en": "Start",
@@ -1517,9 +1753,21 @@
    "en": "Couldn't read Claude Code's settings: {0}",
    "de": "Einstellungen von Claude Code konnten nicht gelesen werden: {0}"
   },
+  "Не удалось распаковать данные": {
+   "en": "Could not unpack the data",
+   "de": "Die Daten konnten nicht entpackt werden"
+  },
+  "Не удалось сохранить токен в связке ключей: после перезапуска его придётся ввести снова.": {
+   "en": "Could not save the token in the keychain: after a restart it has to be entered again.",
+   "de": "Das Token konnte nicht im Schlüsselbund gespeichert werden: Nach einem Neustart muss es erneut eingegeben werden."
+  },
   "Не удалось сохранить: {0}": {
    "en": "Couldn't save: {0}",
    "de": "Speichern fehlgeschlagen: {0}"
+  },
+  "Неверный адрес": {
+   "en": "Invalid address",
+   "de": "Ungültige Adresse"
   },
   "Неделя": {
    "en": "Week",
@@ -1532,6 +1780,10 @@
   "Нейтральная палитра и системный акцент Windows": {
    "en": "Neutral palette and the Windows accent color",
    "de": "Neutrale Palette und die Akzentfarbe von Windows"
+  },
+  "Нейтральная палитра и системный акцент iPad": {
+   "en": "Neutral palette and the iPad's system accent",
+   "de": "Neutrale Palette und der Systemakzent des iPads"
   },
   "Нейтральная палитра и системный акцент macOS": {
    "en": "Neutral palette and the macOS accent color",
@@ -1573,9 +1825,25 @@
    "en": "No new events",
    "de": "Keine neuen Ereignisse"
   },
+  "Нет ответа": {
+   "en": "No response",
+   "de": "Keine Antwort"
+  },
+  "Нет связи: {0}": {
+   "en": "Not reachable: {0}",
+   "de": "Nicht erreichbar: {0}"
+  },
+  "Нет сессий за этот период": {
+   "en": "No sessions in this period",
+   "de": "Keine Sitzungen in diesem Zeitraum"
+  },
   "Низкая доля попаданий в кэш": {
    "en": "Low cache hit rate",
    "de": "Niedrige Cache-Trefferquote"
+  },
+  "Ничего не найдено": {
+   "en": "Nothing found",
+   "de": "Nichts gefunden"
   },
   "Новые облачные сессии начнут присылать лог сами. Они появятся в «Сессиях», «Обзоре» и Live-трассе, а их логи лежат в `{0}\\cloud`.": {
    "en": "New cloud sessions then send their log on their own. They appear in Sessions, Overview and the Live trace, and their logs are kept in `{0}\\cloud`.",
@@ -1588,6 +1856,14 @@
   "Новый": {
    "en": "New",
    "de": "Neu"
+  },
+  "Новый компьютер": {
+   "en": "New computer",
+   "de": "Neuer Computer"
+  },
+  "Новый токен, если менялся": {
+   "en": "New token, if it changed",
+   "de": "Neues Token, falls es sich geändert hat"
   },
   "Ноль": {
    "en": "Zero",
@@ -1628,6 +1904,10 @@
   "Облачные сессии Claude Code могут сами отправлять сюда свой лог после каждого шага: промпты, ответы, размышления, вызовы инструментов, контекст и токены каждого запроса. X-Ray покажет их так же подробно, как сессии на этом компьютере, почти вживую.": {
    "en": "Claude Code cloud sessions can send their log here themselves after every step: prompts, replies, thinking, tool calls, and the context and tokens of each request. X-Ray shows them in as much detail as sessions on this computer, almost live.",
    "de": "Cloud-Sitzungen von Claude Code können ihr Log nach jedem Schritt selbst hierher senden: Prompts, Antworten, Denken, Tool-Aufrufe sowie Kontext und Tokens jeder Anfrage. X-Ray zeigt sie so ausführlich wie Sitzungen auf diesem Computer, fast live."
+  },
+  "Облачные сессии видны здесь, когда X-Ray на компьютере принимает их логи: «Настройки → Облако» в X-Ray на Mac или Windows.": {
+   "en": "Cloud sessions show up here when X-Ray on a computer receives their logs: Settings → Cloud in X-Ray on the Mac or Windows.",
+   "de": "Cloud-Sitzungen erscheinen hier, wenn X-Ray auf einem Computer ihre Logs empfängt: „Einstellungen → Cloud“ in X-Ray auf dem Mac oder unter Windows."
   },
   "Облачные сессии ещё ничего не присылали.": {
    "en": "Cloud sessions haven't sent anything yet.",
@@ -1681,6 +1961,10 @@
    "en": "Window",
    "de": "Fenster"
   },
+  "Окно 5 часов по логам ваших компьютеров": {
+   "en": "5-hour window from your computers' logs",
+   "de": "5-Stunden-Fenster laut den Logs Ihrer Computer"
+  },
   "Окно 5 часов по логам этого Mac": {
    "en": "5-hour window from this Mac's logs",
    "de": "5-Stunden-Fenster laut den Logs dieses Macs"
@@ -1712,6 +1996,10 @@
   "Ответ": {
    "en": "Reply",
    "de": "Antwort"
+  },
+  "Ответ {0}: по этому адресу не X-Ray, или он устарел. Нужна версия 0.9 или новее.": {
+   "en": "Response {0}: this address is not X-Ray, or it is outdated. Version 0.9 or newer is needed.",
+   "de": "Antwort {0}: Unter dieser Adresse läuft kein X-Ray, oder es ist veraltet. Version 0.9 oder neuer ist nötig."
   },
   "Ответ · {0} символов": {
    "en": "Reply · {0} characters",
@@ -1749,6 +2037,10 @@
    "en": "Disconnect",
    "de": "Trennen"
   },
+  "Откройте ссылку или QR-код из X-Ray на компьютере: «Настройки → iPad».": {
+   "en": "Open the link or QR code from X-Ray on the computer: Settings → iPad.",
+   "de": "Öffnen Sie den Link oder QR-Code aus X-Ray auf dem Computer: „Einstellungen → iPad“."
+  },
   "Открыть Live-трассу": {
    "en": "Open the Live trace",
    "de": "Live-Trace öffnen"
@@ -1756,6 +2048,14 @@
   "Открыть X-Ray": {
    "en": "Open X-Ray",
    "de": "X-Ray öffnen"
+  },
+  "Открыть настройки": {
+   "en": "Open settings",
+   "de": "Einstellungen öffnen"
+  },
+  "Отмена": {
+   "en": "Cancel",
+   "de": "Abbrechen"
   },
   "Отпустите, чтобы импортировать логи сессий (.jsonl, .zip)": {
    "en": "Drop to import session logs (.jsonl, .zip)",
@@ -1873,9 +2173,29 @@
    "en": "Mon",
    "de": "Mo"
   },
+  "По длительности": {
+   "en": "By duration",
+   "de": "Nach Dauer"
+  },
+  "По пику контекста": {
+   "en": "By peak context",
+   "de": "Nach Kontextspitze"
+  },
+  "По стоимости": {
+   "en": "By cost",
+   "de": "Nach Kosten"
+  },
   "По умолчанию": {
    "en": "Default",
    "de": "Standard"
+  },
+  "По числу запросов": {
+   "en": "By number of requests",
+   "de": "Nach Anzahl der Anfragen"
+  },
+  "Поделиться PDF": {
+   "en": "Share PDF",
+   "de": "PDF teilen"
   },
   "Подключается": {
    "en": "Connecting",
@@ -1884,6 +2204,10 @@
   "Подключаются: {0}": {
    "en": "Connecting: {0}",
    "de": "Verbinden: {0}"
+  },
+  "Подключение…": {
+   "en": "Connecting…",
+   "de": "Verbinden …"
   },
   "Подключено": {
    "en": "Connected",
@@ -1897,9 +2221,17 @@
    "en": "Connected. Figures appear after Claude Code's first reply in the terminal on this computer: claude or claude --remote-control.",
    "de": "Verbunden. Die Zahlen erscheinen nach der ersten Antwort von Claude Code im Terminal auf diesem Computer: claude oder claude --remote-control."
   },
+  "Подключите компьютер": {
+   "en": "Connect a computer",
+   "de": "Computer verbinden"
+  },
   "Подключить": {
    "en": "Connect",
    "de": "Verbinden"
+  },
+  "Подключить компьютер?": {
+   "en": "Connect the computer?",
+   "de": "Computer verbinden?"
   },
   "Подключён": {
    "en": "Connected",
@@ -1936,6 +2268,10 @@
   "Показать ещё {0}": {
    "en": "Show {0} more",
    "de": "{0} weitere zeigen"
+  },
+  "Понятно": {
+   "en": "OK",
+   "de": "OK"
   },
   "Порт": {
    "en": "Port",
@@ -2025,6 +2361,10 @@
    "en": "Interruption",
    "de": "Unterbrechung"
   },
+  "Приложение": {
+   "en": "App",
+   "de": "App"
+  },
   "Приложение только читает эти файлы и никуда не отправляет данные.": {
    "en": "The app only reads these files and doesn't send data anywhere.",
    "de": "Die App liest diese Dateien nur und sendet keine Daten."
@@ -2073,6 +2413,10 @@
    "en": "Prompt",
    "de": "Prompt"
   },
+  "Проще всего навести камеру iPad на QR-код в X-Ray на компьютере («Настройки → iPad»). Или скопируйте ссылку там, а здесь нажмите «Вставить».": {
+   "en": "The easiest way is to point the iPad's camera at the QR code in X-Ray on the computer (Settings → iPad). Or copy the link there and tap Paste here.",
+   "de": "Am einfachsten richten Sie die iPad-Kamera auf den QR-Code in X-Ray auf dem Computer („Einstellungen → iPad“). Oder kopieren Sie dort den Link und tippen Sie hier auf „Einsetzen“."
+  },
   "Пт": {
    "en": "Fri",
    "de": "Fr"
@@ -2113,6 +2457,10 @@
    "en": "Permissions",
    "de": "Berechtigungen"
   },
+  "Разрешить iPad читать логи": {
+   "en": "Allow the iPad to read the logs",
+   "de": "iPad das Lesen der Logs erlauben"
+  },
   "Разрешённые правила": {
    "en": "Allow rules",
    "de": "Erlaubnisregeln"
@@ -2124,6 +2472,10 @@
   "Расход {0}": {
    "en": "Spending {0}",
    "de": "Verbrauch {0}"
+  },
+  "Реальный процент 5‑часового и недельного лимита аккаунта приходит с компьютера, где X-Ray подключён к строке статуса Claude Code: «Настройки → Лимиты аккаунта» в X-Ray на Mac или Windows. Цифры появятся здесь после следующего ответа Claude Code там.": {
+   "en": "The account's real 5-hour and weekly limit usage comes from the computer where X-Ray is connected to Claude Code's status line: Settings → Account limits in X-Ray on the Mac or Windows. The numbers appear here after Claude Code's next reply there.",
+   "de": "Die tatsächliche Auslastung des 5-Stunden- und des Wochenlimits kommt von dem Computer, auf dem X-Ray mit der Statuszeile von Claude Code verbunden ist: „Einstellungen → Kontolimits“ in X-Ray auf dem Mac oder unter Windows. Die Zahlen erscheinen hier nach der nächsten Antwort von Claude Code dort."
   },
   "Реальный процент 5‑часового и недельного лимита всего аккаунта, включая чаты, облачные сессии и Cowork. Claude Code сообщает его своей строке статуса; X-Ray подключается к ней и запоминает цифры.": {
    "en": "The real percentage of the whole account's 5‑hour and weekly limits, including chats, cloud sessions and Cowork. Claude Code reports it to its status line; X-Ray hooks into it and keeps the figures.",
@@ -2161,6 +2513,10 @@
    "en": "Context growth",
    "de": "Kontextwachstum"
   },
+  "С компьютеров пока не пришло ни одного лога.": {
+   "en": "No logs have come from the computers yet.",
+   "de": "Von den Computern ist noch kein Log angekommen."
+  },
   "Самые дорогие проекты": {
    "en": "Most expensive projects",
    "de": "Teuerste Projekte"
@@ -2196,6 +2552,14 @@
   "Свыше 100K токенов промпта — $0.50 / $2.50. Цена чтения кэша принята как 0.1× — проверьте.": {
    "en": "Above 100K prompt tokens: $0.50 / $2.50. The cache read price is assumed to be 0.1× — please check.",
    "de": "Über 100K Prompt-Tokens: $0.50 / $2.50. Der Preis für Cache-Lesen ist mit 0,1× angenommen – bitte prüfen."
+  },
+  "Сделайте X-Ray доступным для iPad. Если облачные сессии уже подключены, это сделано: iPad использует тот же адрес. Иначе установите Tailscale (бесплатно), войдите и выполните в Терминале команду ниже.": {
+   "en": "Make X-Ray reachable for the iPad. If cloud sessions are already connected, this is done: the iPad uses the same address. Otherwise install Tailscale (free), sign in and run the command below in Terminal.",
+   "de": "Machen Sie X-Ray für das iPad erreichbar. Sind Cloud-Sitzungen schon verbunden, ist das erledigt: Das iPad nutzt dieselbe Adresse. Andernfalls installieren Sie Tailscale (kostenlos), melden sich an und führen den Befehl unten im Terminal aus."
+  },
+  "Сделайте X-Ray доступным для iPad. Если облачные сессии уже подключены, это сделано: iPad использует тот же адрес. Иначе установите Tailscale для Windows (бесплатно), войдите и выполните в PowerShell команду ниже.": {
+   "en": "Make X-Ray reachable for the iPad. If cloud sessions are already connected, this is done: the iPad uses the same address. Otherwise install Tailscale for Windows (free), sign in and run the command below in PowerShell.",
+   "de": "Machen Sie X-Ray für das iPad erreichbar. Sind Cloud-Sitzungen schon verbunden, ist das erledigt: Das iPad nutzt dieselbe Adresse. Andernfalls installieren Sie Tailscale für Windows (kostenlos), melden sich an und führen den Befehl unten in PowerShell aus."
   },
   "Сделайте X-Ray доступным из облака. Проще всего через Tailscale Funnel: установите Tailscale (бесплатно), войдите и выполните в Терминале команду ниже. Она напечатает адрес вида `https://ваш-mac.имя-сети.ts.net`.": {
    "en": "Make X-Ray reachable from the cloud. The easiest way is Tailscale Funnel: install Tailscale (free), sign in and run the command below in Terminal. It prints an address like `https://your-mac.your-tailnet.ts.net`.",
@@ -2237,6 +2601,10 @@
    "en": "Claude Code sessions in the cloud (claude.ai/code, the Claude mobile app, the cloud environment in Claude Desktop) run on Anthropic's servers, and their logs stay there. Without setup, X-Ray sees only sessions that run on this computer:",
    "de": "Sitzungen von Claude Code in der Cloud (claude.ai/code, die Claude-App fürs Handy, die Cloud-Umgebung in Claude Desktop) laufen auf den Servern von Anthropic, und ihre Logs bleiben dort. Ohne Einrichtung sieht X-Ray nur Sitzungen, die auf diesem Computer laufen:"
   },
+  "Сессии нет в выбранном периоде": {
+   "en": "The session is not in the selected period",
+   "de": "Die Sitzung liegt nicht im gewählten Zeitraum"
+  },
   "Сессий за период нет": {
    "en": "No sessions in the period",
    "de": "Keine Sitzungen im Zeitraum"
@@ -2261,6 +2629,14 @@
    "en": "Context compactions",
    "de": "Kontextkomprimierungen"
   },
+  "Синхронизировано": {
+   "en": "Synced",
+   "de": "Synchronisiert"
+  },
+  "Синхронизировать сейчас": {
+   "en": "Sync now",
+   "de": "Jetzt synchronisieren"
+  },
   "Системная": {
    "en": "System",
    "de": "System"
@@ -2276,6 +2652,22 @@
   "Системный промпт: {0} символов (≈{1} токенов)": {
    "en": "System prompt: {0} characters (≈{1} tokens)",
    "de": "System-Prompt: {0} Zeichen (≈{1} Tokens)"
+  },
+  "Скачанные с него логи тоже удалятся с iPad. На компьютере ничего не меняется.": {
+   "en": "The logs downloaded from it are removed from the iPad too. Nothing changes on the computer.",
+   "de": "Die von ihm geladenen Logs werden ebenfalls vom iPad entfernt. Auf dem Computer ändert sich nichts."
+  },
+  "Скачано": {
+   "en": "Downloaded",
+   "de": "Geladen"
+  },
+  "Скачивать логи": {
+   "en": "Download logs of",
+   "de": "Logs laden für"
+  },
+  "Скачиваются логи: {0} из {1}.": {
+   "en": "Downloading logs: {0} of {1}.",
+   "de": "Logs werden geladen: {0} von {1}."
   },
   "Скилл": {
    "en": "Skill",
@@ -2305,6 +2697,10 @@
    "en": "Copy a session log (.jsonl or .zip), for example a cloud one, into X-Ray's import folder",
    "de": "Ein Sitzungslog (.jsonl oder .zip), etwa aus der Cloud, in den Importordner von X-Ray kopieren"
   },
+  "Скопировать ссылку": {
+   "en": "Copy link",
+   "de": "Link kopieren"
+  },
   "Скрывает тексты промптов, ответов, команд и выводов — удобно для демонстрации экрана": {
    "en": "Hides the text of prompts, replies, commands and outputs — handy for screen sharing",
    "de": "Blendet die Texte von Prompts, Antworten, Befehlen und Ausgaben aus – praktisch beim Bildschirmteilen"
@@ -2321,6 +2717,10 @@
    "en": "Follow the active session",
    "de": "Der aktiven Sitzung folgen"
   },
+  "Сначала новые": {
+   "en": "Newest first",
+   "de": "Neueste zuerst"
+  },
   "Совет": {
    "en": "Tip",
    "de": "Tipp"
@@ -2328,6 +2728,10 @@
   "Содержимое скрыто переключателем «Скрыть содержимое».": {
    "en": "Content hidden by the “Hide content” switch.",
    "de": "Inhalt durch den Schalter „Inhalte ausblenden“ verborgen."
+  },
+  "Создать новый токен. iPad придётся подключить заново.": {
+   "en": "Create a new token. The iPad will have to be connected again.",
+   "de": "Neues Token erstellen. Das iPad muss danach neu verbunden werden."
   },
   "Создать новый токен. Старый перестанет приниматься.": {
    "en": "Create a new token. The old one stops being accepted.",
@@ -2345,13 +2749,25 @@
    "en": "Messages while working",
    "de": "Nachrichten während der Arbeit"
   },
+  "Сортировка": {
+   "en": "Sort",
+   "de": "Sortierung"
+  },
   "Состав контекста": {
    "en": "Context makeup",
    "de": "Zusammensetzung des Kontexts"
   },
+  "Состояние": {
+   "en": "Status",
+   "de": "Status"
+  },
   "Сохранено: {0}": {
    "en": "Saved: {0}",
    "de": "Gespeichert: {0}"
+  },
+  "Сохранить": {
+   "en": "Save",
+   "de": "Speichern"
   },
   "Сохранить PDF…": {
    "en": "Save PDF…",
@@ -2388,6 +2804,18 @@
   "Средняя сессия": {
    "en": "Average session",
    "de": "Durchschnittliche Sitzung"
+  },
+  "Ссылка s2a-xray://… из X-Ray на компьютере": {
+   "en": "s2a-xray://… link from X-Ray on the computer",
+   "de": "s2a-xray://…-Link aus X-Ray auf dem Computer"
+  },
+  "Ссылка не подходит": {
+   "en": "This link does not fit",
+   "de": "Dieser Link passt nicht"
+  },
+  "Ссылка подключения": {
+   "en": "Connect link",
+   "de": "Verbindungslink"
   },
   "Статус": {
    "en": "Status",
@@ -2501,9 +2929,25 @@
    "en": "Subagent types: {0}",
    "de": "Subagent-Typen: {0}"
   },
+  "Токен iPad": {
+   "en": "iPad token",
+   "de": "iPad-Token"
+  },
+  "Токен iPad (xrayv_…)": {
+   "en": "iPad token (xrayv_…)",
+   "de": "iPad-Token (xrayv_…)"
+  },
   "Токен доступа": {
    "en": "Access token",
    "de": "Zugriffstoken"
+  },
+  "Токен не подходит: подключите iPad заново по QR-коду": {
+   "en": "The token is not accepted: connect the iPad again with the QR code",
+   "de": "Das Token wird nicht akzeptiert: Verbinden Sie das iPad erneut per QR-Code"
+  },
+  "Токен не похож на токен X-Ray": {
+   "en": "This does not look like an X-Ray token",
+   "de": "Das sieht nicht wie ein X-Ray-Token aus"
   },
   "Токены": {
    "en": "Tokens",
@@ -2533,6 +2977,26 @@
    "en": "Raise the output limit (the CLAUDE_CODE_MAX_OUTPUT_TOKENS variable) or ask the model to make changes in smaller pieces.",
    "de": "Erhöhen Sie das Ausgabelimit (Variable CLAUDE_CODE_MAX_OUTPUT_TOKENS) oder bitten Sie das Modell, Änderungen in kleineren Teilen zu machen."
   },
+  "Удалить": {
+   "en": "Delete",
+   "de": "Löschen"
+  },
+  "Удалить компьютер": {
+   "en": "Remove computer",
+   "de": "Computer entfernen"
+  },
+  "Удалить компьютер?": {
+   "en": "Remove the computer?",
+   "de": "Computer entfernen?"
+  },
+  "Удалить скачанные логи": {
+   "en": "Delete downloaded logs",
+   "de": "Geladene Logs löschen"
+  },
+  "Удалить скачанные логи?": {
+   "en": "Delete the downloaded logs?",
+   "de": "Geladene Logs löschen?"
+  },
   "Удалить строку": {
    "en": "Delete row",
    "de": "Zeile löschen"
@@ -2540,6 +3004,18 @@
   "Успех": {
    "en": "Success",
    "de": "Erfolg"
+  },
+  "Установите X-Ray на iPad из Xcode на Mac: откройте `iPad/XRay.xcodeproj` из репозитория, выберите свой Apple ID в Signing и запустите на iPad. Подробно — в README.": {
+   "en": "Install X-Ray on the iPad from Xcode on a Mac: open `iPad/XRay.xcodeproj` from the repository, choose your Apple ID under Signing and run it on the iPad. Details are in the README.",
+   "de": "Installieren Sie X-Ray über Xcode auf einem Mac auf dem iPad: Öffnen Sie `iPad/XRay.xcodeproj` aus dem Repository, wählen Sie unter Signing Ihre Apple-ID und starten Sie es auf dem iPad. Details stehen in der README."
+  },
+  "Установите X-Ray на iPad из Xcode: откройте `iPad/XRay.xcodeproj` из репозитория, выберите свой Apple ID в Signing и запустите на iPad. Подробно — в README.": {
+   "en": "Install X-Ray on the iPad from Xcode: open `iPad/XRay.xcodeproj` from the repository, choose your Apple ID under Signing and run it on the iPad. Details are in the README.",
+   "de": "Installieren Sie X-Ray über Xcode auf dem iPad: Öffnen Sie `iPad/XRay.xcodeproj` aus dem Repository, wählen Sie unter Signing Ihre Apple-ID und starten Sie es auf dem iPad. Details stehen in der README."
+  },
+  "Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на компьютерах. Цифры приходят с компьютера, где X-Ray подключён к строке статуса Claude Code.": {
+   "en": "Covers everything that draws on the subscription: chats, cloud sessions, Cowork and sessions on your computers. The numbers come from the computer where X-Ray is connected to Claude Code's status line.",
+   "de": "Umfasst alles, was das Abo verbraucht: Chats, Cloud-Sitzungen, Cowork und Sitzungen auf Ihren Computern. Die Zahlen kommen von dem Computer, auf dem X-Ray mit der Statuszeile von Claude Code verbunden ist."
   },
   "Учитывает всё, что расходует подписку: чаты, облачные сессии, Cowork и сессии на этом Mac. Claude Code обновляет эти цифры после каждого своего ответа в Терминале на этом Mac.": {
    "en": "Counts everything that uses the subscription: chats, cloud sessions, Cowork and sessions on this Mac. Claude Code updates these figures after each of its replies in Terminal on this Mac.",
@@ -2625,6 +3101,10 @@
    "en": "Agent loop",
    "de": "Agentenschleife"
   },
+  "Цифры на {0}. Обновятся после следующего ответа Claude Code на компьютере.": {
+   "en": "Numbers as of {0}. They update after Claude Code's next reply on the computer.",
+   "de": "Stand {0}. Die Zahlen werden nach der nächsten Antwort von Claude Code auf dem Computer aktualisiert."
+  },
   "Цифры на {0}. Обновятся после следующего ответа Claude Code на этом Mac.": {
    "en": "Figures as of {0}. They update after Claude Code's next reply on this Mac.",
    "de": "Stand: {0}. Aktualisiert nach der nächsten Antwort von Claude Code auf diesem Mac."
@@ -2696,6 +3176,14 @@
   "Шаги запроса: {0}": {
    "en": "Request steps: {0}",
    "de": "Schritte der Anfrage: {0}"
+  },
+  "Экраны, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык iPad: русский, английский или немецкий, для других языков — английский.": {
+   "en": "Screens, hints, session analysis and reports. \"System\" uses the iPad's language: Russian, English or German, English for other languages.",
+   "de": "Bildschirme, Hinweise, Sitzungsanalyse und Berichte. „Wie im System“ übernimmt die Sprache des iPads: Russisch, Englisch oder Deutsch, für andere Sprachen Englisch."
+  },
+  "Это не ссылка X-Ray. Она начинается с s2a-xray://connect": {
+   "en": "This is not an X-Ray link. It starts with s2a-xray://connect",
+   "de": "Das ist kein X-Ray-Link. Er beginnt mit s2a-xray://connect"
   },
   "Язык и оформление": {
    "en": "Language & appearance",
@@ -3025,6 +3513,10 @@
    "en": "context {0}%",
    "de": "Kontext {0}%"
   },
+  "контекст до {0}": {
+   "en": "context up to {0}",
+   "de": "Kontext bis {0}"
+  },
   "краткое изложение": {
    "en": "summary",
    "de": "Zusammenfassung"
@@ -3032,6 +3524,10 @@
   "критично": {
    "en": "critical",
    "de": "kritisch"
+  },
+  "кэш {0}": {
+   "en": "cache {0}",
+   "de": "Cache {0}"
   },
   "кэш и гигиена контекста": {
    "en": "cache and context hygiene",

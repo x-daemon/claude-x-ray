@@ -218,6 +218,7 @@ button { font: inherit; color: inherit; }
 .list-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--hairline); min-width: 0; }
 .list-row:last-child { border-bottom: 0; }
 .command-box { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; background: var(--empty); }
+.qr-box { flex: none; padding: 8px; border-radius: 10px; background: #ffffff; line-height: 0; }
 .step-number { width: 16px; flex: none; font-weight: 600; color: var(--accent); font-size: 13px; }
 
 /* Tables */

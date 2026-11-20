@@ -24,6 +24,7 @@ export const Paths = {
   get planUsage(): string { return path.join(Paths.support, "plan-usage.json"); },
   get statusLineConfig(): string { return path.join(Paths.support, "statusline.json"); },
   get receiverToken(): string { return path.join(Paths.support, "receiver-token"); },
+  get viewerToken(): string { return path.join(Paths.support, "viewer-token"); },
   get imported(): string { return path.join(Paths.support, "imported"); },
   get cloud(): string { return path.join(Paths.support, "cloud"); },
 };
@@ -52,6 +53,8 @@ export const defaultSettings = (): Settings => ({
   receiverEnabled: false,
   receiverPort: 47318,
   hideContent: false,
+  viewerEnabled: false,
+  viewerAddress: "",
 });
 
 export function loadSettings(): Settings {
@@ -90,21 +93,38 @@ export function savePlanUsage(fresh: PlanUsage): PlanUsage {
 
 /** The access token cloud uploads must send as Authorization: Bearer <token>; created on first use. */
 export function loadOrCreateToken(): string {
+  return loadOrCreate(Paths.receiverToken, "xray_");
+}
+
+export function createToken(): string {
+  return create(Paths.receiverToken, "xray_");
+}
+
+/** The token of the iPad app, which may only read; created on first use. */
+export function loadOrCreateViewerToken(): string {
+  return loadOrCreate(Paths.viewerToken, "xrayv_");
+}
+
+export function createViewerToken(): string {
+  return create(Paths.viewerToken, "xrayv_");
+}
+
+function loadOrCreate(file: string, prefix: string): string {
   try {
-    const existing = readFileSync(Paths.receiverToken, "utf8").trim();
+    const existing = readFileSync(file, "utf8").trim();
     if (existing.length >= 32) return existing;
   } catch {
     // create below
   }
-  return createToken();
+  return create(file, prefix);
 }
 
-export function createToken(): string {
-  const token = "xray_" + randomBytes(32).toString("hex");
+function create(file: string, prefix: string): string {
+  const token = prefix + randomBytes(32).toString("hex");
   mkdirSync(Paths.support, { recursive: true });
-  writeFileSync(Paths.receiverToken, token, { encoding: "utf8", mode: 0o600 });
+  writeFileSync(file, token, { encoding: "utf8", mode: 0o600 });
   try {
-    chmodSync(Paths.receiverToken, 0o600);
+    chmodSync(file, 0o600);
   } catch {
     // Windows ignores POSIX modes; the file sits in the user's own profile.
   }

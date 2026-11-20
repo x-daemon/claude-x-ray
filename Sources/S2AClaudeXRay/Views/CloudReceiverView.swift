@@ -1,4 +1,3 @@
-import AppKit
 import SwiftUI
 import XRayCore
 
@@ -35,8 +34,7 @@ struct CloudReceiverSettings: View {
                             Text(masked(model.receiverToken))
                                 .font(.system(.body, design: .monospaced))
                             Button(copied ? L("Скопировано") : L("Скопировать")) {
-                                NSPasteboard.general.clearContents()
-                                NSPasteboard.general.setString(model.receiverToken, forType: .string)
+                                Clipboard.copy(model.receiverToken)
                                 copied = true
                             }
                             Button(L("Новый")) {
@@ -137,8 +135,7 @@ struct CommandBox: View {
                 .textSelection(.enabled)
             Spacer()
             Button(copied ? L("Скопировано") : L("Скопировать")) {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(command, forType: .string)
+                Clipboard.copy(command)
                 copied = true
             }
             .controlSize(.small)

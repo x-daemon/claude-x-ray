@@ -4,13 +4,16 @@ import Foundation
 public struct HTTPRequest: Equatable, Sendable {
     public var method: String
     public var path: String
+    /// Parameters of the query string, percent-decoded; "+" stays a plus sign.
+    public var query: [String: String]
     /// Header names in lower case.
     public var headers: [String: String]
     public var body: Data
 
-    public init(method: String, path: String, headers: [String: String], body: Data) {
+    public init(method: String, path: String, query: [String: String] = [:], headers: [String: String], body: Data) {
         self.method = method
         self.path = path
+        self.query = query
         self.headers = headers
         self.body = body
     }
@@ -67,10 +70,24 @@ public enum HTTPRequestParser {
         }
 
         var path = String(requestLine[1])
-        if let query = path.firstIndex(of: "?") {
-            path = String(path[..<query])
+        var query: [String: String] = [:]
+        if let mark = path.firstIndex(of: "?") {
+            query = parseQuery(path[path.index(after: mark)...])
+            path = String(path[..<mark])
         }
-        return .complete(HTTPRequest(method: String(requestLine[0]).uppercased(), path: path, headers: headers, body: body))
+        return .complete(HTTPRequest(method: String(requestLine[0]).uppercased(), path: path, query: query, headers: headers, body: body))
+    }
+
+    /// `a=1&b=x%2Fy` → ["a": "1", "b": "x/y"]; the first value of a repeated name wins.
+    static func parseQuery(_ text: Substring) -> [String: String] {
+        var result: [String: String] = [:]
+        for pair in text.split(separator: "&", omittingEmptySubsequences: true) {
+            let parts = pair.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            guard let name = parts.first.flatMap({ String($0).removingPercentEncoding }), !name.isEmpty,
+                  result[name] == nil else { continue }
+            result[name] = parts.count > 1 ? (String(parts[1]).removingPercentEncoding ?? "") : ""
+        }
+        return result
     }
 
     enum ChunkError: Error { case tooLarge, invalid }

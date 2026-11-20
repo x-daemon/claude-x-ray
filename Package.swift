@@ -3,7 +3,8 @@ import PackageDescription
 
 let package = Package(
     name: "ClaudeXRay",
-    platforms: [.macOS(.v14)],
+    // iOS for XRayCore in the iPad app (iPad/XRay.xcodeproj); the app target itself is macOS only.
+    platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
         .library(name: "XRayCore", targets: ["XRayCore"]),
         .executable(name: "S2AClaudeXRay", targets: ["S2AClaudeXRay"]),

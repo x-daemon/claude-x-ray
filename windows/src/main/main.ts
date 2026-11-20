@@ -9,16 +9,19 @@ if (statusLineMode) {
 }
 
 import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, nativeImage, nativeTheme, screen, shell, Tray, type IpcMainInvokeEvent } from "electron";
+import { execFile } from "node:child_process";
 import { existsSync, mkdirSync, watch, writeFileSync, type FSWatcher } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { Fmt } from "../core/fmt";
 import { windowFraction, windowHasReset, type PlanUsage } from "../core/plan";
 import { CHANNELS, type Delta, type InitialState, type ReceiverStatus, type Settings } from "../shared/api";
-import { TranscriptReceiver } from "./receiver";
+import { catalogRoots } from "../core/catalog";
+import { tailscaleAddress } from "../core/viewerLink";
+import { TranscriptReceiver, type ReceiverConfig } from "./receiver";
 import { IngestService } from "./service";
 import { claudeSettingsPath, installStatusLine, statusLineState, uninstallStatusLine } from "./statusline";
-import { createToken, loadOrCreateToken, loadPlanUsage, loadPricing, loadSettings, Paths, saveSettings, savePricing } from "./store";
+import { createToken, createViewerToken, loadOrCreateToken, loadOrCreateViewerToken, loadPlanUsage, loadPricing, loadSettings, Paths, saveSettings, savePricing } from "./store";
 import { L, language, resolveLanguage, setLanguage, type Language } from "../core/i18n";
 
 const isSnapshot = !!process.env.XRAY_SNAPSHOT_DIR;
@@ -30,13 +33,15 @@ const trayIconPath = path.join(appRoot, "assets", "tray.png");
 const TITLE_BAR_HEIGHT = 44;
 
 let settings: Settings = loadSettings();
-if (process.env.XRAY_RECEIVER_PORT && process.env.XRAY_RECEIVER_TOKEN) {
-  settings = { ...settings, receiverEnabled: true, receiverPort: Number(process.env.XRAY_RECEIVER_PORT) };
-}
+if (process.env.XRAY_RECEIVER_PORT) settings = { ...settings, receiverPort: Number(process.env.XRAY_RECEIVER_PORT) };
+if (process.env.XRAY_RECEIVER_TOKEN) settings = { ...settings, receiverEnabled: true };
+if (process.env.XRAY_VIEWER_TOKEN) settings = { ...settings, viewerEnabled: true };
 applyLanguage();
 let pricing = loadPricing();
 let planUsage: PlanUsage | undefined = loadPlanUsage();
 let receiverToken = "";
+let viewerToken = "";
+let detectedAddress: string | undefined;
 let mainWindow: BrowserWindow | undefined;
 let popup: BrowserWindow | undefined;
 let tray: Tray | undefined;
@@ -55,13 +60,50 @@ const service = new IngestService(settings.directories, (delta: Delta) => {
 
 const receiver = new TranscriptReceiver((status: ReceiverStatus) => send(CHANNELS.receiver, status));
 
+function receiverConfig(): ReceiverConfig {
+  return {
+    port: settings.receiverPort,
+    acceptsUploads: settings.receiverEnabled,
+    uploadToken: receiverToken,
+    servesViewer: settings.viewerEnabled,
+    viewerToken,
+    roots: () => catalogRoots(service.scanDirectories, Paths.cloud, Paths.imported),
+    name: os.hostname(),
+    version: app.getVersion(),
+  };
+}
+
+/** The listener runs while cloud uploads or iPad access are on. */
 function startReceiver(): void {
-  if (settings.receiverEnabled) {
-    service.ensureCloudFolder();
-    receiver.start(settings.receiverPort, receiverToken);
-  } else {
-    receiver.stop();
-  }
+  if (settings.receiverEnabled) service.ensureCloudFolder();
+  receiver.update(receiverConfig());
+}
+
+/** This computer's Tailscale address (https://<machine>.<tailnet>.ts.net), from its command line tool. */
+function detectAddress(): Promise<string | undefined> {
+  const programFiles = process.env.ProgramFiles ?? "C:\\Program Files";
+  const candidates = process.platform === "win32"
+    ? ["tailscale", path.join(programFiles, "Tailscale", "tailscale.exe")]
+    : process.platform === "darwin"
+      ? ["/Applications/Tailscale.app/Contents/MacOS/Tailscale", "/opt/homebrew/bin/tailscale", "/usr/local/bin/tailscale"]
+      : ["tailscale"];
+  return new Promise((resolve) => {
+    const attempt = (index: number) => {
+      if (index >= candidates.length) {
+        resolve(undefined);
+        return;
+      }
+      execFile(candidates[index], ["status", "--json"], { timeout: 5000, windowsHide: true }, (error, stdout) => {
+        const address = error ? undefined : tailscaleAddress(String(stdout));
+        if (address) resolve(address);
+        else attempt(index + 1);
+      });
+    };
+    attempt(0);
+  }).then((address) => {
+    detectedAddress = (address as string | undefined) ?? detectedAddress;
+    return detectedAddress;
+  });
 }
 
 // MARK: Theme
@@ -238,6 +280,9 @@ function initialState(event: IpcMainInvokeEvent): InitialState {
     statusLineSettingsPath: claudeSettingsPath(),
     receiver: receiver.status,
     receiverToken,
+    viewerToken,
+    computerName: os.hostname(),
+    detectedAddress,
     events: snapshot.events,
     activities: snapshot.activities,
     scan: service.scan,
@@ -270,7 +315,8 @@ function registerIPC(): void {
       updateTray();
       void service.fullRescan();
     }
-    if (patch.receiverEnabled !== undefined || (patch.receiverPort !== undefined && patch.receiverPort !== previous.receiverPort)) startReceiver();
+    if (patch.receiverEnabled !== undefined || patch.viewerEnabled !== undefined || (patch.receiverPort !== undefined && patch.receiverPort !== previous.receiverPort)) startReceiver();
+    if (patch.viewerEnabled && !settings.viewerAddress && !detectedAddress) void detectAddress();
     broadcastSettings();
     return settings;
   });
@@ -320,6 +366,12 @@ function registerIPC(): void {
     startReceiver();
     return receiverToken;
   });
+  ipcMain.handle(CHANNELS.regenerateViewerToken, () => {
+    viewerToken = createViewerToken();
+    startReceiver();
+    return viewerToken;
+  });
+  ipcMain.handle(CHANNELS.detectAddress, () => detectAddress());
   ipcMain.handle(CHANNELS.savePDF, async (event, name: string, size?: { width: number; height: number }) => {
     const win = BrowserWindow.fromWebContents(event.sender) ?? mainWindow!;
     const data = await printReport(event.sender, size);
@@ -469,6 +521,7 @@ if (statusLineMode) {
   app.setAppUserModelId("com.s2a.claude-xray");
   app.whenReady().then(() => {
     receiverToken = process.env.XRAY_RECEIVER_TOKEN ?? loadOrCreateToken();
+    viewerToken = process.env.XRAY_VIEWER_TOKEN ?? loadOrCreateViewerToken();
     registerIPC();
     applyTheme();
     nativeTheme.on("updated", () => {
@@ -479,6 +532,7 @@ if (statusLineMode) {
     if (!isSnapshot) createTray();
     service.start();
     startReceiver();
+    if (settings.viewerEnabled && !settings.viewerAddress) void detectAddress();
     watchPlanUsage();
     if (isSnapshot) void runSnapshots(process.env.XRAY_SNAPSHOT_DIR!);
   });

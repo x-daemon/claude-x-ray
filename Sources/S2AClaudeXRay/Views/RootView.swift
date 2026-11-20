@@ -3,13 +3,24 @@ import XRayCore
 
 struct RootView: View {
     @Environment(AppModel.self) private var model
+    #if os(iOS)
+    @Environment(DesktopSync.self) private var sync
+    #endif
 
     var body: some View {
         @Bindable var model = model
 
         NavigationSplitView {
-            List(SidebarItem.allCases, selection: $model.selection) { item in
-                Label(item.title, systemImage: item.systemImage)
+            List(selection: $model.selection) {
+                ForEach(SidebarItem.screens) { item in
+                    Label(item.title, systemImage: item.systemImage)
+                }
+                #if os(iOS)
+                Section {
+                    Label(SidebarItem.settings.title, systemImage: SidebarItem.settings.systemImage)
+                        .tag(SidebarItem.settings)
+                }
+                #endif
             }
             .navigationSplitViewColumnWidth(min: 200, ideal: 220)
             .scrollContentBackground(Palette.sidebar == nil ? .automatic : .hidden)
@@ -18,51 +29,100 @@ struct RootView: View {
                 BrandHeader()
             }
             .safeAreaInset(edge: .bottom) {
+                #if os(iOS)
+                SyncStatusFooter()
+                    .padding(10)
+                #else
                 ScanStatusView()
                     .padding(10)
+                #endif
             }
         } detail: {
-            Group {
-                if !model.hasData && model.lastScan != nil {
-                    SourcesHelpView(title: L("Логи Claude Code не найдены"), systemImage: "tray")
-                } else {
-                    detail(for: model.selection ?? .live)
-                }
+            #if os(iOS)
+            // A stack in the detail column: the session list pushes a session's details, the
+            // settings their pages. A new screen in the sidebar starts from its root again.
+            NavigationStack(path: $model.detailPath) {
+                detailContent
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
-                if let page = Palette.page {
-                    page.ignoresSafeArea()
-                }
+            .onChange(of: model.selection) { _, _ in
+                model.detailPath = NavigationPath()
             }
-            .navigationTitle(model.selection?.title ?? "S2A Claude X-Ray")
-            .dropDestination(for: URL.self) { urls, _ in
-                // Session logs dropped on the window, for example from a cloud session.
-                model.importTranscripts(urls) > 0
+            #else
+            detailContent
+            #endif
+        }
+    }
+
+    private var detailContent: some View {
+        @Bindable var model = model
+        return Group {
+            if isSettings {
+                detail(for: model.selection ?? .live)
+            } else if !model.hasData && model.lastScan != nil {
+                SourcesHelpView(title: L("Логи Claude Code не найдены"), systemImage: "tray")
+            } else {
+                detail(for: model.selection ?? .live)
             }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    if model.selection != .live && model.selection != .trace {
-                        Picker(L("Период"), selection: $model.period) {
-                            ForEach(Period.allCases) { period in
-                                Text(period.title).tag(period)
-                            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            if let page = Palette.page {
+                page.ignoresSafeArea()
+            }
+        }
+        .navigationTitle(model.selection?.title ?? "S2A Claude X-Ray")
+        #if os(macOS)
+        .dropDestination(for: URL.self) { urls, _ in
+            // Session logs dropped on the window, for example from a cloud session.
+            model.importTranscripts(urls) > 0
+        }
+        #else
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                if model.selection != .live && model.selection != .trace && !isSettings {
+                    Picker(L("Период"), selection: $model.period) {
+                        ForEach(Period.allCases) { period in
+                            Text(period.title).tag(period)
                         }
-                        .pickerStyle(.segmented)
-                        .frame(width: 420)
                     }
+                    .pickerStyle(.segmented)
+                    .frame(width: 420)
                 }
-                ToolbarItem(placement: .primaryAction) {
+            }
+            ToolbarItem(placement: .primaryAction) {
+                if !isSettings {
                     Button {
-                        Task { await model.rescan() }
+                        refresh()
                     } label: {
                         Label(L("Обновить"), systemImage: "arrow.clockwise")
                     }
                     .help(L("Перечитать новые записи (⌘R)"))
+                    #if os(iOS)
+                    .keyboardShortcut("r", modifiers: .command)
+                    #endif
                     .disabled(model.isScanning)
                 }
             }
         }
+    }
+
+    private var isSettings: Bool {
+        #if os(iOS)
+        return model.selection == .settings
+        #else
+        return false
+        #endif
+    }
+
+    private func refresh() {
+        #if os(iOS)
+        // On the iPad new lines come from the computers: ask them first.
+        sync.syncNow()
+        #else
+        Task { await model.rescan() }
+        #endif
     }
 
     @ViewBuilder
@@ -76,6 +136,9 @@ struct RootView: View {
         case .models: BreakdownView(dimension: .model)
         case .insights: InsightsView()
         case .reports: ReportsView()
+        #if os(iOS)
+        case .settings: IPadSettingsView()
+        #endif
         }
     }
 }

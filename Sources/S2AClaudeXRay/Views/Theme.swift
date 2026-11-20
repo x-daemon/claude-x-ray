@@ -1,6 +1,10 @@
-import AppKit
 import SwiftUI
 import XRayCore
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 /// Visual theme. S2A is the brand theme and the default; System keeps the neutral palette.
 enum AppTheme: String, CaseIterable, Identifiable {
@@ -20,7 +24,11 @@ enum AppTheme: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .s2a: return L("Фирменные цвета S2A: фиолетовый, циан и глубокий ночной фон")
+        #if os(macOS)
         case .system: return L("Нейтральная палитра и системный акцент macOS")
+        #else
+        case .system: return L("Нейтральная палитра и системный акцент iPad")
+        #endif
         }
     }
 
@@ -64,10 +72,27 @@ enum AppAppearance: String, CaseIterable, Identifiable {
 /// always paired with labels, legends or tables. Status colors are never themed.
 enum Palette {
     static func dynamic(light: UInt32, dark: UInt32) -> Color {
-        Color(nsColor: NSColor(name: nil) { appearance in
+        #if os(macOS)
+        return Color(nsColor: NSColor(name: nil) { appearance in
             let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
             return NSColor(rgb: isDark ? dark : light)
         })
+        #else
+        return Color(uiColor: UIColor { traits in
+            UIColor(rgb: traits.userInterfaceStyle == .dark ? dark : light)
+        })
+        #endif
+    }
+
+    /// A fixed sRGB color.
+    static func rgb(_ value: UInt32) -> Color {
+        Color(
+            .sRGB,
+            red: Double((value >> 16) & 0xFF) / 255,
+            green: Double((value >> 8) & 0xFF) / 255,
+            blue: Double(value & 0xFF) / 255,
+            opacity: 1
+        )
     }
 
     static var theme: AppTheme { AppTheme.current }
@@ -148,17 +173,17 @@ enum Palette {
 
     /// The S2A mark: deep violet → violet → cyan.
     static let brandGradient = LinearGradient(
-        colors: [Color(nsColor: NSColor(rgb: 0x301172)), Color(nsColor: NSColor(rgb: 0x7153DD)), Color(nsColor: NSColor(rgb: 0x0EB1CD))],
+        colors: [rgb(0x301172), rgb(0x7153DD), rgb(0x0EB1CD)],
         startPoint: .bottomLeading,
         endPoint: .topTrailing
     )
 
     // MARK: Status (fixed in every theme, always with an icon and a label)
 
-    static let good = Color(nsColor: NSColor(rgb: 0x0CA30C))
-    static let warning = Color(nsColor: NSColor(rgb: 0xFAB219))
-    static let serious = Color(nsColor: NSColor(rgb: 0xEC835A))
-    static let critical = Color(nsColor: NSColor(rgb: 0xD03B3B))
+    static let good = rgb(0x0CA30C)
+    static let warning = rgb(0xFAB219)
+    static let serious = rgb(0xEC835A)
+    static let critical = rgb(0xD03B3B)
 
     static func color(for severity: InsightSeverity) -> Color {
         switch severity {
@@ -189,6 +214,7 @@ enum Palette {
     }
 }
 
+#if os(macOS)
 extension NSColor {
     convenience init(rgb: UInt32) {
         self.init(
@@ -199,6 +225,18 @@ extension NSColor {
         )
     }
 }
+#else
+extension UIColor {
+    convenience init(rgb: UInt32) {
+        self.init(
+            red: CGFloat((rgb >> 16) & 0xFF) / 255,
+            green: CGFloat((rgb >> 8) & 0xFF) / 255,
+            blue: CGFloat(rgb & 0xFF) / 255,
+            alpha: 1
+        )
+    }
+}
+#endif
 
 extension View {
     /// Applies the active theme: accent, light/dark preference and the page background.

@@ -7,7 +7,7 @@ public enum ClaudeDataLocator {
     /// `~/.claude/projects` and `~/.config/claude/projects`.
     public static func candidateProjectDirectories(
         environment: [String: String] = ProcessInfo.processInfo.environment,
-        home: URL = FileManager.default.homeDirectoryForCurrentUser
+        home: URL = ClaudeDataLocator.home
     ) -> [URL] {
         var result: [URL] = []
         if let configured = environment["CLAUDE_CONFIG_DIR"] {
@@ -29,11 +29,20 @@ public enum ClaudeDataLocator {
     /// so the UI can show where it is looking.
     public static func defaultProjectDirectories(
         environment: [String: String] = ProcessInfo.processInfo.environment,
-        home: URL = FileManager.default.homeDirectoryForCurrentUser
+        home: URL = ClaudeDataLocator.home
     ) -> [URL] {
         let candidates = candidateProjectDirectories(environment: environment, home: home)
         let existing = candidates.filter { isDirectory($0) }
         return existing.isEmpty ? [home.appendingPathComponent(".claude/projects", isDirectory: true)] : existing
+    }
+
+    /// The user's home folder (the app's own folder on iPadOS, which has no Claude Code logs).
+    public static var home: URL {
+        #if os(macOS)
+        return FileManager.default.homeDirectoryForCurrentUser
+        #else
+        return URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
+        #endif
     }
 
     static func isDirectory(_ url: URL) -> Bool {

@@ -277,6 +277,12 @@ struct ActivityHeatmap: View {
                                 hovered = nil
                             }
                         }
+                        #if os(iOS)
+                        // Touch: a tap shows the cell's value (a drag would stop the page scrolling).
+                        .onTapGesture { location in
+                            hovered = cell(at: location, proxy: proxy, geometry: geometry)
+                        }
+                        #endif
                 }
             }
             .frame(height: 220)
@@ -298,13 +304,21 @@ struct ActivityHeatmap: View {
                     if let hovered {
                         Text(L("\(Self.days[hovered.weekday]), \(Self.hours[hovered.hour]):00 — \(Fmt.usd(hovered.cost)), запросов: \(hovered.requests)"))
                     } else {
-                        Text(L("Наведите курсор на ячейку, чтобы увидеть значение."))
+                        Text(hint)
                     }
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
         }
+    }
+
+    private var hint: String {
+        #if os(macOS)
+        return L("Наведите курсор на ячейку, чтобы увидеть значение.")
+        #else
+        return L("Коснитесь ячейки, чтобы увидеть значение.")
+        #endif
     }
 
     private func cell(at location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> HeatCell? {

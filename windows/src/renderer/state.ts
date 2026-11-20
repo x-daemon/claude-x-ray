@@ -69,6 +69,9 @@ export class Store {
   statusLinePath = "";
   receiver!: ReceiverStatus;
   receiverToken = "";
+  viewerToken = "";
+  computerName = "";
+  detectedAddress?: string;
   scan!: ScanInfo;
   platform = "win32";
   version = "";
@@ -178,6 +181,9 @@ export class Store {
     this.statusLinePath = state.statusLineSettingsPath;
     this.receiver = state.receiver;
     this.receiverToken = state.receiverToken;
+    this.viewerToken = state.viewerToken;
+    this.computerName = state.computerName;
+    this.detectedAddress = state.detectedAddress;
     this.scan = state.scan;
     this.platform = state.platform;
     this.version = state.version;

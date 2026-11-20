@@ -1,6 +1,7 @@
-import AppKit
 import SwiftUI
 import XRayCore
+#if os(macOS)
+import AppKit
 
 struct SettingsView: View {
     var body: some View {
@@ -13,6 +14,8 @@ struct SettingsView: View {
                 .tabItem { Label(L("Лимиты аккаунта"), systemImage: "gauge.with.dots.needle.33percent") }
             CloudReceiverSettings()
                 .tabItem { Label(L("Облако"), systemImage: "icloud.and.arrow.down") }
+            IPadAccessSettings()
+                .tabItem { Label("iPad", systemImage: "ipad") }
             PricingSettings()
                 .tabItem { Label(L("Цены"), systemImage: "dollarsign.circle") }
             PlanSettings()
@@ -86,6 +89,7 @@ struct SourcesSettings: View {
         model.setDirectories(model.directories + [url])
     }
 }
+#endif
 
 /// Editable API price list.
 struct PricingSettings: View {
@@ -159,7 +163,11 @@ struct PlanSettings: View {
                     Text(plan.title).tag(plan)
                 }
             }
+            #if os(macOS)
             .pickerStyle(.radioGroup)
+            #else
+            .pickerStyle(.inline)
+            #endif
 
             Section {
                 Text(L("На Pro и Max лимиты считаются в 5-часовых окнах, которые начинаются с первого запроса, и дополнительно за неделю. Точный размер лимита Anthropic не публикует, и в логах его нет. Поэтому X-Ray показывает API-эквивалент окна и сравнивает его с вашим самым загруженным окном в истории."))
@@ -195,6 +203,14 @@ struct AppearanceSettings: View {
         )
     }
 
+    private var languageNote: String {
+        #if os(macOS)
+        return L("Меню, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык macOS: русский, английский или немецкий, для других языков — английский. Системные пункты меню (Скрыть, Завершить) меняют язык после перезапуска.")
+        #else
+        return L("Экраны, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык iPad: русский, английский или немецкий, для других языков — английский.")
+        #endif
+    }
+
     var body: some View {
         Form {
             Section(L("Язык интерфейса")) {
@@ -205,7 +221,7 @@ struct AppearanceSettings: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                Text(L("Меню, подсказки, разбор сессий и отчёты. «Как в системе» берёт язык macOS: русский, английский или немецкий, для других языков — английский. Системные пункты меню (Скрыть, Завершить) меняют язык после перезапуска."))
+                Text(languageNote)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

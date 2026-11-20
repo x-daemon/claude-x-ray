@@ -20,7 +20,7 @@ struct LiveView: View {
                     AccountLimitsCard()
                 }
 
-                Card(title: L("Окно 5 часов по логам этого Mac"), subtitle: model.plan.isSubscription ? L("подписка \(model.plan.title)") : nil) {
+                Card(title: windowTitle, subtitle: model.plan.isSubscription ? L("подписка \(model.plan.title)") : nil) {
                     WindowSummaryView()
                 }
 
@@ -71,6 +71,14 @@ struct LiveView: View {
             }
             .padding(20)
         }
+    }
+
+    private var windowTitle: String {
+        #if os(macOS)
+        return L("Окно 5 часов по логам этого Mac")
+        #else
+        return L("Окно 5 часов по логам ваших компьютеров")
+        #endif
     }
 }
 
@@ -316,11 +324,11 @@ struct NoRecentActivityBanner: View {
                 .foregroundStyle(Palette.accent)
                 .frame(width: 28)
             VStack(alignment: .leading, spacing: 4) {
-                Text(L("На этом Mac Claude Code не работал последние 3 дня"))
+                Text(headline)
                     .font(.headline)
                 Text(lastWriteLine)
                     .foregroundStyle(.secondary)
-                Text(L("Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray не видит: их логи остаются на серверах Anthropic."))
+                Text(cloudNote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -336,9 +344,29 @@ struct NoRecentActivityBanner: View {
         .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Palette.hairline))
     }
 
+    private var headline: String {
+        #if os(macOS)
+        return L("На этом Mac Claude Code не работал последние 3 дня")
+        #else
+        return L("На ваших компьютерах Claude Code не работал последние 3 дня")
+        #endif
+    }
+
+    private var cloudNote: String {
+        #if os(macOS)
+        return L("Облачные сессии (claude.ai/code, мобильное приложение Claude, облачная среда в Claude Desktop) X-Ray не видит: их логи остаются на серверах Anthropic.")
+        #else
+        return L("Облачные сессии видны здесь, когда X-Ray на компьютере принимает их логи: «Настройки → Облако» в X-Ray на Mac или Windows.")
+        #endif
+    }
+
     private var lastWriteLine: String {
         guard let newest = model.newestTranscript else {
+            #if os(macOS)
             return L("Логов Claude Code на этом Mac пока нет.")
+            #else
+            return L("Логов Claude Code с компьютеров пока нет.")
+            #endif
         }
         return L("Последняя запись в логах: \(Fmt.dateTime(newest)), \(Fmt.ago(model.now.timeIntervalSince(newest))).")
     }

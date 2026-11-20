@@ -1,0 +1,166 @@
+name: iPad
+
+# The iPad app (iPad/XRay.xcodeproj): the project is up to date, it builds for the simulator, the
+# Mac app serves demo logs to it read-only (checked with curl first), and in an iPad mini simulator
+# it syncs them and shows every screen, in portrait and landscape, light and dark, in Russian,
+# English and German. Screens go to the ipad-snapshots branch and the run's artifacts.
+on:
+  push:
+    paths: ["iPad/**", "Sources/**", "Package.swift", "l10n/**", "scripts/make-ipad-project.py", "scripts/demo-data.py", ".github/workflows/ipad.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ipad:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      BUNDLE: com.s2a.claude-xray.ipad
+      VIEWER_TOKEN: xrayv_ci0123456789abcdef0123456789abcdef
+      OUT: ${{ github.workspace }}/../ipad-snapshots
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          xcrun simctl list runtimes | grep -i ios || true
+
+      - name: The Xcode project lists every source file
+        run: |
+          python3 scripts/make-ipad-project.py
+          git diff --exit-code iPad/XRay.xcodeproj
+
+      - name: Build the iPad app for the simulator
+        run: |
+          set -o pipefail
+          mkdir -p build
+          xcodebuild -project iPad/XRay.xcodeproj -scheme XRay -configuration Debug \
+            -sdk iphonesimulator -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build/ipad CODE_SIGNING_ALLOWED=NO build > build/ipad-build.log 2>&1 \
+            || { grep -E "error:|fatal" build/ipad-build.log | sort -u | head -150; tail -40 build/ipad-build.log; exit 1; }
+          grep -E "warning:" build/ipad-build.log | grep -v "Run script build phase" | sort -u | head -60 || true
+          ls -la build/ipad/Build/Products/Debug-iphonesimulator/XRay.app
+          /usr/libexec/PlistBuddy -c "Print" build/ipad/Build/Products/Debug-iphonesimulator/XRay.app/Info.plist
+
+      - name: Build the Mac app
+        run: swift build --product S2AClaudeXRay
+
+      - name: Demo data
+        run: python3 scripts/demo-data.py "$RUNNER_TEMP/xray-demo"
+
+      - name: Mac X-Ray serves the iPad
+        # The Mac app with demo logs, plan usage from its status line command and iPad access on.
+        run: |
+          BIN="$(swift build --product S2AClaudeXRay --show-bin-path)/S2AClaudeXRay"
+          NOW=$(date +%s)
+          printf '{"session_id":"demo","model":{"id":"claude-opus-5-5","display_name":"Opus 5.5"},"version":"2.1.325","rate_limits":{"five_hour":{"used_percentage":37.5,"resets_at":%d},"seven_day":{"used_percentage":22,"resets_at":%d}}}' $((NOW + 7800)) $((NOW + 3 * 86400 + 5000)) \
+            | "$BIN" --statusline
+          mkdir -p "$OUT"
+          CLAUDE_CONFIG_DIR="$RUNNER_TEMP/xray-demo" XRAY_RECEIVER_PORT=47318 XRAY_VIEWER_TOKEN="$VIEWER_TOKEN" \
+            nohup "$BIN" > "$OUT/mac-app.txt" 2>&1 &
+          echo $! > "$RUNNER_TEMP/mac-app.pid"
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:47318/health && break; sleep 1; done
+          echo
+          check() { [ "$2" = "$3" ] && echo "ok: $1 ($2)" || { echo "FAIL: $1: got $2, want $3"; exit 1; }; }
+          check "no token" "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:47318/v1/info)" 401
+          check "upload token cannot read" "$(curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer xray_wrong' http://127.0.0.1:47318/v1/files)" 401
+          AUTH="Authorization: Bearer $VIEWER_TOKEN"
+          curl -sf -H "$AUTH" http://127.0.0.1:47318/v1/info | tee "$OUT/info.json"; echo
+          curl -sf -H "$AUTH" http://127.0.0.1:47318/v1/files > "$RUNNER_TEMP/files.json"
+          python3 - "$RUNNER_TEMP/files.json" "$RUNNER_TEMP/xray-demo/projects" <<'EOF'
+          import json, os, sys, urllib.parse, urllib.request, zlib
+          listing = json.load(open(sys.argv[1]))
+          files = listing["files"]
+          local = sum(len([f for f in fs if f.endswith(".jsonl")]) for _, _, fs in os.walk(sys.argv[2]))
+          print(f"listed {len(files)} transcripts, {local} in the demo folder")
+          assert len(files) == local, "every demo transcript is listed"
+          first = files[0]
+          request = urllib.request.Request(
+              "http://127.0.0.1:47318/v1/file?" + urllib.parse.urlencode({"id": first["id"], "from": 0, "z": 1}),
+              headers={"Authorization": "Bearer " + os.environ["VIEWER_TOKEN"]})
+          with urllib.request.urlopen(request) as response:
+              body = response.read()
+              raw = zlib.decompress(body, -15) if response.headers.get("X-Encoding") == "deflate-raw" else body
+              assert int(response.headers["X-File-Size"]) == first["size"]
+          parts = first["id"].split("/")[1:]
+          original = open(os.path.join(sys.argv[2], *parts), "rb").read()
+          assert raw == original[: len(raw)] and len(raw) == min(len(original), 4 * 1024 * 1024), "chunk is the file's start"
+          print(f"ok: {first['id']}: {len(body)} bytes compressed, {len(raw)} raw, identical")
+          EOF
+          check "plan usage" "$(curl -s -o /dev/null -w '%{http_code}' -H "$AUTH" http://127.0.0.1:47318/v1/plan-usage)" 200
+          check "outside the catalog" "$(curl -s -o /dev/null -w '%{http_code}' -H "$AUTH" 'http://127.0.0.1:47318/v1/file?id=..%2F..%2Fetc%2Fpasswd')" 404
+
+      - name: iPad mini simulator
+        run: |
+          set -e
+          TYPE=$(xcrun simctl list devicetypes -j | python3 -c "import json,sys; t=[d['identifier'] for d in json.load(sys.stdin)['devicetypes'] if 'iPad-mini' in d['identifier']]; print(sorted(t, key=lambda i: ('A17' not in i, i))[0])")
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "import json,sys; r=[x for x in json.load(sys.stdin)['runtimes'] if x['platform']=='iOS' and x['isAvailable']]; print(sorted(r, key=lambda x: [int(p) for p in x['version'].split('.')])[-1]['identifier'])")
+          echo "device type $TYPE, runtime $RUNTIME"
+          UDID=$(xcrun simctl create "X-Ray iPad mini" "$TYPE" "$RUNTIME")
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 || true
+          xcrun simctl install "$UDID" build/ipad/Build/Products/Debug-iphonesimulator/XRay.app
+
+      - name: iPad screens
+        run: |
+          set +e
+          shoot() {
+            local lang="$1" plan="$2" out="$OUT/$1"
+            mkdir -p "$out"
+            xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null
+            local data
+            data=$(xcrun simctl get_app_container "$UDID" "$BUNDLE" data)
+            local snap="$data/Documents/snapshots"
+            rm -rf "$snap"
+            SIMCTL_CHILD_XRAY_SNAPSHOT_LANGUAGE="$lang" xcrun simctl launch "$UDID" "$BUNDLE" \
+              -XRayServer http://127.0.0.1:47318 -XRayToken "$VIEWER_TOKEN" -XRayName "CI Mac" -XRaySnapshots "$plan"
+            for i in $(seq 1 1800); do
+              if [ -f "$snap/next.txt" ]; then
+                name=$(cat "$snap/next.txt")
+                xcrun simctl io "$UDID" screenshot "$out/$name.png" > /dev/null 2>&1
+                rm -f "$snap/next.txt"
+              fi
+              [ -f "$snap/finished" ] && break
+              sleep 0.5
+            done
+            cp "$snap/log.txt" "$out/log.txt" 2>/dev/null
+            echo "== $lang"; cat "$out/log.txt" 2>/dev/null; ls "$out" | head -80
+          }
+          shoot ru full
+          shoot en short
+          shoot de short
+          # Landscape screenshots come out in the device's portrait frame: turn them upright.
+          for f in "$OUT"/*/landscape-*.png; do
+            [ -f "$f" ] || continue
+            w=$(sips -g pixelWidth "$f" | awk '/pixelWidth/ {print $2}'); h=$(sips -g pixelHeight "$f" | awk '/pixelHeight/ {print $2}')
+            [ "$h" -gt "$w" ] && sips -r 270 "$f" > /dev/null
+          done
+          xcrun simctl spawn "$UDID" log show --last 15m --style compact --predicate 'process == "XRay"' > "$OUT/ipad-log.txt" 2>/dev/null
+          tail -50 "$OUT/ipad-log.txt"
+          kill "$(cat "$RUNNER_TEMP/mac-app.pid")" 2>/dev/null
+          ls -R "$OUT" | head -150
+          exit 0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ipad-snapshots
+          path: ${{ github.workspace }}/../ipad-snapshots
+          retention-days: 14
+
+      - name: Publish to the ipad-snapshots branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd "$OUT"
+          git init -q -b ipad-snapshots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "iPad snapshots of ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ipad-snapshots

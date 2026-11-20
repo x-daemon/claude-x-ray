@@ -14,6 +14,7 @@ struct SessionsView: View {
         let sessions = SessionAnalytics.sessions(events)
         let rows = filter(sessions).sorted(using: sortOrder)
 
+        #if os(macOS)
         VSplitView {
             Table(rows, selection: $model.selectedSessionID, sortOrder: $sortOrder) {
                 TableColumn(L("Начало"), value: \.start) { session in
@@ -56,6 +57,42 @@ struct SessionsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .searchable(text: $query, prompt: L("Проект, ветка или модель"))
+        #else
+        // iPad: a list; a tap opens the session's details.
+        List {
+            Section {
+                ForEach(rows) { session in
+                    NavigationLink(value: SessionRoute(id: session.id)) {
+                        SessionRow(session: session)
+                    }
+                    .listRowBackground(Palette.card)
+                }
+            } header: {
+                HStack {
+                    Text(Fmt.plural(rows.count, "сессия", "сессии", "сессий"))
+                    Spacer()
+                    SessionSortMenu(sortOrder: $sortOrder)
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(Palette.page == nil ? .automatic : .hidden)
+        .overlay {
+            if rows.isEmpty {
+                ContentUnavailableView(query.isEmpty ? L("Нет сессий за этот период") : L("Ничего не найдено"), systemImage: "list.bullet.rectangle")
+            }
+        }
+        .navigationDestination(for: SessionRoute.self) { route in
+            if let session = sessions.first(where: { $0.id == route.id }) {
+                SessionDetailView(session: session, events: events.filter { $0.event.sessionID == route.id })
+                    .navigationTitle(session.projectName)
+                    .background { Palette.page?.ignoresSafeArea() }
+            } else {
+                ContentUnavailableView(L("Сессии нет в выбранном периоде"), systemImage: "list.bullet.rectangle")
+            }
+        }
+        .searchable(text: $query, prompt: L("Проект, ветка или модель"))
+        #endif
     }
 
     private func filter(_ sessions: [SessionSummary]) -> [SessionSummary] {
@@ -127,3 +164,63 @@ struct SessionDetailView: View {
         }
     }
 }
+
+#if os(iOS)
+/// A session opened from the iPad's list.
+struct SessionRoute: Hashable {
+    let id: String
+}
+
+/// One session in the iPad's list: project, cost, when, how long and how big.
+struct SessionRow: View {
+    let session: SessionSummary
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(session.projectName).font(.headline).lineLimit(1)
+                if let branch = session.gitBranch {
+                    Text(branch).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                }
+                Spacer(minLength: 8)
+                Text(Fmt.usd(session.cost)).font(.headline).monospacedDigit()
+            }
+            HStack(spacing: 10) {
+                Text(Fmt.dateTime(session.start))
+                Text(Fmt.duration(session.duration))
+                Text(Fmt.plural(session.requests, "запрос", "запроса", "запросов"))
+                Text(L("контекст до \(Fmt.tokens(session.peakContextTokens))"))
+                Text(L("кэш \(Fmt.percent(session.cacheHitRate))"))
+                Spacer(minLength: 0)
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .monospacedDigit()
+            .lineLimit(1)
+            Text(session.modelsLabel)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+/// How the iPad's session list is sorted.
+struct SessionSortMenu: View {
+    @Binding var sortOrder: [KeyPathComparator<SessionSummary>]
+
+    var body: some View {
+        Menu {
+            Button(L("По стоимости")) { sortOrder = [KeyPathComparator(\SessionSummary.cost, order: .reverse)] }
+            Button(L("Сначала новые")) { sortOrder = [KeyPathComparator(\SessionSummary.start, order: .reverse)] }
+            Button(L("По длительности")) { sortOrder = [KeyPathComparator(\SessionSummary.duration, order: .reverse)] }
+            Button(L("По числу запросов")) { sortOrder = [KeyPathComparator(\SessionSummary.requests, order: .reverse)] }
+            Button(L("По пику контекста")) { sortOrder = [KeyPathComparator(\SessionSummary.peakContextTokens, order: .reverse)] }
+        } label: {
+            Label(L("Сортировка"), systemImage: "arrow.up.arrow.down")
+                .font(.caption)
+        }
+    }
+}
+#endif

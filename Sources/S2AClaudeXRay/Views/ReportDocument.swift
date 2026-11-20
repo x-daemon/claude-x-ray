@@ -1,7 +1,11 @@
-import AppKit
 import Charts
 import SwiftUI
 import XRayCore
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 /// The visual report for the selected period. Shown on the Reports screen and rendered to PDF.
 struct ReportDocument: View {
@@ -425,7 +429,11 @@ struct ReportFooter: View {
         if model.plan.isSubscription {
             parts[0] += L(": на подписке \(model.plan.title) деньги не списываются")
         }
+        #if os(macOS)
         parts.append(L("Источники: логи Claude Code на этом Mac, импортированные логи и логи, присланные облачными сессиями"))
+        #else
+        parts.append(L("Источники: логи Claude Code с ваших компьютеров, включая облачные сессии, которые они получили"))
+        #endif
         parts.append(L("Сформировано \(Fmt.dateTime(model.now)) в S2A Claude X-Ray"))
         return parts.joined(separator: ". ") + "."
     }
@@ -457,11 +465,16 @@ enum ReportPDF {
                 rendered = true
             }
         }
+        // Theme colors follow the appearance they are drawn in: paper is light.
+        #if os(macOS)
         if let light = NSAppearance(named: .aqua) {
             light.performAsCurrentDrawingAppearance(draw)
         } else {
             draw()
         }
+        #else
+        UITraitCollection(userInterfaceStyle: .light).performAsCurrent(draw)
+        #endif
         return rendered ? data as Data : nil
     }
 }

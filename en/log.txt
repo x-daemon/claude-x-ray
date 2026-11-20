@@ -1,0 +1,15 @@
+first sync after 9 s: Connected
+computer sjc22-bm204-15e62c97-3793-4c1e-b199-a830c0de1aed-AE39EE35B370 (macOS): files 42, bytes 14099789, remote files 42
+events: 1187, activity items: 658, trace sessions: 7
+live state: Running Bash
+plan usage: 5h 37.5%, 7d 22.0%
+light-live
+light-trace-feed
+light-trace-flow
+light-trace-llm
+light-overview
+light-sessions
+light-session-detail
+light-insights
+light-reports
+light-settings

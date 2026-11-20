@@ -50,7 +50,7 @@
 
 ## Установка на Windows
 
-Скачайте и запустите [`S2A-Claude-X-Ray-Setup.exe`](https://github.com/x-daemon/claude-x-ray/releases/latest/download/S2A-Claude-X-Ray-Setup.exe) (x64). Для ARM64 — `S2A-Claude-X-Ray-Setup-0.7.0-arm64.exe`; без установки — `S2A-Claude-X-Ray-0.7.0-win-x64.zip` или `-win-arm64.zip`. Или в PowerShell:
+Скачайте и запустите [`S2A-Claude-X-Ray-Setup.exe`](https://github.com/x-daemon/claude-x-ray/releases/latest/download/S2A-Claude-X-Ray-Setup.exe) (x64). Для ARM64 — `S2A-Claude-X-Ray-Setup-<версия>-arm64.exe`; без установки — `S2A-Claude-X-Ray-<версия>-win-x64.zip` или `-win-arm64.zip`. Или в PowerShell:
 
 ```powershell
 Invoke-WebRequest https://github.com/x-daemon/claude-x-ray/releases/latest/download/S2A-Claude-X-Ray-Setup.exe -OutFile "$env:TEMP\S2A-Claude-X-Ray-Setup.exe"; Start-Process "$env:TEMP\S2A-Claude-X-Ray-Setup.exe"
@@ -74,10 +74,14 @@ pkill -x S2AClaudeXRay; rm -rf "/Applications/S2A Claude X-Ray.app"; ditto -x -k
 open "/Applications/S2A Claude X-Ray.app"
 ```
 
-Или вручную: откройте `S2A-Claude-X-Ray-0.7.0.dmg` и перетащите **S2A Claude X-Ray** в «Программы». Сборка подписана ad‑hoc, без Apple Developer ID, поэтому при первом запуске нажмите «Готово», затем «Системные настройки → Конфиденциальность и безопасность → Всё равно открыть», или снимите карантин:
+Или вручную: откройте `S2A-Claude-X-Ray-<версия>.dmg` и перетащите **S2A Claude X-Ray** в «Программы». Сборка подписана ad‑hoc, без Apple Developer ID, поэтому при первом запуске нажмите «Готово», затем «Системные настройки → Конфиденциальность и безопасность → Всё равно открыть», или снимите карантин:
 
 ```bash
 xattr -dr com.apple.quarantine "/Applications/S2A Claude X-Ray.app"
 ```
 
 Приложение читает `~/.claude/projects` (или `$CLAUDE_CONFIG_DIR/projects`) и никуда не отправляет данные. Вне своей папки оно меняет только `statusLine` в `~/.claude/settings.json`, и только после нажатия «Подключить» (копия прежнего файла: `settings.json.xray-backup`). Проверить целостность: `shasum -a 256 -c SHA256SUMS.txt`.
+
+## Установка на iPad
+
+Нужен Mac с Xcode 15 или новее. Скачайте исходники (`git clone https://github.com/x-daemon/claude-x-ray.git` или «Source code (zip)» ниже), откройте `iPad/XRay.xcodeproj`, выберите свой Apple ID в **Signing & Capabilities → Team**, подключите iPad кабелем (на iPad включите «Режим разработчика») и нажмите ▶︎. Затем в X-Ray на Mac или Windows откройте «Настройки → iPad», включите доступ и наведите камеру iPad на QR‑код. Подробно — в README, раздел «X-Ray для iPad».

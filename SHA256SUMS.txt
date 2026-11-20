@@ -1,0 +1,8 @@
+9036268851577c664f5013df6eea172258ee5d53fc97d57a991a0f7f16bd8b52  ./S2A-Claude-X-Ray-0.9.0.dmg
+d903db101825f4a70df21fd228026f6596dd9a18c5d0e8ec3793d5c6b205a683  ./S2A-Claude-X-Ray-0.9.0-win-arm64.zip
+a5608261cfc852409072b4c9cf962516fb339e7e11577b4a7bb0922475894194  ./S2A-Claude-X-Ray-0.9.0-win-x64.zip
+d916ecd4aadd63ea77a17828c04882b6b7d9dbfc1981f46334ffac5614964bbb  ./S2A-Claude-X-Ray-0.9.0.zip
+d916ecd4aadd63ea77a17828c04882b6b7d9dbfc1981f46334ffac5614964bbb  ./S2A-Claude-X-Ray.zip
+7cac419a2b8e558daa0a457a3cc48dbae5c8e9e46deff2ff263887c17a031711  ./S2A-Claude-X-Ray-Setup-0.9.0-arm64.exe
+0decc0cd425fb966ba51219cac151c4cf4cbb1d25fc80e46f5f32f9ffcc1c5fc  ./S2A-Claude-X-Ray-Setup-0.9.0-x64.exe
+0decc0cd425fb966ba51219cac151c4cf4cbb1d25fc80e46f5f32f9ffcc1c5fc  ./S2A-Claude-X-Ray-Setup.exe

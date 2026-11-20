@@ -185,7 +185,10 @@ struct RankedBarList: View {
                             Text(detail).font(.caption2).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                         }
                     }
-                    .frame(width: labelWidth, alignment: .leading)
+                    // labelWidth when there is room; in a narrow card (an iPad in portrait) less, so
+                    // that the bar keeps its minimum. The same width in every row.
+                    .frame(minWidth: 0, maxWidth: labelWidth, alignment: .leading)
+                    .layoutPriority(1)
 
                     GeometryReader { geometry in
                         let width = max(2, geometry.size.width * CGFloat(row.value / maxValue))
@@ -203,6 +206,7 @@ struct RankedBarList: View {
                         .frame(height: 12)
                         .frame(maxHeight: .infinity, alignment: .center)
                     }
+                    .frame(minWidth: 48)
                     .frame(height: 18)
 
                     Text(row.valueText)

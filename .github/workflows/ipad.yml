@@ -19,7 +19,7 @@ jobs:
     env:
       BUNDLE: com.s2a.claude-xray.ipad
       VIEWER_TOKEN: xrayv_ci0123456789abcdef0123456789abcdef
-      OUT: ${{ github.workspace }}/../ipad-snapshots
+      OUT: ${{ runner.temp }}/ipad-snapshots
     steps:
       - uses: actions/checkout@v4
 
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ipad-snapshots
-          path: ${{ github.workspace }}/../ipad-snapshots
+          path: ${{ runner.temp }}/ipad-snapshots
           retention-days: 14
 
       - name: Publish to the ipad-snapshots branch

@@ -18,7 +18,7 @@ struct TraceContextView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
+                TileRow(minWidth: 120) {
                     StatTile(title: L("Контекст сейчас"), value: Fmt.tokens(contextNow), caption: L("\(Fmt.percent(ratio)) окна \(Fmt.tokens(window))"), systemImage: "gauge.with.dots.needle.50percent")
                     StatTile(
                         title: L("Модель"),
@@ -57,7 +57,7 @@ struct TraceContextView: View {
                     BiggestResultsView(trace: trace)
                 }
 
-                HStack(alignment: .top, spacing: 16) {
+                CardRow {
                     Card(title: L("Окружение")) {
                         EnvironmentGrid(snapshot: snapshot, trace: trace)
                     }

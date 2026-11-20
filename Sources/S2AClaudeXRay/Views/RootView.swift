@@ -3,14 +3,45 @@ import XRayCore
 
 struct RootView: View {
     @Environment(AppModel.self) private var model
+    @State private var columns: NavigationSplitViewVisibility = .automatic
     #if os(iOS)
     @Environment(DesktopSync.self) private var sync
+    /// Narrower than an iPad in landscape: the screens get the whole width and the sidebar slides in
+    /// over them. Nil until the width is known.
+    @State private var narrow: Bool?
     #endif
 
     var body: some View {
-        @Bindable var model = model
+        #if os(iOS)
+        splitView
+            .modifier(AdaptiveSplitStyle(narrow: narrow ?? false))
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear { adapt(to: proxy.size.width) }
+                        .onChange(of: proxy.size.width) { _, width in adapt(to: width) }
+                }
+            }
+            .onChange(of: model.selection) { _, _ in
+                if narrow == true { columns = .detailOnly }
+            }
+        #else
+        splitView
+        #endif
+    }
 
-        NavigationSplitView {
+    #if os(iOS)
+    private func adapt(to width: CGFloat) {
+        let isNarrow = width < 1000
+        guard isNarrow != narrow else { return }
+        narrow = isNarrow
+        columns = isNarrow ? .detailOnly : .all
+    }
+    #endif
+
+    private var splitView: some View {
+        @Bindable var model = model
+        return NavigationSplitView(columnVisibility: $columns) {
             List(selection: $model.selection) {
                 ForEach(SidebarItem.screens) { item in
                     Label(item.title, systemImage: item.systemImage)
@@ -181,3 +212,18 @@ struct ScanStatusView: View {
         return L("\(Fmt.plural(files, "лог", "лога", "логов")), \(Fmt.plural(model.priced.count, "ответ", "ответа", "ответов")) модели. Новые строки логов подхватываются автоматически. Облачные сессии сюда не попадают: их логи остаются на серверах Anthropic.")
     }
 }
+
+#if os(iOS)
+/// Portrait: the sidebar slides in over the screen; landscape: it stays beside it.
+private struct AdaptiveSplitStyle: ViewModifier {
+    let narrow: Bool
+
+    func body(content: Content) -> some View {
+        if narrow {
+            content.navigationSplitViewStyle(.prominentDetail)
+        } else {
+            content.navigationSplitViewStyle(.balanced)
+        }
+    }
+}
+#endif

@@ -13,7 +13,7 @@ struct TraceToolsView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
+                TileRow(minWidth: 120) {
                     StatTile(title: L("Вызовов инструментов"), value: "\(trace.tools.count)", caption: L("ошибок \(trace.tools.filter(\.isError).count), сейчас \(trace.tools.filter(\.isRunning).count)"), systemImage: "wrench.and.screwdriver")
                     StatTile(title: L("MCP-серверы"), value: "\(trace.mcpServers.count)", caption: L("подключено \(connected), вызывались \(trace.mcpServers.filter { $0.calls > 0 }.count)"), systemImage: "puzzlepiece.extension")
                     StatTile(title: L("Скиллы"), value: "\(invokedSkills) / \(trace.skills.count)", caption: L("вызваны / доступны"), systemImage: "sparkles")
@@ -30,7 +30,7 @@ struct TraceToolsView: View {
                     MCPServersView(servers: trace.mcpServers)
                 }
 
-                HStack(alignment: .top, spacing: 16) {
+                CardRow {
                     Card(title: L("Скиллы"), subtitle: L("подсвечены вызванные")) {
                         SkillsView(skills: trace.skills)
                     }

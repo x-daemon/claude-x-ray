@@ -14,7 +14,7 @@ struct InsightsView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
+                TileRow {
                     StatTile(title: model.plan.costLabel, value: Fmt.usd(summary.cost.total), caption: model.period.title)
                     StatTile(title: L("Доля кэша"), value: summary.requests > 0 ? Fmt.percent(summary.tokens.cacheHitRate) : "—", caption: L("чем выше, тем дешевле каждый ход"))
                     StatTile(

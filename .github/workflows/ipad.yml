@@ -2,8 +2,8 @@ name: iPad
 
 # The iPad app (iPad/XRay.xcodeproj): the project is up to date, it builds for the simulator, the
 # Mac app serves demo logs to it read-only (checked with curl first), and in an iPad mini simulator
-# it syncs them and shows every screen, in portrait and landscape, light and dark, in Russian,
-# English and German. Screens go to the ipad-snapshots branch and the run's artifacts.
+# it syncs them and shows every screen, light and dark, in Russian, English and German, and on a
+# 13-inch iPad the wide layout. Screens go to the ipad-snapshots branch and the run's artifacts.
 on:
   push:
     paths: ["iPad/**", "Sources/**", "Package.swift", "l10n/**", "scripts/make-ipad-project.py", "scripts/demo-data.py", ".github/workflows/ipad.yml"]
@@ -94,55 +94,60 @@ jobs:
           check "plan usage" "$(curl -s -o /dev/null -w '%{http_code}' -H "$AUTH" http://127.0.0.1:47318/v1/plan-usage)" 200
           check "outside the catalog" "$(curl -s -o /dev/null -w '%{http_code}' -H "$AUTH" 'http://127.0.0.1:47318/v1/file?id=..%2F..%2Fetc%2Fpasswd')" 404
 
-      - name: iPad mini simulator
+      - name: Simulators (iPad mini, and a 13-inch iPad for the wide layout)
+        # iPadOS does not let an app with multitasking turn itself, so the landscape layout
+        # (sidebar beside the screen) is checked on a 13-inch iPad in portrait.
         run: |
           set -e
-          TYPE=$(xcrun simctl list devicetypes -j | python3 -c "import json,sys; t=[d['identifier'] for d in json.load(sys.stdin)['devicetypes'] if 'iPad-mini' in d['identifier']]; print(sorted(t, key=lambda i: ('A17' not in i, i))[0])")
           RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "import json,sys; r=[x for x in json.load(sys.stdin)['runtimes'] if x['platform']=='iOS' and x['isAvailable']]; print(sorted(r, key=lambda x: [int(p) for p in x['version'].split('.')])[-1]['identifier'])")
-          echo "device type $TYPE, runtime $RUNTIME"
-          UDID=$(xcrun simctl create "X-Ray iPad mini" "$TYPE" "$RUNTIME")
-          echo "UDID=$UDID" >> "$GITHUB_ENV"
-          xcrun simctl boot "$UDID"
-          xcrun simctl bootstatus "$UDID" -b
-          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 || true
-          xcrun simctl install "$UDID" build/ipad/Build/Products/Debug-iphonesimulator/XRay.app
+          pick() {
+            xcrun simctl list devicetypes -j | python3 -c "import json,sys; t=[d['identifier'] for d in json.load(sys.stdin)['devicetypes'] if '$1' in d['identifier']]; t.sort(key=lambda i: ('$2' not in i, i)); print(t[0] if t else '')"
+          }
+          MINI=$(pick iPad-mini A17)
+          WIDE=$(pick 13-inch iPad-Pro)
+          [ -n "$WIDE" ] || WIDE=$(pick 12-9-inch iPad-Pro)
+          echo "runtime $RUNTIME, iPad mini $MINI, wide $WIDE"
+          for kind in MINI WIDE; do
+            TYPE=${!kind}
+            UDID=$(xcrun simctl create "X-Ray $kind" "$TYPE" "$RUNTIME")
+            echo "${kind}_UDID=$UDID" >> "$GITHUB_ENV"
+            xcrun simctl boot "$UDID"
+            xcrun simctl bootstatus "$UDID" -b
+            xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 || true
+            xcrun simctl install "$UDID" build/ipad/Build/Products/Debug-iphonesimulator/XRay.app
+          done
 
       - name: iPad screens
         run: |
           set +e
           shoot() {
-            local lang="$1" plan="$2" out="$OUT/$1"
+            local udid="$1" lang="$2" plan="$3" out="$OUT/$4"
             mkdir -p "$out"
-            xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null
+            xcrun simctl terminate "$udid" "$BUNDLE" 2>/dev/null
             local data
-            data=$(xcrun simctl get_app_container "$UDID" "$BUNDLE" data)
+            data=$(xcrun simctl get_app_container "$udid" "$BUNDLE" data)
             local snap="$data/Documents/snapshots"
             rm -rf "$snap"
-            SIMCTL_CHILD_XRAY_SNAPSHOT_LANGUAGE="$lang" xcrun simctl launch "$UDID" "$BUNDLE" \
+            SIMCTL_CHILD_XRAY_SNAPSHOT_LANGUAGE="$lang" xcrun simctl launch "$udid" "$BUNDLE" \
               -XRayServer http://127.0.0.1:47318 -XRayToken "$VIEWER_TOKEN" -XRayName "CI Mac" -XRaySnapshots "$plan"
             for i in $(seq 1 1800); do
               if [ -f "$snap/next.txt" ]; then
                 name=$(cat "$snap/next.txt")
-                xcrun simctl io "$UDID" screenshot "$out/$name.png" > /dev/null 2>&1
+                xcrun simctl io "$udid" screenshot "$out/$name.png" > /dev/null 2>&1
                 rm -f "$snap/next.txt"
               fi
               [ -f "$snap/finished" ] && break
               sleep 0.5
             done
             cp "$snap/log.txt" "$out/log.txt" 2>/dev/null
-            echo "== $lang"; cat "$out/log.txt" 2>/dev/null; ls "$out" | head -80
+            echo "== $4"; cat "$out/log.txt" 2>/dev/null
           }
-          shoot ru full
-          shoot en short
-          shoot de short
-          # Landscape screenshots come out in the device's portrait frame: turn them upright.
-          for f in "$OUT"/*/landscape-*.png; do
-            [ -f "$f" ] || continue
-            w=$(sips -g pixelWidth "$f" | awk '/pixelWidth/ {print $2}'); h=$(sips -g pixelHeight "$f" | awk '/pixelHeight/ {print $2}')
-            [ "$h" -gt "$w" ] && sips -r 270 "$f" > /dev/null
-          done
-          xcrun simctl spawn "$UDID" log show --last 15m --style compact --predicate 'process == "XRay"' > "$OUT/ipad-log.txt" 2>/dev/null
-          tail -50 "$OUT/ipad-log.txt"
+          shoot "$MINI_UDID" ru full ru
+          shoot "$MINI_UDID" en short en
+          shoot "$MINI_UDID" de short de
+          shoot "$WIDE_UDID" ru short ru-wide
+          xcrun simctl spawn "$MINI_UDID" log show --last 20m --style compact --predicate 'process == "XRay"' > "$OUT/ipad-log.txt" 2>/dev/null
+          grep -iE "error|fault|crash" "$OUT/ipad-log.txt" | grep -v "SecTrustReportNetworkingAnalytics" | tail -30
           kill "$(cat "$RUNNER_TEMP/mac-app.pid")" 2>/dev/null
           ls -R "$OUT" | head -150
           exit 0

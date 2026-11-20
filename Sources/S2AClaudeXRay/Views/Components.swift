@@ -155,6 +155,96 @@ extension View {
     }
 }
 
+/// StatTiles in one row, like an HStack; when each would be narrower than `minWidth` (an iPad in
+/// portrait), as many per row as fit, in rows of equal columns.
+struct TileRow: Layout {
+    var minWidth: CGFloat = 140
+    var spacing: CGFloat = 12
+
+    private func columns(_ width: CGFloat?, _ count: Int) -> Int {
+        guard let width, width.isFinite else { return count }
+        return max(1, min(count, Int((width + spacing) / (minWidth + spacing))))
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let count = subviews.count
+        let columns = columns(proposal.width, count)
+        guard count > 0, columns < count, let width = proposal.width else {
+            let stack = HStackLayout(spacing: spacing)
+            var stackCache = stack.makeCache(subviews: subviews)
+            return stack.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
+        }
+        let cell = (width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
+        var height: CGFloat = 0
+        var rows = 0
+        for start in stride(from: 0, to: count, by: columns) {
+            height += subviews[start..<min(start + columns, count)].map { $0.sizeThatFits(ProposedViewSize(width: cell, height: nil)).height }.max() ?? 0
+            rows += 1
+        }
+        return CGSize(width: width, height: height + spacing * CGFloat(rows - 1))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let count = subviews.count
+        let columns = columns(proposal.width ?? bounds.width, count)
+        guard count > 0, columns < count else {
+            let stack = HStackLayout(spacing: spacing)
+            var stackCache = stack.makeCache(subviews: subviews)
+            stack.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
+            return
+        }
+        let cell = (bounds.width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
+        var y = bounds.minY
+        for start in stride(from: 0, to: count, by: columns) {
+            let row = subviews[start..<min(start + columns, count)]
+            let height = row.map { $0.sizeThatFits(ProposedViewSize(width: cell, height: nil)).height }.max() ?? 0
+            for (index, subview) in row.enumerated() {
+                subview.place(
+                    at: CGPoint(x: bounds.minX + CGFloat(index) * (cell + spacing), y: y),
+                    anchor: .topLeading,
+                    proposal: ProposedViewSize(width: cell, height: height)
+                )
+            }
+            y += height + spacing
+        }
+    }
+}
+
+/// Cards side by side, top-aligned like an HStack; one under the other when the row has less
+/// than `minWidth` per card (an iPad in portrait).
+struct CardRow: Layout {
+    var minWidth: CGFloat = 360
+    var spacing: CGFloat = 16
+
+    private func sideBySide(_ width: CGFloat?, _ count: Int) -> Bool {
+        guard let width, width.isFinite, count > 1 else { return true }
+        return width >= minWidth * CGFloat(count) + spacing * CGFloat(count - 1)
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        if sideBySide(proposal.width, subviews.count) {
+            let stack = HStackLayout(alignment: .top, spacing: spacing)
+            var stackCache = stack.makeCache(subviews: subviews)
+            return stack.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
+        }
+        let stack = VStackLayout(alignment: .leading, spacing: spacing)
+        var stackCache = stack.makeCache(subviews: subviews)
+        return stack.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        if sideBySide(proposal.width ?? bounds.width, subviews.count) {
+            let stack = HStackLayout(alignment: .top, spacing: spacing)
+            var stackCache = stack.makeCache(subviews: subviews)
+            stack.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
+        } else {
+            let stack = VStackLayout(alignment: .leading, spacing: spacing)
+            var stackCache = stack.makeCache(subviews: subviews)
+            stack.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
+        }
+    }
+}
+
 /// One row of a ranked horizontal bar list.
 struct RankedBarRow: Identifiable {
     let id: String

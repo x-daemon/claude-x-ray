@@ -251,7 +251,7 @@ struct TimeSplitView: View {
         let waiting = waitingForUser()
         let thinking = Double(trace.steps.reduce(0) { $0 + $1.thinkingMs }) / 1000
 
-        HStack(spacing: 12) {
+        TileRow {
             StatTile(title: L("Модель отвечала"), value: Fmt.shortDuration(model), caption: L("из них размышления \(Fmt.shortDuration(thinking))"), systemImage: "brain")
             StatTile(title: L("Инструменты работали"), value: Fmt.shortDuration(tools), caption: L("\(trace.tools.count) вызовов"), systemImage: "wrench.and.screwdriver")
             StatTile(title: L("Субагенты"), value: Fmt.shortDuration(agents), caption: L("\(trace.subagents.reduce(0) { $0 + $1.calls }) запусков"), systemImage: "person.2")

@@ -14,7 +14,7 @@ struct OverviewView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
+                TileRow {
                     StatTile(title: model.plan.costLabel, value: Fmt.usd(summary.cost.total), caption: model.period.title, systemImage: "dollarsign.circle")
                     StatTile(title: L("Токены"), value: Fmt.tokens(summary.tokens.total), caption: L("вывод \(Fmt.tokens(summary.tokens.output)), из них размышления \(Fmt.tokens(summary.tokens.thinking))"), systemImage: "number")
                     StatTile(title: L("Запросы"), value: "\(summary.requests)", caption: L("\(sessions) сессий · \(Fmt.usd(summary.costPerRequest)) за запрос"), systemImage: "arrow.up.arrow.down")
@@ -31,7 +31,7 @@ struct OverviewView: View {
                     }
                 }
 
-                HStack(alignment: .top, spacing: 16) {
+                CardRow {
                     Card(title: L("Из чего складывается стоимость")) {
                         CostCompositionView(summary: summary)
                     }

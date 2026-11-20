@@ -24,7 +24,7 @@ struct LiveView: View {
                     WindowSummaryView()
                 }
 
-                HStack(spacing: 12) {
+                TileRow {
                     StatTile(
                         title: L("Сегодня"), value: Fmt.usd(today.cost.total),
                         caption: L("\(Fmt.tokens(today.tokens.total)) токенов · \(today.requests) запросов"),
@@ -231,7 +231,7 @@ struct CurrentSessionCard: View {
 
     var body: some View {
         Card(title: L("Текущая сессия"), subtitle: session.gitBranch.map { "\(session.projectName) · \($0)" } ?? session.projectName) {
-            HStack(spacing: 12) {
+            TileRow {
                 StatTile(title: L("Стоимость"), value: Fmt.usd(session.cost))
                 StatTile(title: L("Запросы"), value: "\(session.requests)")
                 StatTile(title: L("Контекст сейчас"), value: Fmt.tokens(lastEvents.first?.event.tokens.contextTokens ?? 0), caption: L("пик \(Fmt.tokens(session.peakContextTokens))"))

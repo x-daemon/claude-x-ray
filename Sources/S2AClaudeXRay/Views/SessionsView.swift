@@ -118,7 +118,7 @@ struct SessionDetailView: View {
                     Spacer()
                     Text("\(Fmt.dateTime(session.start)) – \(Fmt.dateTime(session.end))").foregroundStyle(.secondary)
                 }
-                HStack(spacing: 12) {
+                TileRow(minWidth: 130) {
                     StatTile(title: L("Стоимость"), value: Fmt.usd(session.cost), caption: L("\(Fmt.usd(session.summary.costPerRequest)) за запрос"))
                     StatTile(title: L("Токены"), value: Fmt.tokens(session.totalTokens), caption: L("вывод \(Fmt.tokens(session.summary.tokens.output))"))
                     StatTile(title: L("Пик контекста"), value: Fmt.tokens(session.peakContextTokens), caption: L("средний \(Fmt.tokens(Int(session.summary.averageContextTokens)))"))

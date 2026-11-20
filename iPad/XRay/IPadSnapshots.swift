@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 import XRayCore
 
 /// CI aid. With the launch argument `-XRaySnapshots full` (or `short`) the app waits for its first
@@ -40,7 +39,6 @@ enum IPadSnapshots {
 
     struct Pass {
         let name: String
-        let landscape: Bool
         let dark: Bool
         let shots: [Shot]
     }
@@ -53,21 +51,19 @@ enum IPadSnapshots {
             .screen(.overview), .screen(.sessions), .sessionDetail, .screen(.projects), .screen(.models),
             .screen(.insights), .screen(.reports),
         ] + settings
+        // The simulator cannot be turned from inside an iPad app that supports multitasking: CI
+        // checks the wide layout (landscape) on a 13-inch iPad in portrait instead.
         if plan == "short" {
-            return [Pass(name: "portrait-light", landscape: false, dark: false, shots: [
-                .screen(.live), .trace(.feed), .trace(.llm), .screen(.overview), .screen(.sessions), .screen(.insights), .screen(.reports), .screen(.settings),
+            return [Pass(name: "light", dark: false, shots: [
+                .screen(.live), .trace(.feed), .trace(.flow), .trace(.llm), .screen(.overview), .screen(.sessions), .sessionDetail,
+                .screen(.insights), .screen(.reports), .screen(.settings),
             ])]
         }
         return [
-            Pass(name: "portrait-light", landscape: false, dark: false, shots: everything),
-            Pass(name: "portrait-dark", landscape: false, dark: true, shots: [
+            Pass(name: "light", dark: false, shots: everything),
+            Pass(name: "dark", dark: true, shots: [
                 .screen(.live), .trace(.feed), .trace(.llm), .screen(.overview), .screen(.insights), .screen(.reports), .screen(.settings),
             ]),
-            Pass(name: "landscape-light", landscape: true, dark: false, shots: [
-                .screen(.live), .trace(.feed), .trace(.flow), .trace(.timeline), .screen(.overview), .screen(.sessions), .sessionDetail,
-                .screen(.projects), .screen(.insights), .screen(.reports), .screen(.settings),
-            ]),
-            Pass(name: "landscape-dark", landscape: true, dark: true, shots: [.screen(.live), .trace(.feed), .screen(.overview)]),
         ]
     }
 
@@ -103,7 +99,6 @@ enum IPadSnapshots {
 
         for pass in passes(plan, computer: sync.computers.first?.id) {
             UserDefaults.standard.set(pass.dark ? AppAppearance.dark.rawValue : AppAppearance.light.rawValue, forKey: AppAppearance.storageKey)
-            setOrientation(landscape: pass.landscape)
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             for shot in pass.shots {
                 await show(shot, model: model)
@@ -156,9 +151,4 @@ enum IPadSnapshots {
         return false
     }
 
-    private static func setOrientation(landscape: Bool) {
-        guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first else { return }
-        scene.requestGeometryUpdate(.iOS(interfaceOrientations: landscape ? .landscapeRight : .portrait)) { _ in }
-        scene.keyWindow?.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
-    }
 }

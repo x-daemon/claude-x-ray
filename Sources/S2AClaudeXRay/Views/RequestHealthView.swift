@@ -16,7 +16,7 @@ struct RequestHealthCard: View {
         if Self.hasDetails(events) {
             let issues = RequestIssues.of(events, pricing: model.pricing)
             Card(title: L("Запросы к модели"), subtitle: subtitle(issues)) {
-                HStack(alignment: .top, spacing: 16) {
+                CardRow(minWidth: 280) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(L("Почему не срабатывал кэш")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                         if issues.misses.isEmpty {

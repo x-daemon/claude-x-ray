@@ -75,7 +75,7 @@ private struct CallTiles: View {
 
     var body: some View {
         let stats = Stats(calls: calls, pricing: model.pricing)
-        HStack(spacing: 12) {
+        TileRow(minWidth: 130) {
             StatTile(
                 title: L("Запросов к модели"), value: "\(calls.count)",
                 caption: L("основной поток \(stats.main) · субагенты \(calls.count - stats.main)"), systemImage: "brain"
@@ -150,6 +150,17 @@ private struct CallList: View {
     @State private var limit = 40
     @State private var toggled: Set<Int> = []
 
+    private func issueFilter(count: Int) -> some View {
+        HStack(spacing: 14) {
+            Toggle(L("Только с проблемами"), isOn: $onlyIssues)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .help(L("промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов"))
+                .fixedSize()
+            Text(Fmt.plural(count, "запрос", "запроса", "запросов")).font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
     var body: some View {
         let latest = calls.last?.index
         let shown = calls.reversed().filter { !onlyIssues || $0.hasIssue }
@@ -157,14 +168,20 @@ private struct CallList: View {
         let maxOutput = max(calls.map { $0.priced?.event.tokens.output ?? 0 }.max() ?? 1, 1)
 
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 14) {
-                Toggle(L("Только с проблемами"), isOn: $onlyIssues)
-                    .toggleStyle(.switch)
-                    .controlSize(.small)
-                    .help(L("промахи кэша, потерянные размышления, отказы, обрезанные ответы, ошибки инструментов"))
-                Text(Fmt.plural(shown.count, "запрос", "запроса", "запросов")).font(.caption).foregroundStyle(.secondary)
-                Spacer()
-                SegmentLegend()
+            // One row when it fits; on a narrow screen (an iPad in portrait) the legend goes below.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 14) {
+                    issueFilter(count: shown.count)
+                    Spacer()
+                    SegmentLegend()
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 14) {
+                        issueFilter(count: shown.count)
+                        Spacer()
+                    }
+                    SegmentLegend()
+                }
             }
             ForEach(Array(shown.prefix(limit))) { call in
                 CallCard(
@@ -190,7 +207,7 @@ private struct CallList: View {
 
 struct SegmentLegend: View {
     var body: some View {
-        HStack(spacing: 12) {
+        FlowLayout(spacing: 12) {
             Label(L("чтение кэша"), systemImage: "square.fill").foregroundStyle(TokenSegment.read)
             Label(L("запись в кэш"), systemImage: "square.fill").foregroundStyle(TokenSegment.write)
             Label(L("свежий ввод"), systemImage: "square.fill").foregroundStyle(TokenSegment.input)

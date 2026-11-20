@@ -15,7 +15,7 @@ struct TraceFlowView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .top, spacing: 16) {
+                CardRow {
                     Card(title: L("Карта переходов"), subtitle: L("что за чем следует в основном потоке")) {
                         TransitionsChart(transitions: Array(trace.transitions.prefix(16)))
                     }

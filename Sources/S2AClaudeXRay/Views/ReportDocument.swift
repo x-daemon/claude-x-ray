@@ -43,7 +43,7 @@ struct ReportDocument: View {
                     }
                 }
 
-                HStack(alignment: .top, spacing: 16) {
+                CardRow {
                     Card(title: L("Из чего складывается стоимость")) {
                         CostCompositionView(summary: summary)
                     }
@@ -52,7 +52,7 @@ struct ReportDocument: View {
                     }
                 }
 
-                HStack(alignment: .top, spacing: 16) {
+                CardRow {
                     Card(title: L("Проекты"), subtitle: L("по расходу")) {
                         RankedBarList(rows: projectRows(events, total: summary.cost.total), labelWidth: 170)
                     }
@@ -64,7 +64,7 @@ struct ReportDocument: View {
                 if let interval = model.periodInterval {
                     let days = Self.daily(events, interval: interval)
                     if days.count >= 2 {
-                        HStack(alignment: .top, spacing: 16) {
+                        CardRow {
                             Card(title: L("Доля контекста из кэша"), subtitle: L("по дням")) {
                                 DailyMetricChart(points: days.map { DailyPoint(day: $0.day, value: $0.cacheRate) }, domain: 0...1, format: { Fmt.percent($0) })
                             }
@@ -265,7 +265,7 @@ struct ReportKPIRow: View {
         let previousCostPerSession = previous.flatMap { previous in
             previousSessions.flatMap { $0 > 0 ? previous.cost.total / Double($0) : nil }
         }
-        HStack(spacing: 12) {
+        TileRow(minWidth: 130) {
             ReportStatTile(title: L("Токены"), value: Fmt.tokens(summary.tokens.total),
                            change: previous.flatMap { Self.change(Double(summary.tokens.total), Double($0.tokens.total)) })
             ReportStatTile(title: L("Запросы"), value: "\(summary.requests)",

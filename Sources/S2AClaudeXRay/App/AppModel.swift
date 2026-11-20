@@ -391,9 +391,8 @@ final class AppModel {
 
     /// Looks up this Mac's Tailscale name in the background.
     func detectAddress() {
-        Task.detached { [weak self] in
-            let address = TailscaleAddress.detect()
-            await MainActor.run { self?.detectedAddress = address }
+        Task {
+            detectedAddress = await Task.detached { TailscaleAddress.detect() }.value
         }
     }
 

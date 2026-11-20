@@ -155,92 +155,116 @@ extension View {
     }
 }
 
-/// StatTiles in one row, like an HStack; when each would be narrower than `minWidth` (an iPad in
+/// StatTiles in one row of equal widths; when each would be narrower than `minWidth` (an iPad in
 /// portrait), as many per row as fit, in rows of equal columns.
 struct TileRow: Layout {
     var minWidth: CGFloat = 140
     var spacing: CGFloat = 12
 
-    private func columns(_ width: CGFloat?, _ count: Int) -> Int {
-        guard let width, width.isFinite else { return count }
-        return max(1, min(count, Int((width + spacing) / (minWidth + spacing))))
+    private func columns(_ width: CGFloat, _ count: Int) -> Int {
+        max(1, min(count, Int((width + spacing) / (minWidth + spacing))))
+    }
+
+    private func rows(_ subviews: Subviews, width: CGFloat) -> (cell: CGFloat, rows: [(range: Range<Int>, height: CGFloat)]) {
+        let count = subviews.count
+        let columns = columns(width, count)
+        let cell = (width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
+        var rows: [(range: Range<Int>, height: CGFloat)] = []
+        for start in stride(from: 0, to: count, by: columns) {
+            let range = start..<min(start + columns, count)
+            let height = range.map { subviews[$0].sizeThatFits(ProposedViewSize(width: cell, height: nil)).height }.max() ?? 0
+            rows.append((range, height))
+        }
+        return (cell, rows)
     }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let count = subviews.count
-        let columns = columns(proposal.width, count)
-        guard count > 0, columns < count, let width = proposal.width else {
-            let stack = HStackLayout(spacing: spacing)
-            var stackCache = stack.makeCache(subviews: subviews)
-            return stack.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
+        guard !subviews.isEmpty else { return .zero }
+        guard let width = proposal.width, width.isFinite else {
+            let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+            return CGSize(width: sizes.reduce(0) { $0 + $1.width } + spacing * CGFloat(sizes.count - 1), height: sizes.map(\.height).max() ?? 0)
         }
-        let cell = (width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
-        var height: CGFloat = 0
-        var rows = 0
-        for start in stride(from: 0, to: count, by: columns) {
-            height += subviews[start..<min(start + columns, count)].map { $0.sizeThatFits(ProposedViewSize(width: cell, height: nil)).height }.max() ?? 0
-            rows += 1
-        }
-        return CGSize(width: width, height: height + spacing * CGFloat(rows - 1))
+        let layout = rows(subviews, width: width)
+        let height = layout.rows.reduce(0) { $0 + $1.height } + spacing * CGFloat(layout.rows.count - 1)
+        return CGSize(width: width, height: height)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let count = subviews.count
-        let columns = columns(proposal.width ?? bounds.width, count)
-        guard count > 0, columns < count else {
-            let stack = HStackLayout(spacing: spacing)
-            var stackCache = stack.makeCache(subviews: subviews)
-            stack.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
-            return
-        }
-        let cell = (bounds.width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
+        guard !subviews.isEmpty else { return }
+        let layout = rows(subviews, width: bounds.width)
         var y = bounds.minY
-        for start in stride(from: 0, to: count, by: columns) {
-            let row = subviews[start..<min(start + columns, count)]
-            let height = row.map { $0.sizeThatFits(ProposedViewSize(width: cell, height: nil)).height }.max() ?? 0
-            for (index, subview) in row.enumerated() {
-                subview.place(
-                    at: CGPoint(x: bounds.minX + CGFloat(index) * (cell + spacing), y: y),
+        for row in layout.rows {
+            for (column, index) in row.range.enumerated() {
+                let height = subviews[index].sizeThatFits(ProposedViewSize(width: layout.cell, height: nil)).height
+                subviews[index].place(
+                    // Centred in the row, as in an HStack.
+                    at: CGPoint(x: bounds.minX + CGFloat(column) * (layout.cell + spacing), y: y + (row.height - height) / 2),
                     anchor: .topLeading,
-                    proposal: ProposedViewSize(width: cell, height: height)
+                    proposal: ProposedViewSize(width: layout.cell, height: height)
                 )
             }
-            y += height + spacing
+            y += row.height + spacing
         }
     }
 }
 
-/// Cards side by side, top-aligned like an HStack; one under the other when the row has less
-/// than `minWidth` per card (an iPad in portrait).
+/// Cards side by side, top-aligned, with widths shared as an HStack shares them; one under the
+/// other when the row has less than `minWidth` per card (an iPad in portrait).
 struct CardRow: Layout {
     var minWidth: CGFloat = 360
     var spacing: CGFloat = 16
 
-    private func sideBySide(_ width: CGFloat?, _ count: Int) -> Bool {
-        guard let width, width.isFinite, count > 1 else { return true }
-        return width >= minWidth * CGFloat(count) + spacing * CGFloat(count - 1)
+    private func sideBySide(_ width: CGFloat, _ count: Int) -> Bool {
+        count < 2 || width >= minWidth * CGFloat(count) + spacing * CGFloat(count - 1)
+    }
+
+    /// The least flexible card first, each between its minimum and maximum width.
+    private func widths(_ width: CGFloat, _ subviews: Subviews) -> [CGFloat] {
+        let ranges = subviews.map { view -> (low: CGFloat, high: CGFloat) in
+            let low = view.sizeThatFits(ProposedViewSize(width: 0, height: nil)).width
+            let high = view.sizeThatFits(ProposedViewSize(width: .infinity, height: nil)).width
+            return (low, max(low, high))
+        }
+        var result = [CGFloat](repeating: 0, count: subviews.count)
+        var remaining = max(0, width - spacing * CGFloat(subviews.count - 1))
+        let order = ranges.indices.sorted { ranges[$0].high - ranges[$0].low < ranges[$1].high - ranges[$1].low }
+        for (position, index) in order.enumerated() {
+            let share = remaining / CGFloat(order.count - position)
+            result[index] = min(max(share, ranges[index].low), ranges[index].high)
+            remaining -= result[index]
+        }
+        return result
     }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        if sideBySide(proposal.width, subviews.count) {
-            let stack = HStackLayout(alignment: .top, spacing: spacing)
-            var stackCache = stack.makeCache(subviews: subviews)
-            return stack.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
+        guard !subviews.isEmpty else { return .zero }
+        guard let width = proposal.width, width.isFinite else {
+            let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+            return CGSize(width: sizes.reduce(0) { $0 + $1.width } + spacing * CGFloat(sizes.count - 1), height: sizes.map(\.height).max() ?? 0)
         }
-        let stack = VStackLayout(alignment: .leading, spacing: spacing)
-        var stackCache = stack.makeCache(subviews: subviews)
-        return stack.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
+        if sideBySide(width, subviews.count) {
+            let heights = zip(subviews, widths(width, subviews)).map { $0.sizeThatFits(ProposedViewSize(width: $1, height: nil)).height }
+            return CGSize(width: width, height: heights.max() ?? 0)
+        }
+        let heights = subviews.map { $0.sizeThatFits(ProposedViewSize(width: width, height: nil)).height }
+        return CGSize(width: width, height: heights.reduce(0, +) + spacing * CGFloat(heights.count - 1))
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        if sideBySide(proposal.width ?? bounds.width, subviews.count) {
-            let stack = HStackLayout(alignment: .top, spacing: spacing)
-            var stackCache = stack.makeCache(subviews: subviews)
-            stack.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
+        guard !subviews.isEmpty else { return }
+        if sideBySide(bounds.width, subviews.count) {
+            var x = bounds.minX
+            for (view, width) in zip(subviews, widths(bounds.width, subviews)) {
+                view.place(at: CGPoint(x: x, y: bounds.minY), anchor: .topLeading, proposal: ProposedViewSize(width: width, height: nil))
+                x += width + spacing
+            }
         } else {
-            let stack = VStackLayout(alignment: .leading, spacing: spacing)
-            var stackCache = stack.makeCache(subviews: subviews)
-            stack.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
+            var y = bounds.minY
+            for view in subviews {
+                let height = view.sizeThatFits(ProposedViewSize(width: bounds.width, height: nil)).height
+                view.place(at: CGPoint(x: bounds.minX, y: y), anchor: .topLeading, proposal: ProposedViewSize(width: bounds.width, height: height))
+                y += height + spacing
+            }
         }
     }
 }

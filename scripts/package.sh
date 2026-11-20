@@ -4,11 +4,11 @@
 #   dist/S2A-Claude-X-Ray-<version>.zip
 #   dist/S2A-Claude-X-Ray.zip               (the same, for releases/latest/download/…)
 #   dist/SHA256SUMS.txt
-# Usage: VERSION=0.8.1 ./scripts/package.sh
+# Usage: VERSION=0.9.0 ./scripts/package.sh
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-VERSION="${VERSION:-0.8.1}"
+VERSION="${VERSION:-0.9.0}"
 NAME="S2A-Claude-X-Ray-${VERSION}"
 APP="build/S2A Claude X-Ray.app"
 

@@ -65,7 +65,7 @@ struct XRayApp: App {
                     Text(L("Откройте ссылку или QR-код из X-Ray на компьютере: «Настройки → iPad»."))
                 }
         }
-        .onChange(of: scenePhase) { _, phase in
+        .onChange(of: scenePhase, initial: true) { _, phase in
             sync.setActive(phase == .active)
         }
     }

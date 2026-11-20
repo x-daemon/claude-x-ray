@@ -1,15 +1,20 @@
-# S2A Claude X-Ray 0.8.1
+# S2A Claude X-Ray 0.9.0
 
-Использование Claude Code в реальном времени и по истории, API‑эквивалент для подписки Pro/Max, Live‑трасса и подсказки по оптимизации. Для macOS 14+ (Apple Silicon и Intel) и Windows 10 и 11 (x64 и ARM64).
+Использование Claude Code в реальном времени и по истории, API‑эквивалент для подписки Pro/Max, Live‑трасса и подсказки по оптимизации. Для macOS 14+ (Apple Silicon и Intel), Windows 10 и 11 (x64 и ARM64) и iPad (iPadOS 17+, в том числе iPad mini).
 
 ## Что нового
 
+- **X-Ray для iPad.** Нативное приложение для iPad, в том числе iPad mini, со всеми экранами: «Сейчас» с лимитами аккаунта, Live‑трасса со всеми вкладками, обзор, сессии, проекты, модели, оптимизация и отчёты (PDF, Markdown и CSV через «Поделиться»). Логи оно берёт с ваших компьютеров и, пока открыто, каждые 3 секунды догружает новые строки. Можно подключить Mac и ПК сразу. Ставится из Xcode со своим Apple ID: `iPad/XRay.xcodeproj`, пошагово в README.
+- **«Настройки → iPad» на Mac и Windows.** Переключатель «Разрешить iPad читать логи», адрес из Tailscale и QR‑код: камера iPad открывает его в X-Ray, и iPad подключается. Доступ только на чтение и со своим токеном, отдельным от токена облачных сессий. По умолчанию выключен.
+
+**English.** X-Ray now runs on the iPad, including the iPad mini, with every screen of the Mac app. It reads the logs of your Mac and Windows computers, read-only, through the same tunnel as cloud sessions, and fetches new lines every 3 seconds while open. Turn it on in Settings → iPad on the computer and scan the QR code with the iPad's camera. Install it from Xcode with your Apple ID (`iPad/XRay.xcodeproj`, see the README).
+
+**Deutsch.** X-Ray läuft jetzt auch auf dem iPad, einschließlich iPad mini, mit allen Bildschirmen der Mac-App. Es liest die Logs Ihrer Mac- und Windows-Computer schreibgeschützt über denselben Tunnel wie die Cloud-Sitzungen und holt neue Zeilen alle 3 Sekunden, solange es geöffnet ist. Schalten Sie es auf dem Computer unter „Einstellungen → iPad“ ein und scannen Sie den QR-Code mit der iPad-Kamera. Installation über Xcode mit Ihrer Apple-ID (`iPad/XRay.xcodeproj`, siehe README).
+
+### Из 0.8.1
+
 - **Честный статус на экране «Сейчас» и в Live‑трассе.** Если после промпта или ответа модели три минуты нет новых событий, X‑Ray пишет «Нет новых событий» и сколько прошло, а не «Думает»: модель может ещё отвечать, а лог облачной сессии мог ещё не дойти. Раньше статус «Думает» держался до 10 минут.
 - **Ответы облачных сессий доходят без задержек.** Если отправка лога не удалась, хук облачной сессии сам повторяет её через 5, 15, 30 и 60 секунд, а не ждёт следующего шага сессии (после конца хода он может быть через много минут). После конца хода он ещё раз проверяет лог: Claude Code дописывает конец хода сразу после хука. Ошибки отправки пишутся в `/tmp/xray-push/errors.log` облачной сессии. Новый хук облачная среда ставит в новые сессии сама.
-
-**English.** The live status no longer claims “Thinking” after three minutes without new events: it says “No new events” and how long it has been. Cloud sessions retry a failed log upload on their own within a minute instead of waiting for the session's next step.
-
-**Deutsch.** Der Live-Status behauptet nach drei Minuten ohne neue Ereignisse nicht mehr „Denkt nach“, sondern zeigt „Keine neuen Ereignisse“ und die vergangene Zeit. Cloud-Sitzungen wiederholen ein fehlgeschlagenes Senden des Logs selbst innerhalb einer Minute, statt auf den nächsten Schritt zu warten.
 
 ### Из 0.8.0
 

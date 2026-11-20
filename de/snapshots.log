@@ -1,0 +1,34 @@
+events: 1187, activity items: 667, files: 42
+s2a-light-live: 1440x1000
+s2a-light-trace-feed: 1440x1000
+s2a-light-trace-flow: 1440x1000
+s2a-light-trace-llm: 1440x1000
+s2a-light-trace-timeline: 1440x1000
+s2a-light-trace-context: 1440x1000
+s2a-light-trace-tools: 1440x1000
+s2a-light-overview: 1440x1000
+s2a-light-sessions: 1440x1000
+s2a-light-insights: 1440x1000
+s2a-light-reports: 1440x1000
+s2a-light-settings: 1440x1000
+s2a-dark-live: 1440x1000
+s2a-dark-trace-feed: 1440x1000
+s2a-dark-trace-flow: 1440x1000
+s2a-dark-trace-llm: 1440x1000
+s2a-dark-trace-timeline: 1440x1000
+s2a-dark-trace-context: 1440x1000
+s2a-dark-trace-tools: 1440x1000
+s2a-dark-overview: 1440x1000
+s2a-dark-sessions: 1440x1000
+s2a-dark-insights: 1440x1000
+s2a-dark-reports: 1440x1000
+s2a-dark-settings: 1440x1000
+system-light-live: 1440x1000
+system-light-trace-feed: 1440x1000
+system-light-trace-flow: 1440x1000
+system-light-trace-llm: 1440x1000
+system-light-trace-timeline: 1440x1000
+system-light-trace-context: 1440x1000
+system-light-trace-tools: 1440x1000
+system-light-overview: 1440x1000
+report.pdf: 223902 bytes, page 1104x3853 px
